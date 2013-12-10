@@ -9,31 +9,73 @@ class DoubleListSelector(tk.Frame):
         self.selected = options.get("selected")
         
         self.source_list_var = tk.StringVar()
-        self.source_list = tk.Listbox(self, exportselection=0, listvar=self.source_list_var)
+        self.source_list = tk.Listbox(self, exportselection=0, listvar=self.source_list_var, selectmode=tk.MULTIPLE)
+        self.source_list.bind('<ButtonRelease-1>', self.source_list_changed)
+        
         for item in self.source:
             if not item in self.selected:
                 self.source_list.insert(tk.END, str(item))
                 
         self.selected_list_var = tk.StringVar()
-        self.selected_list = tk.Listbox(self, exportselection=0, listvar=self.selected_list_var)
+        self.selected_list = tk.Listbox(self, exportselection=0, listvar=self.selected_list_var, selectmode=tk.MULTIPLE)
+        self.selected_list.bind('<ButtonRelease-1>', self.selected_list_changed)
+        
         for item in self.selected:
             self.selected_list.insert(tk.END, str(item))
             
         buttons = tk.Frame(self)
-        add_btn = tk.Button(buttons, text="Add", command=self.select_item)
-        add_btn.pack()
-        remove_btn = tk.Button(buttons, text="Remove", command=self.unselect_item)
-        remove_btn.pack()
+        self.add_btn = tk.Button(buttons, text="Add", command=self.select_item, state=tk.DISABLED)
+        self.add_btn.pack()
+        
+        self.remove_btn = tk.Button(buttons, text="Remove", command=self.unselect_item, state=tk.DISABLED)
+        self.remove_btn.pack()
         
         self.selected_list.pack(side=tk.LEFT)
         buttons.pack(side=tk.LEFT)
         self.source_list.pack(side=tk.LEFT)
     
+    def source_list_changed(self, ev):
+        if self.source_list.curselection():
+            self.add_btn.configure(state=tk.NORMAL)
+        else:
+            self.add_btn.configure(state=tk.DISABLED)
+            
+    def selected_list_changed(self, ev):
+        if self.selected_list.curselection():
+            self.remove_btn.configure(state=tk.NORMAL)
+        else:
+            self.remove_btn.configure(state=tk.DISABLED)
+            
     def select_item(self):
-        print "Select item!!"
+        selected_items = []
+        for i in self.source_list.curselection():
+            item = self.source[int(i)]
+            selected_items.append(item)
+        
+        for item in selected_items:
+            self.source.remove(item)
+               
+        self.selected.extend(selected_items)
+        self.update_listboxes()
+        self.add_btn.configure(state=tk.DISABLED)
+        
+    def update_listboxes(self):
+        self.selected_list_var.set(' '.join(map(str, self.selected)))
+        self.source_list_var.set(' '.join(map(str, self.source)))
         
     def unselect_item(self):
-        print "Unselect item!!"           
+        selected_items = []
+        for i in self.selected_list.curselection():
+            item = self.selected[int(i)]
+            selected_items.append(item)
+        
+        for item in selected_items:
+            self.selected.remove(item)
+            
+        self.source.extend(selected_items)
+        self.update_listboxes()
+        self.remove_btn.configure(state=tk.DISABLED)
+                  
         
 configuration_schemas = {}
 
