@@ -1,6 +1,40 @@
 import Tkinter as tk
 import ttk
 
+class DoubleListSelector(tk.Frame):
+    def __init__(self, master, **options):
+        tk.Frame.__init__(self, master)
+        
+        self.source = options.get("source")
+        self.selected = options.get("selected")
+        
+        self.source_list_var = tk.StringVar()
+        self.source_list = tk.Listbox(self, exportselection=0, listvar=self.source_list_var)
+        for item in self.source:
+            if not item in self.selected:
+                self.source_list.insert(tk.END, str(item))
+                
+        self.selected_list_var = tk.StringVar()
+        self.selected_list = tk.Listbox(self, exportselection=0, listvar=self.selected_list_var)
+        for item in self.selected:
+            self.selected_list.insert(tk.END, str(item))
+            
+        buttons = tk.Frame(self)
+        add_btn = tk.Button(buttons, text="Add", command=self.select_item)
+        add_btn.pack()
+        remove_btn = tk.Button(buttons, text="Remove", command=self.unselect_item)
+        remove_btn.pack()
+        
+        self.selected_list.pack(side=tk.LEFT)
+        buttons.pack(side=tk.LEFT)
+        self.source_list.pack(side=tk.LEFT)
+    
+    def select_item(self):
+        print "Select item!!"
+        
+    def unselect_item(self):
+        print "Unselect item!!"           
+        
 configuration_schemas = {}
 
 def get_configuration_schema(name):
@@ -20,6 +54,7 @@ class ConfigurationSchema:
         self._name = name
         self._sections = {}
         self._documentation = args.get('documentation') or "Not documented"
+        self._parents = args.get("parents") or []
         register_configuration_schema(self)
                 
     def section(self, section):
@@ -28,6 +63,9 @@ class ConfigurationSchema:
     
     def sections(self):
         return self._sections.values()
+    
+    def parents(self):
+        return self._parents
     
     @property
     def name(self):
@@ -48,7 +86,7 @@ class ConfigurationSchema:
         return self
     
     def __str__(self):
-        return "<ConfigurationSchema \"" + self.name() + "\">" 
+        return self.name 
         
 class ConfigurationSchemaSection:
     def __init__(self, name, **args):
@@ -171,16 +209,25 @@ class ConfigurationSchemaEditor(tk.Frame):
         
         self.schema = schema
         tk.Label(self, text="Name: ").grid(row=0, column=0)
-        tk.Entry(self, textvariable=tk.StringVar()).grid(row=0, column=1)
+        self.schema_name = tk.StringVar().set(schema.name or "")
+        tk.Entry(self, textvariable=self.schema_name).grid(row=0, column=1)
         tk.Label(self, text="Parents:").grid(row=1, column=0)
-        parents = tk.Listbox(self)
-        for sc in list_configuration_schemas():
-            parents.insert(tk.END, sc.name)
+        parents = DoubleListSelector(self, source=list_configuration_schemas(),
+                                        selected=schema.parents())
         parents.grid(row=1, column=1)
             
         tk.Label(self, text="Documentation").grid(row=2, column=0)
         tk.Text(self).grid(row=2, column=1)
         tk.Label(self, text="Options").grid(row=3,column=0)
+        
+class ConfigurationSchemaSectionEditor(tk.Frame):
+    def __init__(self, master, section):
+        tk.Frame.__init__(self, master)
+        
+        self.section = section
+        tk.Label(self, text="Name: ").grid(row=0, column=0)
+        tk.Entry()
+                
            
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
