@@ -303,22 +303,25 @@ class ConfigurationSchemaEditor(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.schema = schema
-        tk.Label(self, text="Name: ").grid(row=0, column=0)
+        tk.Label(self, text="Configuration schema").pack()
+        props = tk.Frame(self)
+        tk.Label(props, text="Name: ").grid(row=0, column=0)
         self.schema_name = tk.StringVar()
         self.schema_name.set(schema.name or "")
         
-        tk.Entry(self, textvariable=self.schema_name).grid(row=0, column=1)
-        tk.Label(self, text="Parents:").grid(row=1, column=0)
-        parents = DoubleListSelector(self, source=list_configuration_schemas(),
+        tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1)
+        tk.Label(props, text="Parents:").grid(row=1, column=0)
+        parents = DoubleListSelector(props, source=list_configuration_schemas(),
                                         selected=schema.parents())
         parents.grid(row=1, column=1)
         
         self.schema_documentation = schema.documentation
             
-        tk.Label(self, text="Documentation").grid(row=2, column=0)
-        text = tk.Text(self)
+        tk.Label(props, text="Documentation").grid(row=2, column=0)
+        text = tk.Text(props)
         text.insert(tk.END, self.schema_documentation)
         text.grid(row=2, column=1)
+        props.pack()
         
 class ConfigurationSchemaSectionEditor(tk.Frame):
     def __init__(self, master, section):
