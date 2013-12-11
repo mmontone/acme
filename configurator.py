@@ -215,6 +215,10 @@ class OptionType(object):
     def option_name(cls):
         return cls._name
     
+    @classmethod
+    def get_named(cls, name):
+        return next((option_type for option_type in cls.__subclasses__() if option_type.option_name() == name), None)
+    
     @property
     def name(self):
         return self.__class__.option_name()
@@ -231,14 +235,20 @@ class BooleanOptionType(OptionType):
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
-    def __init__(self, options):
+    def __init__(self, options=[]):
         self._options = options
+        
+    def options(self):
+        return self._options
         
 class ListOptionType(OptionType):
     _name = "List"
     
-    def __init__(self, options):
+    def __init__(self, options=[]):
         self._options = options
+        
+    def options():
+        return self._options
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -395,29 +405,79 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         
         tk.Label(self, text=option.name + " option").pack()
         
-        f = tk.Frame(self)
+        self.f = tk.Frame(self)
         
-        tk.Label(f, text="Name: ").grid(row=0, column=0)
+        tk.Label(self.f, text="Name: ").grid(row=0, column=0)
         self.option_name = tk.StringVar()
         self.option_name.set(option.name or "")
-        tk.Entry(f, textvariable=self.option_name).grid(row=0, column=1)
+        tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1)
         
-        tk.Label(f, text="Type: ").grid(row=1, column=0)
+        tk.Label(self.f, text="Type: ").grid(row=1, column=0)
         self.option_type = tk.StringVar()
         if option.option_type:
             self.option_type.set(option.option_type.name)
         option_types = map(lambda o: o.option_name(), OptionType.__subclasses__())
-        tk.OptionMenu(f, self.option_type, *option_types).grid(row=1, column=1)        
+        tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1) 
+        
+        self.option_type_editor = tk.Frame(self.f)
+        self.option_type_editor.grid(row=2, column=1)       
         
         self.option_documentation = option.documentation
-        tk.Label(f, text="Documentation:").grid(row=2, column=0)
-        text = tk.Text(f)
+        tk.Label(self.f, text="Documentation:").grid(row=3, column=0)
+        text = tk.Text(self.f)
         text.insert(tk.END, self.option_documentation)
         text.grid(row=2, column=1)
         
-        tk.Button(f, text="Save").grid(row=3, column=1, sticky=tk.SE)
-        f.pack()
+        tk.Button(self.f, text="Save").grid(row=4, column=1, sticky=tk.SE)
+        self.f.pack()
         
+    def edit_option_type(self, ev):
+        print "Edit option type" + self.option_type.get() 
+        option_type = OptionType.get_named(self.option_type.get())
+        
+        editor = OptionTypeEditor.for_option_type(option_type)
+        print "Editor " + str(editor)
+            
+        self.option_type_editor.grid_forget()     
+        
+        if editor:
+            self.option_type_editor = editor(self.f, option_type())
+            self.option_type_editor.grid(row=4, column=1)
+        
+class OptionTypeEditor(object, tk.Frame):
+    option_type = None
+    
+    def __init__(self, parent, option_type):
+        tk.Frame.__init__(self, parent)
+        self.option_type = option_type
+        
+    @classmethod
+    def for_option_type(cls, option_type):
+        subclasses = OptionTypeEditor.__subclasses__()
+        return next((editor for editor in subclasses if editor.option_type == option_type), None)
+
+class ChoiceOptionTypeEditor(OptionTypeEditor):
+    option_type = ChoiceOptionType
+    
+    def __init__(self, parent, option_type):
+        OptionTypeEditor.__init__(self, parent, option_type)
+        self.options_var = tk.StringVar()
+        self.options_var.set(' '.join(map(str, option_type.options())))
+        self.options_list = tk.Listbox(self, exportselection=0, listvar=self.options_var, selectmode=tk.MULTIPLE)
+        self.options_list.pack(side=tk.LEFT)
+        actions = tk.Frame(self)
+        tk.Button(actions, text="Remove", command=self.remove_option).pack()
+        self.new_option = tk.StringVar()
+        tk.Entry(actions, textvariable=self.new_option).pack()
+        tk.Button(actions, text="Add", command=self.add_option).pack()
+        actions.pack()
+           
+    def remove_option(self, ev):
+        print "Remove option"
+    
+    def add_option(self, ev):
+        print "Add option"
+       
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
         tk.Frame.__init__(self, master)
