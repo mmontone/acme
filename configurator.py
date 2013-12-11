@@ -244,7 +244,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         schema = self.find_schema(item_id)
         print 'Selected schema was %s' % item_id
         print schema
-        self.editor.forget()
+        self.editor.grid_forget()
         self.editor = ConfigurationSchemaEditor(self.pane, schema)
         self.editor.grid(column=1, row=0)
                
@@ -256,6 +256,9 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print 'Selected section was %s' % item_id
         section = self.find_section(item_id)
         print section
+        self.editor.grid_forget()
+        self.editor = ConfigurationSchemaSectionEditor(self.pane, section)
+        self.editor.grid(column=1, row=0)
         
     def find_section(self, id):
         path = id.split('.')
@@ -303,7 +306,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.schema = schema
-        tk.Label(self, text="Configuration schema").pack()
+        tk.Label(self, text=schema.name + " configuration schema").pack()
         props = tk.Frame(self)
         tk.Label(props, text="Name: ").grid(row=0, column=0)
         self.schema_name = tk.StringVar()
@@ -316,7 +319,6 @@ class ConfigurationSchemaEditor(tk.Frame):
         parents.grid(row=1, column=1)
         
         self.schema_documentation = schema.documentation
-            
         tk.Label(props, text="Documentation").grid(row=2, column=0)
         text = tk.Text(props)
         text.insert(tk.END, self.schema_documentation)
@@ -330,8 +332,24 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.section = section
-        tk.Label(self, text="Name: ").grid(row=0, column=0)
-        tk.Entry()                
+        
+        tk.Label(self, text=section.name + " section").pack()
+        
+        f = tk.Frame(self)
+        
+        tk.Label(f, text="Name: ").grid(row=0, column=0)
+        self.section_name = tk.StringVar()
+        self.section_name.set(section.name or "")
+        tk.Entry(f, textvariable=self.section_name).grid(row=0, column=1)
+        
+        self.section_documentation = section.documentation
+        tk.Label(f, text="Documentation").grid(row=1, column=0)
+        text = tk.Text(f)
+        text.insert(tk.END, self.section_documentation)
+        text.grid(row=1, column=1)
+        
+        tk.Button(f, text="Save").grid(row=2, column=1, sticky=tk.SE)
+        f.pack()
            
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
