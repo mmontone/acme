@@ -215,15 +215,15 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.schemas = schemas
         
         # The pane
-        pane = tk.PanedWindow(self, orient=tk.HORIZONTAL)
+        self.pane = tk.Frame(self)
         
         # The tree
-        self.tree = ttk.Treeview(pane)
-        ysb = ttk.Scrollbar(self, orient='vertical', command=self.tree.yview)
-        xsb = ttk.Scrollbar(self, orient='horizontal', command=self.tree.xview)
+        self.tree = ttk.Treeview(self.pane)
+        ysb = ttk.Scrollbar(self.pane, orient='vertical', command=self.tree.yview)
+        xsb = ttk.Scrollbar(self.pane, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         self.tree.heading('#0', text='Configuration schemas', anchor='w')
-        
+                
         for schema in schemas:
             self.insert_schema(schema)
             
@@ -231,20 +231,23 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.tree.tag_bind('section', '<ButtonRelease-1>', self.select_section)
         self.tree.tag_bind('option', '<ButtonRelease-1>', self.select_option)
         
-        pane.add(self.tree)
+        self.tree.grid(column=0, row=0, sticky=tk.N+tk.S)
         
         # The editor
         
-        self.editor = ConfigurationSchemaEditor(pane, schemas[0])
-        pane.add(self.editor)
-        pane.pack()
+        self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
+        self.editor.grid(column=1, row=0)
+        self.pane.pack()
         
     def select_schema(self, ev):
         item_id = str(self.tree.focus())
         schema = self.find_schema(item_id)
         print 'Selected schema was %s' % item_id
         print schema
-        
+        self.editor.forget()
+        self.editor = ConfigurationSchemaEditor(self.pane, schema)
+        self.editor.grid(column=1, row=0)
+               
     def find_schema(self, id):
         return next((sc for sc in self.schemas if sc.name == id), None)
 
