@@ -321,6 +321,8 @@ class ConfigurationSchemaEditor(tk.Frame):
         text = tk.Text(props)
         text.insert(tk.END, self.schema_documentation)
         text.grid(row=2, column=1)
+        
+        tk.Button(props, text="Save").grid(row=3, column=1, sticky=tk.SE)
         props.pack()
         
 class ConfigurationSchemaSectionEditor(tk.Frame):
