@@ -208,6 +208,38 @@ class ConfigurationSchemaOption:
         self._documentation = value
         return self
     
+class OptionType(object):
+    _name = "Option type"
+    
+    @classmethod
+    def option_name(cls):
+        return cls._name
+    
+    @property
+    def name(self):
+        return self.__class__.option_name()
+   
+class StringOptionType(OptionType):
+    _name = "String"
+    
+class NumberOptionType(OptionType):
+    _name = "Number"
+    
+class BooleanOptionType(OptionType):
+    _name = "Boolean"
+    
+class ChoiceOptionType(OptionType):
+    _name = "Choice"
+    
+    def __init__(self, options):
+        self._options = options
+        
+class ListOptionType(OptionType):
+    _name = "List"
+    
+    def __init__(self, options):
+        self._options = options
+    
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
         tk.Frame.__init__(self, master)
@@ -276,7 +308,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def select_option(self, ev):
         item_id = str(self.tree.focus())
         print 'Selected option was %s' % item_id
+        option = self.find_option(item_id)
         print self.find_option(item_id)
+        self.editor.grid_forget()
+        self.editor = ConfigurationSchemaOptionEditor(self.pane, option)
+        self.editor.grid(column=1, row=0)
         
     def find_option(self, id):
         path= id.split('.')
@@ -350,7 +386,38 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         
         tk.Button(f, text="Save").grid(row=2, column=1, sticky=tk.SE)
         f.pack()
-           
+        
+class ConfigurationSchemaOptionEditor(tk.Frame):
+    def __init__(self, master, option):
+        tk.Frame.__init__(self, master)
+        
+        self.option = option
+        
+        tk.Label(self, text=option.name + " option").pack()
+        
+        f = tk.Frame(self)
+        
+        tk.Label(f, text="Name: ").grid(row=0, column=0)
+        self.option_name = tk.StringVar()
+        self.option_name.set(option.name or "")
+        tk.Entry(f, textvariable=self.option_name).grid(row=0, column=1)
+        
+        tk.Label(f, text="Type: ").grid(row=1, column=0)
+        self.option_type = tk.StringVar()
+        if option.option_type:
+            self.option_type.set(option.option_type.name)
+        option_types = map(lambda o: o.option_name(), OptionType.__subclasses__())
+        tk.OptionMenu(f, self.option_type, *option_types).grid(row=1, column=1)        
+        
+        self.option_documentation = option.documentation
+        tk.Label(f, text="Documentation:").grid(row=2, column=0)
+        text = tk.Text(f)
+        text.insert(tk.END, self.option_documentation)
+        text.grid(row=2, column=1)
+        
+        tk.Button(f, text="Save").grid(row=3, column=1, sticky=tk.SE)
+        f.pack()
+        
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
         tk.Frame.__init__(self, master)
@@ -402,13 +469,13 @@ class ConfigurationNavigator(tk.Frame):
 if __name__ == '__main__':
     schemas = []
     sch1 = ConfigurationSchema("Web")
-    host = ConfigurationSchemaOption("host", 'uri', documentation="Server host")
+    host = ConfigurationSchemaOption("host", StringOptionType(), documentation="Server host")
     s1 = ConfigurationSchemaSection("Server").add_option(host)
     sch1.section(s1)
     schemas.append(sch1)
     
     db = ConfigurationSchema("Database")
-    db_engine = ConfigurationSchemaOption("engine", "option", documentation="The database engine")
+    db_engine = ConfigurationSchemaOption("engine", ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
     db_server = ConfigurationSchemaSection("Server").add_option(db_engine)
     db.section(db_server)
     schemas.append(db)
