@@ -419,14 +419,22 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         option_types = map(lambda o: o.option_name(), OptionType.__subclasses__())
         tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1) 
         
-        self.option_type_editor = tk.Frame(self.f)
+        if option.option_type:
+            editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
+            if editor:
+                self.option_type_editor = editor(self.f, option.option_type)
+            else:
+                self.option_type_editor = tk.Frame(self, f)
+        else:
+            self.option_type_editor = tk.Frame(self.f)
+            
         self.option_type_editor.grid(row=2, column=1)       
         
         self.option_documentation = option.documentation
         tk.Label(self.f, text="Documentation:").grid(row=3, column=0)
         text = tk.Text(self.f)
         text.insert(tk.END, self.option_documentation)
-        text.grid(row=2, column=1)
+        text.grid(row=3, column=1)
         
         tk.Button(self.f, text="Save").grid(row=4, column=1, sticky=tk.SE)
         self.f.pack()
@@ -442,7 +450,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         
         if editor:
             self.option_type_editor = editor(self.f, option_type())
-            self.option_type_editor.grid(row=4, column=1)
+            self.option_type_editor.grid(row=2, column=1)
         
 class OptionTypeEditor(object, tk.Frame):
     option_type = None
