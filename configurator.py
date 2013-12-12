@@ -395,6 +395,8 @@ class Configurator(tk.Frame):
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
+        self.menu_bar.add_command(label='Quit', command=self.quit)
+        
         try:
             parent.config(menu=self.menu_bar)
         except AttributeError:
@@ -439,6 +441,9 @@ class Configurator(tk.Frame):
         d = AboutDialog(self)
 
         self.wait_window(d.top)
+        
+    def quit(self):
+        root.quit()
         
 if __name__ == '__main__':
     root = tk.Tk()
