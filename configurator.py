@@ -367,6 +367,9 @@ class Configurator(tk.Frame):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
+        parent.title('Configurator')
+        
+        # Menubar
         self.menu_bar = tk.Menu(self)
         
         help_menu = tk.Menu(self.menu_bar)
@@ -379,6 +382,10 @@ class Configurator(tk.Frame):
         except AttributeError:
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
+            
+        # Tabs
+        tabs = ttk.Notebook(self)
+        
         
         schemas = []
         
