@@ -62,7 +62,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print 'Selected schema was %s' % item_id
         print schema
         self.editor.grid_forget()
-        self.editor = ConfigurationSchemaEditor(self.pane, schema)
+        self.editor = ConfigurationSchemaEditor(self.pane, schema, 
+                                                onsave=lambda:self.tree.item(item_id, text=schema.name))
         self.editor.grid(column=1, row=0)
         
     def popup_schema(self, ev):
@@ -156,10 +157,13 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.items[oid] = option
             
 class ConfigurationSchemaEditor(tk.Frame):
-    def __init__(self, master, schema):
+    def __init__(self, master, schema, **options):
         tk.Frame.__init__(self, master)
         
         self.schema = schema
+        self._onsave = options.get('onsave') or None
+        
+        # ui
         tk.Label(self, text=schema.name + " configuration schema").pack()
         props = tk.Frame(self)
         tk.Label(props, text="Name: ").grid(row=0, column=0)
@@ -188,6 +192,8 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema.name = self.schema_name.get()
         self.schema.documentation = self.schema_doc.get(1.0, tk.END)
         #self.schema.set_parents(self.parents.get_selection())
+        if self._onsave:
+            self._onsave()
     
     def restore_inputs(self):
         self.schema_name.set(self.schema.name)
