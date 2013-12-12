@@ -24,7 +24,7 @@ class DoubleListSelector(tk.Frame):
             
         buttons = tk.Frame(self)
         self.add_btn = tk.Button(buttons, text="Add", command=self.select_item, state=tk.DISABLED)
-        self.add_btn.pack()
+        self.add_btn.pack(fill=tk.X)
         
         self.remove_btn = tk.Button(buttons, text="Remove", command=self.unselect_item, state=tk.DISABLED)
         self.remove_btn.pack()
@@ -83,10 +83,10 @@ class ListEditor(tk.Frame):
         self.list = tk.Listbox(self, exportselection=0, listvar=self.list_var, selectmode=tk.MULTIPLE)
         self.list.pack(side=tk.LEFT)
         actions = tk.Frame(self)
-        tk.Button(actions, text="Remove", command=self.remove_item).pack()
+        tk.Button(actions, text="Remove", command=self.remove_item).pack(fill=tk.X)
         self.new_item = tk.StringVar()
-        tk.Entry(actions, textvariable=self.new_item).pack()
-        tk.Button(actions, text="Add", command=self.add_item).pack()
+        tk.Entry(actions, textvariable=self.new_item).pack(fill=tk.X)
+        tk.Button(actions, text="Add", command=self.add_item).pack(fill=tk.X)
         actions.pack()
            
     def add_item(self):

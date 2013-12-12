@@ -43,7 +43,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         # The editor
         self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
         self.editor.grid(column=1, row=0)
-        self.pane.pack()
+        self.pane.pack(fill=tk.BOTH, expand=True)
         
     def tree_popup(self, ev):
         popup = tk.Menu(self, tearoff=0)
@@ -71,6 +71,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         popup = tk.Menu(self, tearoff=0)
         popup.add_command(label="Remove") # , command=next) etc...
         popup.add_command(label="Add section")
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
         
         # display the popup menu
         try:
@@ -96,6 +98,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         popup = tk.Menu(self, tearoff=0)
         popup.add_command(label="Remove") # , command=next) etc...
         popup.add_command(label="Add option")
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
         
         # display the popup menu
         try:
@@ -123,7 +127,9 @@ class ConfigurationSchemaNavigator(tk.Frame):
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         popup.add_command(label="Remove", command=lambda:self.remove_option(item, option)) # , command=next) etc...
-                
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
+               
         # display the popup menu
         try:
             popup.tk_popup(ev.x_root, ev.y_root, 0)
@@ -166,25 +172,25 @@ class ConfigurationSchemaEditor(tk.Frame):
         # ui
         tk.Label(self, text=schema.name + " configuration schema").pack()
         props = tk.Frame(self)
-        tk.Label(props, text="Name: ").grid(row=0, column=0)
+        tk.Label(props, text="Name: ").grid(row=0, column=0, sticky=tk.W)
         self.schema_name = tk.StringVar()
         self.schema_name.set(schema.name or "")
+        tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1, sticky=tk.W + tk.N)
         
-        tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1)
-        tk.Label(props, text="Parents:").grid(row=1, column=0)
+        tk.Label(props, text="Parents:").grid(row=1, column=0, sticky=tk.W + tk.N)
         self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
                                         selected=schema.parents())
-        self.parents.grid(row=1, column=1)
+        self.parents.grid(row=1, column=1, sticky=tk.W)
         
-        tk.Label(props, text="Documentation").grid(row=2, column=0)
-        self.schema_doc = tk.Text(props)
+        tk.Label(props, text="Documentation:").grid(row=2, column=0, sticky=tk.W + tk.N)
+        self.schema_doc = tk.Text(props, width=60, height=10)
         self.schema_doc.insert(tk.END, schema.documentation)
-        self.schema_doc.grid(row=2, column=1)
+        self.schema_doc.grid(row=2, column=1, sticky=tk.W)
         
         buttons = tk.Frame(props)
-        tk.Button(buttons, text="Save", command=self.save_schema).pack(side=tk.LEFT)
-        tk.Button(buttons, text="Restore", command=self.restore_inputs).pack(side=tk.LEFT)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Save", command=self.save_schema).pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Restore", command=self.restore_inputs).pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
         buttons.grid(row=3, column=1, sticky=tk.SE)
         props.pack()
     
@@ -210,20 +216,20 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         
         f = tk.Frame(self)
         
-        tk.Label(f, text="Name: ").grid(row=0, column=0)
+        tk.Label(f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
         self.section_name = tk.StringVar()
         self.section_name.set(section.name or "")
-        tk.Entry(f, textvariable=self.section_name).grid(row=0, column=1)
+        tk.Entry(f, textvariable=self.section_name).grid(row=0, column=1, sticky=tk.W)
         
         self.section_documentation = section.documentation
-        tk.Label(f, text="Documentation").grid(row=1, column=0)
-        text = tk.Text(f)
+        tk.Label(f, text="Documentation").grid(row=1, column=0, sticky=tk.W)
+        text = tk.Text(f, height=10, width=60)
         text.insert(tk.END, self.section_documentation)
-        text.grid(row=1, column=1)
+        text.grid(row=1, column=1, sticky=tk.W)
         
         buttons = tk.Frame(f)
-        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Save").pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
         f.pack()
@@ -239,18 +245,18 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.f = tk.Frame(self)
                 
         # Name
-        tk.Label(self.f, text="Name: ").grid(row=0, column=0)
+        tk.Label(self.f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
         self.option_name = tk.StringVar()
         self.option_name.set(option.name or "")
-        tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1)
+        tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1, sticky=tk.W)
                 
         # Option type
-        tk.Label(self.f, text="Type: ").grid(row=1, column=0)
+        tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
         self.option_type = tk.StringVar()
         if option.option_type:
             self.option_type.set(option.option_type.name)
         option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
-        tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1) 
+        tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1, sticky=tk.W) 
         
         if option.option_type:
             editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
@@ -261,24 +267,24 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         else:
             self.option_type_editor = tk.Frame(self.f)
             
-        self.option_type_editor.grid(row=2, column=1)
+        self.option_type_editor.grid(row=2, column=1, sticky=tk.W)
         
         # Required?
-        tk.Label(self.f, text="Is required?: ").grid(row=3, column=0)
+        tk.Label(self.f, text="Is required?: ").grid(row=3, column=0, sticky=tk.W)
         self.option_required = tk.IntVar()
         self.option_required.set(1 if option.is_required else 0)
-        tk.Checkbutton(self.f, variable=self.option_required).grid(row=3, column=1)
+        tk.Checkbutton(self.f, variable=self.option_required).grid(row=3, column=1, sticky=tk.W)
         
         # Documentation
         self.option_documentation = option.documentation
-        tk.Label(self.f, text="Documentation:").grid(row=4, column=0)
-        text = tk.Text(self.f)
+        tk.Label(self.f, text="Documentation:").grid(row=4, column=0, sticky=tk.W)
+        text = tk.Text(self.f, width=60, height=10)
         text.insert(tk.END, self.option_documentation)
-        text.grid(row=4, column=1)
+        text.grid(row=4, column=1, sticky=tk.W)
         
         buttons = tk.Frame(self.f)
-        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Save").pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
         buttons.grid(row=5, column=1, sticky=tk.SE)
         
         self.f.pack()
@@ -452,5 +458,5 @@ class Configurator(tk.Frame):
 if __name__ == '__main__':
     root = tk.Tk()
     configurator = Configurator(root)
-    configurator.pack()
+    configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
