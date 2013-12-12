@@ -1,179 +1,7 @@
 import Tkinter as tk
 import ttk
 import widgets as w
-
-configuration_schemas = {}
-
-def get_configuration_schema(name):
-    global configuration_schemas
-    return configuration_schemas[name]
-
-def register_configuration_schema(schema):
-    global configuration_schemas
-    configuration_schemas[schema.name] = schema
-    
-def list_configuration_schemas():
-    global configuration_schemas
-    return configuration_schemas.values()
-
-class ConfigurationSchema:
-    def __init__(self, name, **args):
-        self._name = name
-        self._sections = {}
-        self._documentation = args.get('documentation') or "Not documented"
-        self._parents = args.get("parents") or []
-        register_configuration_schema(self)
-                
-    def section(self, section):
-        self._sections[section.name] = section
-        return self
-    
-    def sections(self):
-        return self._sections.values()
-    
-    def get_section(self, name):
-        return self._sections[name]
-    
-    def parents(self):
-        return self._parents
-    
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, value):
-        self._name = value
-        return self
-    
-    @property
-    def documentation(self):
-        return self._documentation
-    
-    @documentation.setter
-    def documentation(self, value):
-        self._documentation = value
-        return self
-    
-    def __str__(self):
-        return self.name 
-        
-class ConfigurationSchemaSection:
-    def __init__(self, name, **args):
-        self._name = name
-        self._subsections = {}
-        self._options = {}
-        self._documentation = args.get('documentation') or 'Not documented'
-        
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, value):
-        self._name = value
-        return self
-        
-    def subsections(self):
-        return self._subsections.values()
-            
-    def add_section(self, section):
-        self._subsections[section.name] = section
-        return self
-    
-    def options(self):
-        return self._options.values()
-    
-    def add_option(self, option):
-        self._options[option.name] = option
-        return self
-        
-    def get_option(self, name):
-        return self._options[name]
-        
-    @property
-    def documentation(self):
-        return self._documentation
-    
-    @documentation.setter
-    def documentation(self, value):
-        self._documentation = value
-        return self
-
-class ConfigurationSchemaOption:
-    def __init__(self, name, option_type, **args):
-        self._name = name
-        self._option_type = option_type
-        self._documentation = args.get('documentation') or 'Not documented'
-    
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, value):
-        self._name = value
-        return self
-        
-    @property
-    def option_type(self):
-        return self._option_type
-    
-    @option_type.setter
-    def option_type(self, value):
-        self._option_type = value
-        return self
-    
-    @property
-    def documentation(self):
-        return self._documentation
-    
-    @documentation.setter
-    def documentation(self, value):
-        self._documentation = value
-        return self
-    
-class OptionType(object):
-    _name = "Option type"
-    
-    @classmethod
-    def option_name(cls):
-        return cls._name
-    
-    @classmethod
-    def get_named(cls, name):
-        return next((option_type for option_type in cls.__subclasses__() if option_type.option_name() == name), None)
-    
-    @property
-    def name(self):
-        return self.__class__.option_name()
-   
-class StringOptionType(OptionType):
-    _name = "String"
-    
-class NumberOptionType(OptionType):
-    _name = "Number"
-    
-class BooleanOptionType(OptionType):
-    _name = "Boolean"
-    
-class ChoiceOptionType(OptionType):
-    _name = "Choice"
-    
-    def __init__(self, options=[]):
-        self._options = options
-        
-    def options(self):
-        return self._options
-        
-class ListOptionType(OptionType):
-    _name = "List"
-    
-    def __init__(self, options=[]):
-        self._options = options
-        
-    def options():
-        return self._options
+import configuration as conf
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -285,7 +113,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         
         tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1)
         tk.Label(props, text="Parents:").grid(row=1, column=0)
-        parents = w.DoubleListSelector(props, source=list_configuration_schemas(),
+        parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
                                         selected=schema.parents())
         parents.grid(row=1, column=1)
         
@@ -341,7 +169,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_type = tk.StringVar()
         if option.option_type:
             self.option_type.set(option.option_type.name)
-        option_types = map(lambda o: o.option_name(), OptionType.__subclasses__())
+        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
         tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1) 
         
         if option.option_type:
@@ -366,7 +194,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         
     def edit_option_type(self, ev):
         print "Edit option type" + self.option_type.get() 
-        option_type = OptionType.get_named(self.option_type.get())
+        option_type = conf.OptionType.get_named(self.option_type.get())
         
         editor = OptionTypeEditor.for_option_type(option_type)
         print "Editor " + str(editor)
@@ -390,7 +218,7 @@ class OptionTypeEditor(object, tk.Frame):
         return next((editor for editor in subclasses if editor.option_type == option_type), None)
 
 class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
-    option_type = ChoiceOptionType
+    option_type = conf.ChoiceOptionType
     
     def __init__(self, parent, option_type):
         OptionTypeEditor.__init__(self, parent, option_type)
@@ -450,15 +278,15 @@ class ConfigurationNavigator(tk.Frame):
 
 if __name__ == '__main__':
     schemas = []
-    sch1 = ConfigurationSchema("Web")
-    host = ConfigurationSchemaOption("host", StringOptionType(), documentation="Server host")
-    s1 = ConfigurationSchemaSection("Server").add_option(host)
+    sch1 = conf.ConfigurationSchema("Web")
+    host = conf.ConfigurationSchemaOption("host", conf.StringOptionType(), documentation="Server host")
+    s1 = conf.ConfigurationSchemaSection("Server").add_option(host)
     sch1.section(s1)
     schemas.append(sch1)
     
-    db = ConfigurationSchema("Database")
-    db_engine = ConfigurationSchemaOption("engine", ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
-    db_server = ConfigurationSchemaSection("Server").add_option(db_engine)
+    db = conf.ConfigurationSchema("Database")
+    db_engine = conf.ConfigurationSchemaOption("engine", conf.ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
+    db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
     db.section(db_server)
     schemas.append(db)
     
