@@ -23,13 +23,15 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.insert_schema(schema)
             
         self.tree.tag_bind('schema', '<ButtonRelease-1>', self.select_schema)
+        self.tree.tag_bind('schema', '<ButtonRelease-3>', self.popup_schema)
         self.tree.tag_bind('section', '<ButtonRelease-1>', self.select_section)
+        self.tree.tag_bind('section', '<ButtonRelease-3>', self.popup_section)
         self.tree.tag_bind('option', '<ButtonRelease-1>', self.select_option)
+        self.tree.tag_bind('option', '<ButtonRelease-3>', self.popup_option)
         
         self.tree.grid(column=0, row=0, sticky=tk.N+tk.S)
         
         # The editor
-        
         self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
         self.editor.grid(column=1, row=0)
         self.pane.pack()
@@ -42,6 +44,19 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid_forget()
         self.editor = ConfigurationSchemaEditor(self.pane, schema)
         self.editor.grid(column=1, row=0)
+        
+    def popup_schema(self, ev):
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="Remove") # , command=next) etc...
+        popup.add_command(label="Add section")
+        
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
                
     def find_schema(self, id):
         return next((sc for sc in self.schemas if sc.name == id), None)
@@ -54,6 +69,19 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid_forget()
         self.editor = ConfigurationSchemaSectionEditor(self.pane, section)
         self.editor.grid(column=1, row=0)
+        
+    def popup_section(self, ev):
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="Remove") # , command=next) etc...
+        popup.add_command(label="Add option")
+        
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
         
     def find_section(self, id):
         path = id.split('.')
@@ -77,6 +105,18 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor = ConfigurationSchemaOptionEditor(self.pane, option)
         self.editor.grid(column=1, row=0)
         
+    def popup_option(self, ev):
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="Remove") # , command=next) etc...
+                
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
+            
     def find_option(self, id):
         path= id.split('.')
         schema = self.find_schema(path[0])
