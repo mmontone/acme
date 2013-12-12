@@ -180,6 +180,18 @@ class NumberOptionType(OptionType):
 class BooleanOptionType(OptionType):
     _name = "Boolean"
     
+class EmailOptionType(OptionType):
+    _name = "Email"
+    
+class URIOptionType(OptionType):
+    _name = "URI"
+    
+class PathnameOptionType(OptionType):
+    _name = "Pathname"
+    
+class ColorOptionType(OptionType):
+    _name = "Color"
+    
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
@@ -188,7 +200,7 @@ class ChoiceOptionType(OptionType):
         
     def options(self):
         return self._options
-        
+    
 class ListOptionType(OptionType):
     _name = "List"
     
