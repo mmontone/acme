@@ -233,12 +233,14 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         tk.Label(self, text=option.name + " option").pack()
         
         self.f = tk.Frame(self)
-        
+                
+        # Name
         tk.Label(self.f, text="Name: ").grid(row=0, column=0)
         self.option_name = tk.StringVar()
         self.option_name.set(option.name or "")
         tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1)
-        
+                
+        # Option type
         tk.Label(self.f, text="Type: ").grid(row=1, column=0)
         self.option_type = tk.StringVar()
         if option.option_type:
@@ -255,18 +257,25 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         else:
             self.option_type_editor = tk.Frame(self.f)
             
-        self.option_type_editor.grid(row=2, column=1)       
+        self.option_type_editor.grid(row=2, column=1)
         
+        # Required?
+        tk.Label(self.f, text="Is required?: ").grid(row=3, column=0)
+        self.option_required = tk.IntVar()
+        self.option_required.set(1 if option.is_required else 0)
+        tk.Checkbutton(self.f, variable=self.option_required).grid(row=3, column=1)
+        
+        # Documentation
         self.option_documentation = option.documentation
-        tk.Label(self.f, text="Documentation:").grid(row=3, column=0)
+        tk.Label(self.f, text="Documentation:").grid(row=4, column=0)
         text = tk.Text(self.f)
         text.insert(tk.END, self.option_documentation)
-        text.grid(row=3, column=1)
+        text.grid(row=4, column=1)
         
         buttons = tk.Frame(self.f)
         tk.Button(buttons, text="Save").pack(side=tk.LEFT)
         tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
-        buttons.grid(row=4, column=1, sticky=tk.SE)
+        buttons.grid(row=5, column=1, sticky=tk.SE)
         
         self.f.pack()
         
@@ -415,6 +424,7 @@ class Configurator(tk.Frame):
     
         db = conf.ConfigurationSchema("Database")
         db_engine = conf.ConfigurationSchemaOption("engine", conf.ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
+        db_engine.is_required = True
         db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
         db.section(db_server)
         schemas.append(db)

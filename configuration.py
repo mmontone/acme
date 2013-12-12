@@ -106,6 +106,7 @@ class ConfigurationSchemaOption:
         self._option_type = option_type
         self._documentation = args.get('documentation') or 'Not documented'
         self._section = None
+        self._is_required = args.get('required') or True
     
     @property
     def name(self):
@@ -145,6 +146,15 @@ class ConfigurationSchemaOption:
     
     def remove(self):
         self.section.remove_option(self)
+        
+    @property
+    def is_required(self):
+        return self._is_required
+    
+    @is_required.setter
+    def is_required(self, value):
+        self._is_required = value
+        return self
     
 class OptionType(object):
     _name = "Option type"
