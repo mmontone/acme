@@ -9,6 +9,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         tk.Frame.__init__(self, master)
         
         self.schemas = schemas
+        self.items = {}
         
         # The pane
         self.pane = tk.Frame(self)
@@ -78,7 +79,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             popup.grab_release()
                
     def find_schema(self, id):
-        return next((sc for sc in self.schemas if sc.name == id), None)
+        return self.items[id]
 
     def select_section(self, ev):
         item_id = str(self.tree.focus())
@@ -103,17 +104,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             popup.grab_release()
         
     def find_section(self, id):
-        path = id.split('.')
-        # First element is the schema, find it first
-        schema = self.find_schema(path[0])
-        
-        section = schema
-        i = 1
-        while i <= len(path) - 1:
-            section = section.get_section(path[i])
-            i = i + 1
-        
-        return section
+        return self.items[id]
     
     def select_option(self, ev):
         item_id = str(self.tree.focus())
@@ -140,14 +131,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             popup.grab_release()
             
     def find_option(self, id):
-        path= id.split('.')
-        schema = self.find_schema(path[0])
-        section = schema
-        i = 1
-        while i <= len(path) - 2:
-            section = section.get_section(path[i])
-            i = i + 1
-        return section.get_option(path[len(path) - 1])
+        return self.items[id]
     
     def remove_option(self, id, option):
         if tkMessageBox.askquestion("Remove option", "Remove option " + option.name + "?") == 'yes':
@@ -155,17 +139,21 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.tree.delete(id)        
         
     def insert_schema(self, schema):
-        sc = self.tree.insert('', 'end', schema.name, text=schema.name, tags='schema')
+        sc = self.tree.insert('', 'end', text=schema.name, tags='schema')
+        self.items[sc] = schema
         for section in schema.sections():
             self.insert_section(section, sc)
             
     def insert_section(self, section, parent):
-        sc = self.tree.insert(parent, 'end', parent + '.' + section.name, text=section.name, tags='section')
+        sid = self.tree.insert(parent, 'end', text=section.name, tags='section')
+        self.items[sid] = section
+        
         for subsection in section.subsections():
-            self.insert_section(subsection, sc)
+            self.insert_section(subsection, sid)
         
         for option in section.options():
-            self.tree.insert(sc, 'end', sc + '.' + option.name, text=option.name, tags='option')
+            oid = self.tree.insert(sid, 'end', text=option.name, tags='option')
+            self.items[oid] = option
             
 class ConfigurationSchemaEditor(tk.Frame):
     def __init__(self, master, schema):
@@ -180,21 +168,31 @@ class ConfigurationSchemaEditor(tk.Frame):
         
         tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1)
         tk.Label(props, text="Parents:").grid(row=1, column=0)
-        parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
+        self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
                                         selected=schema.parents())
-        parents.grid(row=1, column=1)
+        self.parents.grid(row=1, column=1)
         
-        self.schema_documentation = schema.documentation
         tk.Label(props, text="Documentation").grid(row=2, column=0)
-        text = tk.Text(props)
-        text.insert(tk.END, self.schema_documentation)
-        text.grid(row=2, column=1)
+        self.schema_doc = tk.Text(props)
+        self.schema_doc.insert(tk.END, schema.documentation)
+        self.schema_doc.grid(row=2, column=1)
         
         buttons = tk.Frame(props)
-        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Save", command=self.save_schema).pack(side=tk.LEFT)
+        tk.Button(buttons, text="Restore", command=self.restore_inputs).pack(side=tk.LEFT)
         tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
         buttons.grid(row=3, column=1, sticky=tk.SE)
         props.pack()
+    
+    def save_schema(self):
+        self.schema.name = self.schema_name.get()
+        self.schema.documentation = self.schema_doc.get(1.0, tk.END)
+        #self.schema.set_parents(self.parents.get_selection())
+    
+    def restore_inputs(self):
+        self.schema_name.set(self.schema.name)
+        self.schema_doc.delete(1.0, tk.END)
+        self.schema_doc.insert(1.0, self.schema.documentation)
         
 class ConfigurationSchemaSectionEditor(tk.Frame):
     def __init__(self, master, section):
