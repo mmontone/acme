@@ -373,22 +373,28 @@ class ConfigurationNavigator(tk.Frame):
             if isdir:
                 self.process_directory(oid, abspath)
                 
-class AboutDialog:
+class AboutDialog(tk.Toplevel):
 
     def __init__(self, parent):
+        
+        tk.Toplevel.__init__(self, parent)
 
-        top = self.top = tk.Toplevel(parent)
+        self.transient(parent)
+        self.title("About configurator")
+        
+        self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
+                                  parent.winfo_rooty()+50))
 
-        tk.Label(top, text="This is configurator, a tool for managing application configurations." +
+        tk.Label(self, text="This is configurator, a tool for managing application configurations." +
                             "\n\n Home page: https://github.com/mmontone/configurator" +  
                             "\n\n Author: Mariano Montone").pack()
 
-        b = tk.Button(top, text="OK", command=self.ok)
+        b = tk.Button(self, text="OK", command=self.ok)
         b.pack(pady=5)
 
     def ok(self):
 
-        self.top.destroy()
+        self.destroy()
     
 class Configurator(tk.Frame):
     def __init__(self, parent):
@@ -450,7 +456,7 @@ class Configurator(tk.Frame):
     def help_about(self):
         d = AboutDialog(self)
 
-        self.wait_window(d.top)
+        self.wait_window(d)
         
     def quit(self):
         root.quit()
