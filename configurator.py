@@ -2,6 +2,7 @@ import Tkinter as tk
 import ttk
 import widgets as w
 import configuration as conf
+import tkMessageBox
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -124,9 +125,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid(column=1, row=0)
         
     def popup_option(self, ev):
+        item = self.tree.identify_row(ev.y)
+        option = self.find_option(item)
+                 
         # create a menu
         popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="Remove") # , command=next) etc...
+        popup.add_command(label="Remove", command=lambda:self.remove_option(item, option)) # , command=next) etc...
                 
         # display the popup menu
         try:
@@ -144,6 +148,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
             section = section.get_section(path[i])
             i = i + 1
         return section.get_option(path[len(path) - 1])
+    
+    def remove_option(self, id, option):
+        if tkMessageBox.askquestion("Remove option", "Remove option " + option.name + "?") == 'yes':
+            option.remove()
+            self.tree.delete(id)        
         
     def insert_schema(self, schema):
         sc = self.tree.insert('', 'end', schema.name, text=schema.name, tags='schema')

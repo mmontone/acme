@@ -82,7 +82,11 @@ class ConfigurationSchemaSection:
     
     def add_option(self, option):
         self._options[option.name] = option
+        option.section = self
         return self
+    
+    def remove_option(self, option):
+        del self._options[option.name]        
         
     def get_option(self, name):
         return self._options[name]
@@ -101,6 +105,7 @@ class ConfigurationSchemaOption:
         self._name = name
         self._option_type = option_type
         self._documentation = args.get('documentation') or 'Not documented'
+        self._section = None
     
     @property
     def name(self):
@@ -128,6 +133,18 @@ class ConfigurationSchemaOption:
     def documentation(self, value):
         self._documentation = value
         return self
+    
+    @property
+    def section(self):
+        return self._section
+    
+    @section.setter
+    def section(self, value):
+        self._section = value
+        return self
+    
+    def remove(self):
+        self.section.remove_option(self)
     
 class OptionType(object):
     _name = "Option type"
