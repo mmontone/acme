@@ -22,6 +22,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         for schema in schemas:
             self.insert_schema(schema)
             
+        # Popup menus
         self.tree.tag_bind('schema', '<ButtonRelease-1>', self.select_schema)
         self.tree.tag_bind('schema', '<ButtonRelease-3>', self.popup_schema)
         self.tree.tag_bind('section', '<ButtonRelease-1>', self.select_section)
@@ -29,12 +30,29 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.tree.tag_bind('option', '<ButtonRelease-1>', self.select_option)
         self.tree.tag_bind('option', '<ButtonRelease-3>', self.popup_option)
         
+        #self.tree.bind('<ButtonRelease-3>', self.tree_popup)
+        
+        #Configuration
+        #print(self.tree.tag_configure('schema'))
+        #self.tree.tag_configure('schema', font=('Helvetica', '16'))
+        
         self.tree.grid(column=0, row=0, sticky=tk.N+tk.S)
         
         # The editor
         self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
         self.editor.grid(column=1, row=0)
         self.pane.pack()
+        
+    def tree_popup(self, ev):
+        popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="New configuration schema") # , command=next) etc...
+               
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
         
     def select_schema(self, ev):
         item_id = str(self.tree.focus())
@@ -327,6 +345,23 @@ class ConfigurationNavigator(tk.Frame):
             if isdir:
                 self.process_directory(oid, abspath)
                 
+class AboutDialog:
+
+    def __init__(self, parent):
+
+        top = self.top = tk.Toplevel(parent)
+
+        tk.Label(top, text="This is configurator, a tool for managing application configurations." +
+                            "\n\n Home page: https://github.com/mmontone/configurator" +  
+                            "\n\n Author: Mariano Montone").pack()
+
+        b = tk.Button(top, text="OK", command=self.ok)
+        b.pack(pady=5)
+
+    def ok(self):
+
+        self.top.destroy()
+    
 class Configurator(tk.Frame):
     def __init__(self, parent):
         
@@ -363,7 +398,9 @@ class Configurator(tk.Frame):
         navigator.pack()
         
     def help_about(self):
-        print "About configurator"
+        d = AboutDialog(self)
+
+        self.wait_window(d.top)
         
 if __name__ == '__main__':
     root = tk.Tk()
