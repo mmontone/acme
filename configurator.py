@@ -275,7 +275,7 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         OptionTypeEditor.__init__(self, parent, option_type)
         
         self.options_var = tk.StringVar()
-        self.options_var.set(' '.join(map(str, option_type.options())))
+        self.options_var.set(' '.join(option_type.options()))
         
         w.ListEditor.__init__(self, parent, listvar=self.options_var)
        
@@ -326,22 +326,27 @@ class ConfigurationNavigator(tk.Frame):
             oid = self.tree.insert(parent, 'end', text=p, open=False)
             if isdir:
                 self.process_directory(oid, abspath)
-
+                
+class Configurator(tk.Frame):
+    def __init__(self, parent):
+        schemas = []
+        
+        sch1 = conf.ConfigurationSchema("Web")
+        host = conf.ConfigurationSchemaOption("host", conf.StringOptionType(), documentation="Server host")
+        s1 = conf.ConfigurationSchemaSection("Server").add_option(host)
+        sch1.section(s1)
+        schemas.append(sch1)
+    
+        db = conf.ConfigurationSchema("Database")
+        db_engine = conf.ConfigurationSchemaOption("engine", conf.ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
+        db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
+        db.section(db_server)
+        schemas.append(db)
+        
+        navigator = ConfigurationSchemaNavigator(root, schemas)
+        navigator.pack()
+        
 if __name__ == '__main__':
-    schemas = []
-    sch1 = conf.ConfigurationSchema("Web")
-    host = conf.ConfigurationSchemaOption("host", conf.StringOptionType(), documentation="Server host")
-    s1 = conf.ConfigurationSchemaSection("Server").add_option(host)
-    sch1.section(s1)
-    schemas.append(sch1)
-    
-    db = conf.ConfigurationSchema("Database")
-    db_engine = conf.ConfigurationSchemaOption("engine", conf.ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
-    db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
-    db.section(db_server)
-    schemas.append(db)
-    
     root = tk.Tk()
-    navigator = ConfigurationSchemaNavigator(root, schemas)
-    navigator.pack()
+    configurator = Configurator(root)
     root.mainloop()
