@@ -163,7 +163,10 @@ class ConfigurationSchemaEditor(tk.Frame):
         text.insert(tk.END, self.schema_documentation)
         text.grid(row=2, column=1)
         
-        tk.Button(props, text="Save").grid(row=3, column=1, sticky=tk.SE)
+        buttons = tk.Frame(props)
+        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        buttons.grid(row=3, column=1, sticky=tk.SE)
         props.pack()
         
 class ConfigurationSchemaSectionEditor(tk.Frame):
@@ -187,7 +190,11 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         text.insert(tk.END, self.section_documentation)
         text.grid(row=1, column=1)
         
-        tk.Button(f, text="Save").grid(row=2, column=1, sticky=tk.SE)
+        buttons = tk.Frame(f)
+        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        buttons.grid(row=2, column=1, sticky=tk.SE)
+        
         f.pack()
         
 class ConfigurationSchemaOptionEditor(tk.Frame):
@@ -229,7 +236,11 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         text.insert(tk.END, self.option_documentation)
         text.grid(row=3, column=1)
         
-        tk.Button(self.f, text="Save").grid(row=4, column=1, sticky=tk.SE)
+        buttons = tk.Frame(self.f)
+        tk.Button(buttons, text="Save").pack(side=tk.LEFT)
+        tk.Button(buttons, text="Remove").pack(side=tk.LEFT)
+        buttons.grid(row=4, column=1, sticky=tk.SE)
+        
         self.f.pack()
         
     def edit_option_type(self, ev):
