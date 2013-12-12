@@ -329,6 +329,22 @@ class ConfigurationNavigator(tk.Frame):
                 
 class Configurator(tk.Frame):
     def __init__(self, parent):
+        
+        tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
+        
+        self.menu_bar = tk.Menu(self)
+        
+        help_menu = tk.Menu(self.menu_bar)
+        help_menu.add_command(label='About', command=self.help_about)
+        
+        self.menu_bar.add_cascade(label='Help', menu=help_menu)
+        
+        try:
+            parent.config(menu=self.menu_bar)
+        except AttributeError:
+            # master is a toplevel window (Python 1.4/Tkinter 1.63)
+            parent.tk.call(parent, "config", "-menu", menu_bar)
+        
         schemas = []
         
         sch1 = conf.ConfigurationSchema("Web")
@@ -345,6 +361,9 @@ class Configurator(tk.Frame):
         
         navigator = ConfigurationSchemaNavigator(root, schemas)
         navigator.pack()
+        
+    def help_about(self):
+        print "About configurator"
         
 if __name__ == '__main__':
     root = tk.Tk()
