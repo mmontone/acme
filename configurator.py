@@ -384,9 +384,18 @@ class Configurator(tk.Frame):
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
         # Tabs
-        tabs = ttk.Notebook(self)
+        tabs = ttk.Notebook(self, name='notebook')
+        tabs.enable_traversal()
         
+        configs_nav = self.init_configs_navigator()
+        tabs.add(configs_nav, text='Configurations')
         
+        navigator = self.init_schemas_navigator()
+        tabs.add(navigator, text='Configuration schemas')
+                      
+        tabs.pack(fill=tk.BOTH, expand=tk.Y, padx=2, pady=3)
+        
+    def init_schemas_navigator(self):
         schemas = []
         
         sch1 = conf.ConfigurationSchema("Web")
@@ -401,9 +410,12 @@ class Configurator(tk.Frame):
         db.section(db_server)
         schemas.append(db)
         
-        navigator = ConfigurationSchemaNavigator(root, schemas)
-        navigator.pack()
-        
+        return ConfigurationSchemaNavigator(self, schemas)
+    
+    def init_configs_navigator(self):
+        return self.init_schemas_navigator()
+                        
+       
     def help_about(self):
         d = AboutDialog(self)
 
@@ -412,4 +424,5 @@ class Configurator(tk.Frame):
 if __name__ == '__main__':
     root = tk.Tk()
     configurator = Configurator(root)
+    configurator.pack()
     root.mainloop()
