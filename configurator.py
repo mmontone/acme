@@ -20,6 +20,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         xsb = ttk.Scrollbar(self.pane, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         self.tree.heading('#0', text='Configuration schemas', anchor='w')
+        
+        self.tree.bind('<Leave>', lambda ev:configurator.status.set(''))
                 
         for schema in schemas:
             self.insert_schema(schema)
@@ -27,11 +29,13 @@ class ConfigurationSchemaNavigator(tk.Frame):
         # Popup menus
         self.tree.tag_bind('schema', '<ButtonRelease-1>', self.select_schema)
         self.tree.tag_bind('schema', '<ButtonRelease-3>', self.popup_schema)
+        
         self.tree.tag_bind('section', '<ButtonRelease-1>', self.select_section)
         self.tree.tag_bind('section', '<ButtonRelease-3>', self.popup_section)
+        
         self.tree.tag_bind('option', '<ButtonRelease-1>', self.select_option)
         self.tree.tag_bind('option', '<ButtonRelease-3>', self.popup_option)
-        
+                
         #self.tree.bind('<ButtonRelease-3>', self.tree_popup)
         
         #Configuration
@@ -63,8 +67,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print schema
         self.editor.grid_forget()
         self.editor = ConfigurationSchemaEditor(self.pane, schema, 
-                                                onsave=lambda:self.tree.item(item_id, text=schema.name),
-                                                onremove=lambda:self.tree.delete(item_id))
+                                                onsave=lambda: self.tree.item(item_id, text=schema.name),
+                                                onremove=lambda: self.tree.delete(item_id))
         self.editor.grid(column=1, row=0)
         
     def popup_schema(self, ev):
@@ -81,6 +85,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
+    
+    def schema_status(self, ev):
+        item_id = str(self.tree.focus())
+        schema = self.find_schema(item_id)
+        set_status_message(self, "Edit " + schema.name + " configuration schema")
                
     def find_schema(self, id):
         return self.items[id]
@@ -91,7 +100,9 @@ class ConfigurationSchemaNavigator(tk.Frame):
         section = self.find_section(item_id)
         print section
         self.editor.grid_forget()
-        self.editor = ConfigurationSchemaSectionEditor(self.pane, section)
+        self.editor = ConfigurationSchemaSectionEditor(self.pane, section,
+                                                       onsave=lambda:self.tree.item(item_id, text=section.name), 
+                                                       onremove=lambda: self.tree.delete(item_id))
         self.editor.grid(column=1, row=0)
         
     def popup_section(self, ev):
@@ -108,6 +119,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
+            
+    def section_status(self, ev):
+        item_id = str(self.tree.focus())
+        section = self.find_section(item_id)
+        set_status_message(self, "Edit " + section.name + " section")            
         
     def find_section(self, id):
         return self.items[id]
@@ -137,6 +153,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
+            
+    def option_status(self, ev):
+        item_id = str(self.tree.focus())
+        option = self.find_option(item_id)
+        set_status_message(self, "Edit " + option.name + " option")            
             
     def find_option(self, id):
         return self.items[id]
@@ -210,6 +231,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema.name = self.schema_name.get()
         self.schema.documentation = self.schema_doc.get(1.0, tk.END)
         #self.schema.set_parents(self.parents.get_selection())
+        configurator.status.set(self.schema.name + " configuration schema has been updated")
         if self._onsave:
             self._onsave()
     
@@ -217,10 +239,12 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema_name.set(self.schema.name)
         self.schema_doc.delete(1.0, tk.END)
         self.schema_doc.insert(1.0, self.schema.documentation)
+        configurator.status.set(self.schema.name + " configuration schema has been restored to its original state")
         
     def remove_schema(self):
         if tkMessageBox.askquestion("Remove?", "Remove " + self.schema.name + " configuration schema?") == 'yes':
             self.schema.remove()
+            configurator.status.set(self.schema.name + " configuration schema has been removed")
             if self._onremove:
                 self._onremove()
         
@@ -249,9 +273,19 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self.section_documentation.grid(row=1, column=1, sticky=tk.W)
         
         buttons = tk.Frame(f)
-        tk.Button(buttons, text="Save", command=self.save_section).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Restore", command=self.restore_section).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Remove", command=self.remove_section).pack(side=tk.LEFT, padx=2)
+        
+        save = tk.Button(buttons, text="Save", command=self.save_section)
+        save.pack(side=tk.LEFT, padx=2)
+        set_status_message(save, "Update the section with the new data")
+        
+        restore = tk.Button(buttons, text="Restore", command=self.restore_section)
+        restore.pack(side=tk.LEFT, padx=2)
+        set_status_message(restore, "Restore the section data to its original form")
+        
+        remove = tk.Button(buttons, text="Remove", command=self.remove_section)
+        remove.pack(side=tk.LEFT, padx=2)
+        set_status_message(remove, "Remove the section")
+        
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
         f.pack()
@@ -259,6 +293,7 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
     def save_section(self):
         self.section.name = self.section_name.get()
         self.section.documentation = self.section_documentation.get(1.0, tk.END)
+        configurator.status.set(self.section.name + " section has been updated")
         
         if self._onsave:
             self._onsave()
@@ -267,10 +302,12 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self.section_name.set(self.section.name)
         self.section_documentation.delete(1.0, tk.END)
         self.section_documentation.insert(1.0, self.section.documentation)
+        configurator.status.set(self.section.name + " section has been restored to its original state")
                 
     def remove_section(self):
         if tkMessageBox.askquestion("Remove?", "Remove section " + self.section.name + "?") == 'yes':
             self.section.remove()
+            configurator.status.set(self.section.name + " section has been removed")
         
             if self._onremove:
                 self._onremove()    
@@ -314,7 +351,10 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         tk.Label(self.f, text="Is required?: ").grid(row=3, column=0, sticky=tk.W)
         self.option_required = tk.IntVar()
         self.option_required.set(1 if option.is_required else 0)
-        tk.Checkbutton(self.f, variable=self.option_required).grid(row=3, column=1, sticky=tk.W)
+        required = tk.Checkbutton(self.f, variable=self.option_required)
+        set_status_message(required, "Whether the option is required. If the option is required, then it is mandatory to set its value")
+        required.grid(row=3, column=1, sticky=tk.W)
+        
         
         # Documentation
         self.option_documentation = option.documentation
@@ -365,6 +405,7 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         self.options_var.set(' '.join(option_type.options()))
         
         w.ListEditor.__init__(self, parent, listvar=self.options_var)
+        set_status_message(self, "The possible option choices")
        
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
