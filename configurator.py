@@ -182,6 +182,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         tk.Label(props, text="Parents:").grid(row=1, column=0, sticky=tk.W + tk.N)
         self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
                                         selected=schema.parents())
+        set_status_message(self.parents, "Add and remove parents to the configuration schema")
         self.parents.grid(row=1, column=1, sticky=tk.W)
         
         tk.Label(props, text="Documentation:").grid(row=2, column=0, sticky=tk.W + tk.N)
@@ -190,9 +191,18 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema_doc.grid(row=2, column=1, sticky=tk.W)
         
         buttons = tk.Frame(props)
-        tk.Button(buttons, text="Save", command=self.save_schema).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Restore", command=self.restore_schema).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Remove", command=self.remove_schema).pack(side=tk.LEFT, padx=2)
+        save = tk.Button(buttons, text="Save", command=self.save_schema)
+        set_status_message(save, "Save changes to configuration schema")
+        save.pack(side=tk.LEFT, padx=2)
+        
+        restore = tk.Button(buttons, text="Restore", command=self.restore_schema)
+        set_status_message(restore, "Restore original configuration schema data")
+        restore.pack(side=tk.LEFT, padx=2)
+        
+        remove = tk.Button(buttons, text="Remove", command=self.remove_schema)
+        set_status_message(remove, "Remove the configuration schema")
+        remove.pack(side=tk.LEFT, padx=2)
+        
         buttons.grid(row=3, column=1, sticky=tk.SE)
         props.pack()
     
@@ -263,8 +273,7 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
             self.section.remove()
         
             if self._onremove:
-                self._onremove()
-    
+                self._onremove()    
         
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option):
@@ -440,6 +449,7 @@ class Configurator(tk.Frame):
         
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
+        set_status_message(help_menu, 'About configurator')
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
@@ -462,6 +472,10 @@ class Configurator(tk.Frame):
         tabs.add(navigator, text='Configuration schemas')
                       
         tabs.pack(fill=tk.BOTH, expand=tk.Y, padx=2, pady=3)
+        
+        # Status bar
+        self.status = w.StatusBar(self)
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)
         
     def init_schemas_navigator(self):
         schemas = []
@@ -492,6 +506,11 @@ class Configurator(tk.Frame):
         
     def quit(self):
         root.quit()
+        
+def set_status_message(widget, message):
+    global configurator
+    widget.bind('<Enter>', lambda ev:configurator.status.set(message))
+    widget.bind('<Leave>', lambda ev:configurator.status.set(''))
         
 if __name__ == '__main__':
     root = tk.Tk()
