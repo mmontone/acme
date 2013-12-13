@@ -63,7 +63,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print schema
         self.editor.grid_forget()
         self.editor = ConfigurationSchemaEditor(self.pane, schema, 
-                                                onsave=lambda:self.tree.item(item_id, text=schema.name))
+                                                onsave=lambda:self.tree.item(item_id, text=schema.name),
+                                                onremove=lambda:self.tree.delete(item_id))
         self.editor.grid(column=1, row=0)
         
     def popup_schema(self, ev):
@@ -168,6 +169,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         
         self.schema = schema
         self._onsave = options.get('onsave') or None
+        self._onremove = options.get('onremove') or None
         
         # ui
         tk.Label(self, text=schema.name + " configuration schema").pack()
@@ -189,8 +191,8 @@ class ConfigurationSchemaEditor(tk.Frame):
         
         buttons = tk.Frame(props)
         tk.Button(buttons, text="Save", command=self.save_schema).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Restore", command=self.restore_inputs).pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Restore", command=self.restore_schema).pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Remove", command=self.remove_schema).pack(side=tk.LEFT, padx=2)
         buttons.grid(row=3, column=1, sticky=tk.SE)
         props.pack()
     
@@ -201,17 +203,27 @@ class ConfigurationSchemaEditor(tk.Frame):
         if self._onsave:
             self._onsave()
     
-    def restore_inputs(self):
+    def restore_schema(self):
         self.schema_name.set(self.schema.name)
         self.schema_doc.delete(1.0, tk.END)
         self.schema_doc.insert(1.0, self.schema.documentation)
         
+    def remove_schema(self):
+        if tkMessageBox.askquestion("Remove?", "Remove " + self.schema.name + " configuration schema?") == 'yes':
+            self.schema.remove()
+            if self._onremove:
+                self._onremove()
+        
 class ConfigurationSchemaSectionEditor(tk.Frame):
-    def __init__(self, master, section):
+    def __init__(self, master, section, **options):
         tk.Frame.__init__(self, master)
         
+        # configuration
         self.section = section
+        self._onsave = options.get('onsave') or None
+        self._onremove = options.get('onremove') or None
         
+        # ui
         tk.Label(self, text=section.name + " section").pack()
         
         f = tk.Frame(self)
@@ -221,18 +233,38 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self.section_name.set(section.name or "")
         tk.Entry(f, textvariable=self.section_name).grid(row=0, column=1, sticky=tk.W)
         
-        self.section_documentation = section.documentation
         tk.Label(f, text="Documentation").grid(row=1, column=0, sticky=tk.W)
-        text = tk.Text(f, height=10, width=60)
-        text.insert(tk.END, self.section_documentation)
-        text.grid(row=1, column=1, sticky=tk.W)
+        self.section_documentation = tk.Text(f, height=10, width=60)
+        self.section_documentation.insert(tk.END, self.section.documentation)
+        self.section_documentation.grid(row=1, column=1, sticky=tk.W)
         
         buttons = tk.Frame(f)
-        tk.Button(buttons, text="Save").pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Save", command=self.save_section).pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Restore", command=self.restore_section).pack(side=tk.LEFT, padx=2)
+        tk.Button(buttons, text="Remove", command=self.remove_section).pack(side=tk.LEFT, padx=2)
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
         f.pack()
+        
+    def save_section(self):
+        self.section.name = self.section_name.get()
+        self.section.documentation = self.section_documentation.get(1.0, tk.END)
+        
+        if self._onsave:
+            self._onsave()
+            
+    def restore_section(self):
+        self.section_name.set(self.section.name)
+        self.section_documentation.delete(1.0, tk.END)
+        self.section_documentation.insert(1.0, self.section.documentation)
+                
+    def remove_section(self):
+        if tkMessageBox.askquestion("Remove?", "Remove section " + self.section.name + "?") == 'yes':
+            self.section.remove()
+        
+            if self._onremove:
+                self._onremove()
+    
         
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option):

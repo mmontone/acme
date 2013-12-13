@@ -8,6 +8,10 @@ def register_configuration_schema(schema):
     global configuration_schemas
     configuration_schemas[schema.name] = schema
     
+def unregister_configuration_schema(schema):
+    global configuration_schemas
+    del configuration_schemas[schema.name]
+    
 def list_configuration_schemas():
     global configuration_schemas
     return configuration_schemas.values()
@@ -22,6 +26,7 @@ class ConfigurationSchema:
                 
     def section(self, section):
         self._sections[section.name] = section
+        section.schema = self
         return self
     
     def sections(self):
@@ -29,6 +34,9 @@ class ConfigurationSchema:
     
     def get_section(self, name):
         return self._sections[name]
+    
+    def remove_section(self, section):
+        del self._sections[section.name]
     
     def parents(self):
         return self._parents
@@ -51,6 +59,9 @@ class ConfigurationSchema:
         self._documentation = value
         return self
     
+    def remove(self):
+        unregister_configuration_schema(self)
+    
     def __str__(self):
         return self.name 
         
@@ -60,6 +71,7 @@ class ConfigurationSchemaSection:
         self._subsections = {}
         self._options = {}
         self._documentation = args.get('documentation') or 'Not documented'
+        self._schema = args.get('schema') or None
         
     @property
     def name(self):
@@ -99,6 +111,18 @@ class ConfigurationSchemaSection:
     def documentation(self, value):
         self._documentation = value
         return self
+    
+    @property
+    def schema(self):
+        return self._schema
+    
+    @schema.setter
+    def schema(self, value):
+        self._schema = value
+        return self
+    
+    def remove(self):
+        self.schema.remove_section(self)
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
