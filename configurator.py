@@ -3,6 +3,7 @@ import ttk
 import widgets as w
 import configuration as conf
 import tkMessageBox
+import os
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -672,7 +673,7 @@ class AboutDialog(tk.Toplevel):
         self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
                                   parent.winfo_rooty()+50))
         
-        logo = tk.PhotoImage(file='/home/marian/workspace2/configurator/images/system-settings-2.gif')
+        logo = tk.PhotoImage(file=image('system-settings-2.gif'))
         
         label = tk.Label(self,image=logo)
         label.image = logo # avoid garbage collection
@@ -767,6 +768,9 @@ def set_status_message(widget, message):
     global configurator
     widget.bind('<Enter>', lambda ev:configurator.status.set(message))
     widget.bind('<Leave>', lambda ev:configurator.status.set(''))
+    
+def image(filename):
+    return os.path.dirname(os.path.realpath(__file__)) + "/images/" + filename
         
 if __name__ == '__main__':
     root = tk.Tk()
