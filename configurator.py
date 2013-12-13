@@ -468,6 +468,7 @@ class ConfigurationSchemaOptionCreator(tk.Frame):
         option_type = conf.OptionType.get_named(self.option_type.get())
         
         option = conf.ConfigurationSchemaOption(option_name, option_type())
+        option.is_required=self.option_required == 1
         option.documentation = self.option_documentation.get(1.0, tk.END)
         
         configurator.status.set(option.name + " option has been created")
@@ -567,6 +568,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option.documentation = self.option_documentation.get(1.0, tk.END)
         option_type = conf.OptionType.get_named(self.option_type.get())
         self.option.option_type = option_type()
+        self.option.is_required = self.option_required.get() == 1
         
         configurator.status.set(self.option.name + " option has been updated")
         
@@ -703,8 +705,12 @@ class Configurator(tk.Frame):
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
-        self.menu_bar.add_command(label='Quit', command=self.quit)
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
+        #self.menu_bar.icon = quit_icon
         
+        self.menu_bar.add_command(label='Quit', command=self.quit)
+                
         try:
             parent.config(menu=self.menu_bar)
         except AttributeError:
