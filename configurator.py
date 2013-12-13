@@ -115,10 +115,14 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid(column=1, row=0)
         
     def popup_section(self, ev):
+        # find the section
+        item = self.tree.identify_row(ev.y)
+        section = self.find_section(item)
+        
         # create a menu
         popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="Remove") # , command=next) etc...
-        popup.add_command(label="Add option")
+        popup.add_command(label="Remove", command=lambda:self.remove_section(section, item)) # , command=next) etc...
+        popup.add_command(label="Add option", command=lambda:self.add_option(section, item))
         popup.add_separator()
         popup.add_command(label="Dismiss")
         
@@ -147,6 +151,24 @@ class ConfigurationSchemaNavigator(tk.Frame):
             
         self.editor.grid_forget()
         self.editor = ConfigurationSchemaSectionCreator(self.pane, onsave=save_section)
+        self.editor.grid(column=1, row=0)
+        
+    def remove_section(self, section, id):
+        if tkMessageBox.askquestion("Remove?", "Remove section " + section.name + "?") == 'yes':
+            section.remove()
+            self.tree.delete(id)
+            del self.items[id]
+            configurator.status.set(section.name + " section removed")
+            
+    def add_option(self, section, item_id):
+        def save_option(option):
+            section.add_option(option)
+            id = self.tree.insert(item_id, 'end', text=option.name, tags='option')
+            self.items[id] = option
+            configurator.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
+            
+        self.editor.grid_forget()
+        self.editor = ConfigurationSchemaOptionCreator(self.pane, onsave=save_option)
         self.editor.grid(column=1, row=0)
     
     def select_option(self, ev):
@@ -358,7 +380,7 @@ class ConfigurationSchemaSectionCreator(tk.Frame):
         
         buttons = tk.Frame(f)
         
-        save = tk.Button(buttons, text="Save", command=self.save_section)
+        save = tk.Button(buttons, text="Create", command=self.save_section)
         save.pack(side=tk.LEFT, padx=2)
         set_status_message(save, "Create the new section")
                
@@ -373,7 +395,86 @@ class ConfigurationSchemaSectionCreator(tk.Frame):
         
         if self._onsave:
             self._onsave(self.section)
-                   
+            
+class ConfigurationSchemaOptionCreator(tk.Frame):
+    def __init__(self, master, **options):
+        tk.Frame.__init__(self, master)
+        
+        # configuration
+        self._onsave = options.get('onsave') or None
+        self._onremove = options.get('onremove') or None
+        
+        # ui 
+        tk.Label(self, text='New option').pack()
+        
+        self.f = tk.Frame(self)
+                
+        # Name
+        tk.Label(self.f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
+        self.option_name = tk.StringVar()
+        tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1, sticky=tk.W)
+                
+        # Option type
+        tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
+        self.option_type = tk.StringVar()
+        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
+        set_status_message(options, "Select the type of option")
+        options.grid(row=1, column=1, sticky=tk.W) 
+        
+        self.option_type_editor = tk.Frame(self.f)
+        self.option_type_editor.grid(row=2, column=1, sticky=tk.W)
+        
+        # Required?
+        tk.Label(self.f, text="Is required?: ").grid(row=3, column=0, sticky=tk.W)
+        self.option_required = tk.IntVar()
+        self.option_required.set(1)
+        
+        required = tk.Checkbutton(self.f, variable=self.option_required)
+        set_status_message(required, "Whether the option is required. If the option is required, then it is mandatory to set its value in the configuration")
+        required.grid(row=3, column=1, sticky=tk.W)
+        
+        
+        # Documentation
+        tk.Label(self.f, text="Documentation:").grid(row=4, column=0, sticky=tk.W)
+        self.option_documentation = tk.Text(self.f, width=60, height=10)
+        self.option_documentation.grid(row=4, column=1, sticky=tk.W)
+        
+        buttons = tk.Frame(self.f)
+    
+        save = tk.Button(buttons, text="Create", command=self.save_option)
+        set_status_message(save, "Create the new option")
+        save.pack(side=tk.LEFT, padx=2)
+               
+        buttons.grid(row=5, column=1, sticky=tk.SE)
+        
+        self.f.pack()
+        
+    def edit_option_type(self, ev):
+        print "Edit option type" + self.option_type.get() 
+        option_type = conf.OptionType.get_named(self.option_type.get())
+        
+        editor = OptionTypeEditor.for_option_type(option_type)
+        print "Editor " + str(editor)
+            
+        self.option_type_editor.grid_forget()     
+        
+        if editor:
+            self.option_type_editor = editor(self.f, option_type())
+            self.option_type_editor.grid(row=2, column=1)
+    
+    def save_option(self):
+        option_name = self.option_name.get()
+        option_type = conf.OptionType.get_named(self.option_type.get())
+        
+        option = conf.ConfigurationSchemaOption(option_name, option_type())
+        option.documentation = self.option_documentation.get(1.0, tk.END)
+        
+        configurator.status.set(option.name + " option has been created")
+        
+        if self._onsave:
+            self._onsave(option)
+                      
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option, **options):
         tk.Frame.__init__(self, master)
@@ -475,7 +576,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
     def restore_option(self):
         self.option_name.set(self.option.name)
         self.option_documentation.delete(1.0, tk.END)
-        self.schema_documentation.insert(1.0, self.option.documentation)
+        self.option_documentation.insert(1.0, self.option.documentation)
         configurator.status.set(self.option.name + " option has been restored to its original state")
         
     def remove_option(self):
