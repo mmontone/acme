@@ -669,7 +669,13 @@ class AboutDialog(tk.Toplevel):
         
         self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
                                   parent.winfo_rooty()+50))
-
+        
+        logo = tk.PhotoImage(file='/home/marian/workspace2/configurator/images/system-settings-2.gif')
+        
+        label = tk.Label(self,image=logo)
+        label.image = logo # avoid garbage collection
+        label.pack()
+        
         tk.Label(self, text="This is configurator, a tool for managing application configurations." +
                             "\n\n Home page: https://github.com/mmontone/configurator" +  
                             "\n\n Author: Mariano Montone").pack()
