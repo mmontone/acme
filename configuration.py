@@ -1,43 +1,43 @@
-configuration_schemas = {}
+configuration_schemas = []
 
 def get_configuration_schema(name):
     global configuration_schemas
-    return configuration_schemas[name]
+    return next((schema for schema in configuration_schemas if schema.name == name), None)
 
 def register_configuration_schema(schema):
     global configuration_schemas
-    configuration_schemas[schema.name] = schema
+    configuration_schemas.append(schema)
     
 def unregister_configuration_schema(schema):
     global configuration_schemas
-    del configuration_schemas[schema.name]
+    configuration_schemas.remove(schema)
     
 def list_configuration_schemas():
     global configuration_schemas
-    return configuration_schemas.values()
+    return configuration_schemas
 
 class ConfigurationSchema:
     def __init__(self, name='', **args):
         self._name = name
-        self._sections = {}
+        self._sections = []
         self._documentation = args.get('documentation') or "Not documented"
         self._parents = args.get("parents") or []
         register_configuration_schema(self)
                 
     def section(self, section):
-        self._sections[section.name] = section
+        self._sections.append(section)
         section.schema = self
         return self
     
     def sections(self):
-        return self._sections.values()
+        return self._sections
     
     def get_section(self, name):
-        return self._sections[name]
-    
+        return next((s for s in self._sections if s.name == name), None)
+        
     def remove_section(self, section):
-        del self._sections[section.name]
-    
+        self._sections.remove(section)
+            
     def parents(self):
         return self._parents
     
@@ -68,8 +68,8 @@ class ConfigurationSchema:
 class ConfigurationSchemaSection:
     def __init__(self, name='', **args):
         self._name = name
-        self._subsections = {}
-        self._options = {}
+        self._subsections = []
+        self._options = []
         self._documentation = args.get('documentation') or 'Not documented'
         self._schema = args.get('schema') or None
         
@@ -83,25 +83,25 @@ class ConfigurationSchemaSection:
         return self
         
     def subsections(self):
-        return self._subsections.values()
+        return self._subsections
             
     def add_section(self, section):
-        self._subsections[section.name] = section
+        self._subsections.append(section)
         return self
     
     def options(self):
-        return self._options.values()
+        return self._options
     
     def add_option(self, option):
-        self._options[option.name] = option
+        self._options.append(option)
         option.section = self
         return self
     
     def remove_option(self, option):
-        del self._options[option.name]        
+        self._options.remove(option)        
         
     def get_option(self, name):
-        return self._options[name]
+        return next((opt for opt in self._options if opt.name == name), None)
         
     @property
     def documentation(self):

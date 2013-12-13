@@ -400,7 +400,9 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if option.option_type:
             self.option_type.set(option.option_type.name)
         option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
-        tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type).grid(row=1, column=1, sticky=tk.W) 
+        options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
+        set_status_message(options, "Select the type of option")
+        options.grid(row=1, column=1, sticky=tk.W) 
         
         if option.option_type:
             editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
@@ -418,7 +420,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_required = tk.IntVar()
         self.option_required.set(1 if option.is_required else 0)
         required = tk.Checkbutton(self.f, variable=self.option_required)
-        set_status_message(required, "Whether the option is required. If the option is required, then it is mandatory to set its value")
+        set_status_message(required, "Whether the option is required. If the option is required, then it is mandatory to set its value in the configuration")
         required.grid(row=3, column=1, sticky=tk.W)
         
         
