@@ -155,7 +155,9 @@ class ConfigurationSchemaNavigator(tk.Frame):
         option = self.find_option(item_id)
         print self.find_option(item_id)
         self.editor.grid_forget()
-        self.editor = ConfigurationSchemaOptionEditor(self.pane, option)
+        self.editor = ConfigurationSchemaOptionEditor(self.pane, option, 
+                                                      onsave=lambda:self.tree.item(item_id, text=option.name), 
+                                                      onremove=lambda: self.tree.delete(item_id))
         self.editor.grid(column=1, row=0)
         
     def popup_option(self, ev):
@@ -373,11 +375,15 @@ class ConfigurationSchemaSectionCreator(tk.Frame):
             self._onsave(self.section)
                    
 class ConfigurationSchemaOptionEditor(tk.Frame):
-    def __init__(self, master, option):
+    def __init__(self, master, option, **options):
         tk.Frame.__init__(self, master)
         
+        # configuration
         self.option = option
+        self._onsave = options.get('onsave') or None
+        self._onremove = options.get('onremove') or None
         
+        # ui 
         tk.Label(self, text=option.name + " option").pack()
         
         self.f = tk.Frame(self)
@@ -417,15 +423,25 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         
         
         # Documentation
-        self.option_documentation = option.documentation
         tk.Label(self.f, text="Documentation:").grid(row=4, column=0, sticky=tk.W)
-        text = tk.Text(self.f, width=60, height=10)
-        text.insert(tk.END, self.option_documentation)
-        text.grid(row=4, column=1, sticky=tk.W)
+        self.option_documentation = tk.Text(self.f, width=60, height=10)
+        self.option_documentation.insert(tk.END, self.option.documentation)
+        self.option_documentation.grid(row=4, column=1, sticky=tk.W)
         
         buttons = tk.Frame(self.f)
-        tk.Button(buttons, text="Save").pack(side=tk.LEFT, padx=2)
-        tk.Button(buttons, text="Remove").pack(side=tk.LEFT, padx=2)
+    
+        save = tk.Button(buttons, text="Save", command=self.save_option)
+        set_status_message(save, "Save option changes")
+        save.pack(side=tk.LEFT, padx=2)
+        
+        restore = tk.Button(buttons, text="Restore", command=self.restore_option)
+        set_status_message(restore, "Restore option original data")
+        restore.pack(side=tk.LEFT, padx=2)
+        
+        remove = tk.Button(buttons, text="Remove", command=self.remove_option)
+        set_status_message(remove, "Remove the option")
+        remove.pack(side=tk.LEFT, padx=2)
+        
         buttons.grid(row=5, column=1, sticky=tk.SE)
         
         self.f.pack()
@@ -442,6 +458,30 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if editor:
             self.option_type_editor = editor(self.f, option_type())
             self.option_type_editor.grid(row=2, column=1)
+    
+    def save_option(self):
+        self.option.name = self.option_name.get()
+        self.option.documentation = self.option_documentation.get(1.0, tk.END)
+        option_type = conf.OptionType.get_named(self.option_type.get())
+        self.option.option_type = option_type()
+        
+        configurator.status.set(self.option.name + " option has been updated")
+        
+        if self._onsave:
+            self._onsave()
+            
+    def restore_option(self):
+        self.option_name.set(self.option.name)
+        self.option_documentation.delete(1.0, tk.END)
+        self.schema_documentation.insert(1.0, self.option.documentation)
+        configurator.status.set(self.option.name + " option has been restored to its original state")
+        
+    def remove_option(self):
+        if tkMessageBox.askquestion("Remove?", "Remove " + self.option.name + " option?") == 'yes':
+            self.option.remove()
+            
+            if self._onremove:
+                self._onremove()
         
 class OptionTypeEditor(object, tk.Frame):
     option_type = None
