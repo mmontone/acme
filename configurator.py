@@ -72,10 +72,14 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid(column=1, row=0)
         
     def popup_schema(self, ev):
+        # find the schema
+        item = self.tree.identify_row(ev.y)
+        schema = self.find_schema(item)
+        
         # create a menu
         popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="Remove") # , command=next) etc...
-        popup.add_command(label="Add section")
+        popup.add_command(label="Remove", command=lambda: self.remove_schema(schema, item)) # , command=next) etc...
+        popup.add_command(label="Add section", command=lambda: self.add_section(schema, item))
         popup.add_separator()
         popup.add_command(label="Dismiss")
         
@@ -93,7 +97,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
                
     def find_schema(self, id):
         return self.items[id]
-
+    
+    def remove_schema(self, schema, id):
+        if tkMessageBox.askquestion("Remove?", "Remove " + schema.name + " configuration schema?") == 'yes':
+            schema.remove
+            self.tree.delete(id)
+            
     def select_section(self, ev):
         item_id = str(self.tree.focus())
         print 'Selected section was %s' % item_id
@@ -123,10 +132,22 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def section_status(self, ev):
         item_id = str(self.tree.focus())
         section = self.find_section(item_id)
-        set_status_message(self, "Edit " + section.name + " section")            
+        set_status_message(self, "Edit " + section.name + " section")
         
+           
     def find_section(self, id):
         return self.items[id]
+    
+    def add_section(self, schema, item_id):
+        def save_section(section):
+            schema.section(section)
+            id = self.tree.insert(item_id, 'end', text=section.name, tags='section')
+            self.items[id] = section
+            configurator.status.set('Section ' + section.name + ' created in ' + schema.name + ' configuration schema')
+            
+        self.editor.grid_forget()
+        self.editor = ConfigurationSchemaSectionCreator(self.pane, onsave=save_section)
+        self.editor.grid(column=1, row=0)
     
     def select_option(self, ev):
         item_id = str(self.tree.focus())
@@ -311,7 +332,46 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         
             if self._onremove:
                 self._onremove()    
+                
+class ConfigurationSchemaSectionCreator(tk.Frame):
+    def __init__(self, master, **options):
+        tk.Frame.__init__(self, master)
         
+        # configuration
+        self.section = conf.ConfigurationSchemaSection()
+        self._onsave = options.get('onsave') or None
+                
+        # ui
+        tk.Label(self, text="New section").pack()
+        
+        f = tk.Frame(self)
+        
+        tk.Label(f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
+        self.section_name = tk.StringVar()
+        tk.Entry(f, textvariable=self.section_name).grid(row=0, column=1, sticky=tk.W)
+        
+        tk.Label(f, text="Documentation").grid(row=1, column=0, sticky=tk.W)
+        self.section_documentation = tk.Text(f, height=10, width=60)
+        self.section_documentation.grid(row=1, column=1, sticky=tk.W)
+        
+        buttons = tk.Frame(f)
+        
+        save = tk.Button(buttons, text="Save", command=self.save_section)
+        save.pack(side=tk.LEFT, padx=2)
+        set_status_message(save, "Create the new section")
+               
+        buttons.grid(row=2, column=1, sticky=tk.SE)
+        
+        f.pack()
+        
+    def save_section(self):
+        self.section.name = self.section_name.get()
+        self.section.documentation = self.section_documentation.get(1.0, tk.END)
+        configurator.status.set(self.section.name + " section has been created")
+        
+        if self._onsave:
+            self._onsave(self.section)
+                   
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option):
         tk.Frame.__init__(self, master)

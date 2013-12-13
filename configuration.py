@@ -17,7 +17,7 @@ def list_configuration_schemas():
     return configuration_schemas.values()
 
 class ConfigurationSchema:
-    def __init__(self, name, **args):
+    def __init__(self, name='', **args):
         self._name = name
         self._sections = {}
         self._documentation = args.get('documentation') or "Not documented"
@@ -66,7 +66,7 @@ class ConfigurationSchema:
         return self.name 
         
 class ConfigurationSchemaSection:
-    def __init__(self, name, **args):
+    def __init__(self, name='', **args):
         self._name = name
         self._subsections = {}
         self._options = {}
