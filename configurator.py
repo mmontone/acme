@@ -150,9 +150,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.items[id] = section
             configurator.status.set('Section ' + section.name + ' created in ' + schema.name + ' configuration schema')
             
-        self.editor.grid_forget()
-        self.editor = ConfigurationSchemaSectionCreator(self.pane, onsave=save_section)
-        self.editor.grid(column=1, row=0)
+        creator = ConfigurationSchemaSectionCreator(self, onsave=save_section)
+        self.wait_window(creator)        
         
     def remove_section(self, section, id):
         if tkMessageBox.askquestion("Remove?", "Remove section " + section.name + "?") == 'yes':
@@ -168,9 +167,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.items[id] = option
             configurator.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
             
-        self.editor.grid_forget()
-        self.editor = ConfigurationSchemaOptionCreator(self.pane, onsave=save_option)
-        self.editor.grid(column=1, row=0)
+        creator = ConfigurationSchemaOptionCreator(self.pane, onsave=save_option)
+        self.wait_window(creator)        
     
     def select_option(self, ev):
         item_id = str(self.tree.focus())
@@ -358,13 +356,14 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
             if self._onremove:
                 self._onremove()    
                 
-class ConfigurationSchemaSectionCreator(tk.Frame):
+class ConfigurationSchemaSectionCreator(tk.Toplevel):
     def __init__(self, master, **options):
-        tk.Frame.__init__(self, master)
+        tk.Toplevel.__init__(self, master)
         
         # configuration
         self.section = conf.ConfigurationSchemaSection()
         self._onsave = options.get('onsave') or None
+        self.transient(master)
                 
         # ui
         tk.Label(self, text="New section").pack()
@@ -384,6 +383,9 @@ class ConfigurationSchemaSectionCreator(tk.Frame):
         save = tk.Button(buttons, text="Create", command=self.save_section)
         save.pack(side=tk.LEFT, padx=2)
         set_status_message(save, "Create the new section")
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
                
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
@@ -396,12 +398,14 @@ class ConfigurationSchemaSectionCreator(tk.Frame):
         
         if self._onsave:
             self._onsave(self.section)
+        self.destroy()
             
-class ConfigurationSchemaOptionCreator(tk.Frame):
+class ConfigurationSchemaOptionCreator(tk.Toplevel):
     def __init__(self, master, **options):
-        tk.Frame.__init__(self, master)
+        tk.Toplevel.__init__(self, master)
         
         # configuration
+        self.transient(master)
         self._onsave = options.get('onsave') or None
         self._onremove = options.get('onremove') or None
         
@@ -446,6 +450,9 @@ class ConfigurationSchemaOptionCreator(tk.Frame):
         save = tk.Button(buttons, text="Create", command=self.save_option)
         set_status_message(save, "Create the new option")
         save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
                
         buttons.grid(row=5, column=1, sticky=tk.SE)
         
@@ -476,6 +483,8 @@ class ConfigurationSchemaOptionCreator(tk.Frame):
         
         if self._onsave:
             self._onsave(option)
+            
+        self.destroy()
                       
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option, **options):
