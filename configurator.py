@@ -551,7 +551,7 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
         option_type = conf.OptionType.get_named(self.option_type.get())
         
         option = conf.ConfigurationSchemaOption(option_name, option_type())
-        option.is_required=self.option_required == 1
+        option.is_required=self.option_required.get() == 1
         option.documentation = self.option_documentation.get(1.0, tk.END)
         
         configurator.status.set(option.name + " option has been created")
