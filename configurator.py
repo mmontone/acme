@@ -148,7 +148,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         # create a menu
         popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="Remove", command=lambda:self.remove_section(section, item)) # , command=next) etc...
+        popup.add_command(label="Remove", command=lambda:self.remove_section(section, item))
+        popup.add_command(label="Add subsection", command=lambda:self.add_subsection(section, item))
         popup.add_command(label="Add option", command=lambda:self.add_option(section, item))
         popup.add_separator()
         popup.add_command(label="Dismiss")
@@ -177,7 +178,17 @@ class ConfigurationSchemaNavigator(tk.Frame):
             configurator.status.set('Section ' + section.name + ' created in ' + schema.name + ' configuration schema')
             
         creator = ConfigurationSchemaSectionCreator(self, onsave=save_section)
-        self.wait_window(creator)        
+        self.wait_window(creator)
+        
+    def add_subsection(self, section, item_id):        
+        def save_subsection(subsection):
+            section.add_section(subsection)
+            id = self.tree.insert(item_id, 'end', text=subsection.name, tags='section')
+            self.items[id] = subsection
+            configurator.status.set('Subsection ' + subsection.name + ' created in ' + section.name + ' section')
+            
+        creator = ConfigurationSchemaSectionCreator(self, onsave=save_subsection)
+        self.wait_window(creator)
         
     def remove_section(self, section, id):
         if tkMessageBox.askquestion("Remove?", "Remove section " + section.name + "?") == 'yes':

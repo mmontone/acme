@@ -71,7 +71,7 @@ class ConfigurationSchemaSection:
         self._subsections = []
         self._options = []
         self._documentation = args.get('documentation') or 'Not documented'
-        self._schema = args.get('schema') or None
+        self._parent = args.get('parent') or None
         
     @property
     def name(self):
@@ -87,7 +87,11 @@ class ConfigurationSchemaSection:
             
     def add_section(self, section):
         self._subsections.append(section)
+        section.parent = self
         return self
+    
+    def remove_section(self, section):
+        self._subsections.remove(section)
     
     def options(self):
         return self._options
@@ -113,16 +117,16 @@ class ConfigurationSchemaSection:
         return self
     
     @property
-    def schema(self):
-        return self._schema
+    def parent(self):
+        return self._parent
     
-    @schema.setter
-    def schema(self, value):
-        self._schema = value
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
         return self
     
     def remove(self):
-        self.schema.remove_section(self)
+        self.parent.remove_section(self)
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
