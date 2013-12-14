@@ -55,23 +55,26 @@ class ConfigurationSchemaNavigator(tk.Frame):
         item = self.tree.identify_row(ev.y)
         
         if not item:
-            popup = tk.Menu(self, tearoff=0)
-            popup.add_command(label="New configuration schema") # , command=next) etc...
-            popup.add_separator()
-            popup.add_command(label="Dismiss")
-            
-            # display the popup menu
-            try:
-                popup.tk_popup(ev.x_root, ev.y_root, 0)
-            finally:
-                # make sure to release the grab (Tk 8.0a1 only)
-                popup.grab_release()
+            self.popup_noitem(ev)
         elif isinstance(self.items[item], conf.ConfigurationSchema):
             self.popup_schema(ev)
         elif isinstance(self.items[item],conf.ConfigurationSchemaSection):
             self.popup_section(ev)
         elif isinstance(self.items[item], conf.ConfigurationSchemaOption):
             self.popup_option(ev)
+            
+    def popup_noitem(self, ev):
+        popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="New configuration schema", command=self.create_schema) # , command=next) etc...
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
+            
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
                 
     def select_schema(self, ev):
         item_id = str(self.tree.focus())
@@ -111,10 +114,21 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def find_schema(self, id):
         return self.items[id]
     
+    def create_schema(self):
+        def save_schema(schema):
+            self.schemas.append(schema)
+            id = self.tree.insert('', 'end', text=schema.name, tags='schema')
+            self.items[id] = schema
+            configurator.status.set('Configuration schema ' + schema.name + ' has been created')
+            
+        creator = ConfigurationSchemaCreator(self, onsave=save_schema)
+        self.wait_window(creator)
+
     def remove_schema(self, schema, id):
         if tkMessageBox.askquestion("Remove?", "Remove " + schema.name + " configuration schema?") == 'yes':
             schema.remove
             self.tree.delete(id)
+            
             
     def select_section(self, ev):
         item_id = str(self.tree.focus())
@@ -303,7 +317,56 @@ class ConfigurationSchemaEditor(tk.Frame):
             configurator.status.set(self.schema.name + " configuration schema has been removed")
             if self._onremove:
                 self._onremove()
+                
+class ConfigurationSchemaCreator(tk.Toplevel):
+    def __init__(self, master, **options):
+        tk.Toplevel.__init__(self, master)
+                
+        # configuration
+        self._onsave = options.get('onsave') or None
+            
+        # ui
+        self.title("New configuration schema")
         
+        props = tk.Frame(self)
+        tk.Label(props, text="Name: ").grid(row=0, column=0, sticky=tk.W)
+        self.schema_name = tk.StringVar()
+        tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1, sticky=tk.W + tk.N)
+        
+        tk.Label(props, text="Parents:").grid(row=1, column=0, sticky=tk.W + tk.N)
+        self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
+                                        selected=[])
+        set_status_message(self.parents, "Add and remove parents to the configuration schema")
+        self.parents.grid(row=1, column=1, sticky=tk.W)
+        
+        tk.Label(props, text="Documentation:").grid(row=2, column=0, sticky=tk.W + tk.N)
+        self.schema_doc = tk.Text(props, width=60, height=10)
+        self.schema_doc.grid(row=2, column=1, sticky=tk.W)
+        
+        buttons = tk.Frame(props)
+        save = tk.Button(buttons, text="Save", command=self.save_schema)
+        set_status_message(save, "Save changes to configuration schema")
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
+               
+        buttons.grid(row=3, column=1, sticky=tk.SE)
+        props.pack()
+    
+    def save_schema(self):
+        schema = conf.ConfigurationSchema(self.schema_name.get())
+         
+        schema.documentation = self.schema_doc.get(1.0, tk.END)
+        #schema.set_parents(self.parents.get_selection())
+        
+        configurator.status.set(schema.name + " configuration schema has been updated")
+        
+        if self._onsave:
+            self._onsave(schema)
+            
+        self.destroy()
+           
 class ConfigurationSchemaSectionEditor(tk.Frame):
     def __init__(self, master, section, **options):
         tk.Frame.__init__(self, master)
@@ -378,7 +441,7 @@ class ConfigurationSchemaSectionCreator(tk.Toplevel):
         self.transient(master)
                 
         # ui
-        tk.Label(self, text="New section").pack()
+        self.title("New section")
         
         f = tk.Frame(self)
         
@@ -422,7 +485,7 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
         self._onremove = options.get('onremove') or None
         
         # ui 
-        tk.Label(self, text='New option').pack()
+        self.title('New option')
         
         self.f = tk.Frame(self)
                 
