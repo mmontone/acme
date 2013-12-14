@@ -29,15 +29,15 @@ class ConfigurationSchemaNavigator(tk.Frame):
             
         # Popup menus
         self.tree.tag_bind('schema', '<ButtonRelease-1>', self.select_schema)
-        self.tree.tag_bind('schema', '<ButtonRelease-3>', self.popup_schema)
+        #self.tree.tag_bind('schema', '<ButtonRelease-3>', self.popup_schema)
         
         self.tree.tag_bind('section', '<ButtonRelease-1>', self.select_section)
-        self.tree.tag_bind('section', '<ButtonRelease-3>', self.popup_section)
+        #self.tree.tag_bind('section', '<ButtonRelease-3>', self.popup_section)
         
         self.tree.tag_bind('option', '<ButtonRelease-1>', self.select_option)
-        self.tree.tag_bind('option', '<ButtonRelease-3>', self.popup_option)
-                
-        #self.tree.bind('<ButtonRelease-3>', self.tree_popup)
+        #self.tree.tag_bind('option', '<ButtonRelease-3>', self.popup_option)
+                        
+        self.tree.bind('<ButtonRelease-3>', self.popup_tree)
         
         #Configuration
         #print(self.tree.tag_configure('schema'))
@@ -50,17 +50,29 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.editor.grid(column=1, row=0)
         self.pane.pack(fill=tk.BOTH, expand=True)
         
-    def tree_popup(self, ev):
-        popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="New configuration schema") # , command=next) etc...
-               
-        # display the popup menu
-        try:
-            popup.tk_popup(ev.x_root, ev.y_root, 0)
-        finally:
-            # make sure to release the grab (Tk 8.0a1 only)
-            popup.grab_release()
+    def popup_tree(self, ev):
         
+        item = self.tree.identify_row(ev.y)
+        
+        if not item:
+            popup = tk.Menu(self, tearoff=0)
+            popup.add_command(label="New configuration schema") # , command=next) etc...
+            popup.add_separator()
+            popup.add_command(label="Dismiss")
+            
+            # display the popup menu
+            try:
+                popup.tk_popup(ev.x_root, ev.y_root, 0)
+            finally:
+                # make sure to release the grab (Tk 8.0a1 only)
+                popup.grab_release()
+        elif isinstance(self.items[item], conf.ConfigurationSchema):
+            self.popup_schema(ev)
+        elif isinstance(self.items[item],conf.ConfigurationSchemaSection):
+            self.popup_section(ev)
+        elif isinstance(self.items[item], conf.ConfigurationSchemaOption):
+            self.popup_option(ev)
+                
     def select_schema(self, ev):
         item_id = str(self.tree.focus())
         schema = self.find_schema(item_id)
