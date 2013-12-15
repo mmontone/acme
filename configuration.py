@@ -233,8 +233,11 @@ class EmailOptionType(OptionType):
 class URIOptionType(OptionType):
     _name = "URI"
     
-class PathnameOptionType(OptionType):
-    _name = "Pathname"
+class FilenameOptionType(OptionType):
+    _name = "Filename"
+    
+class DirectoryOptionType(OptionType):
+    _name = "Directory"
     
 class ColorOptionType(OptionType):
     _name = "Color"

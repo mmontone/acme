@@ -923,6 +923,36 @@ class ColorOptionEditor(OptionEditor):
     def getColor(self):
         color = tkColorChooser.askcolor()
         self._var.set(color)
+        
+class FilenameOptionEditor(OptionEditor):
+    option_type = conf.FilenameOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+            
+        tk.Entry(self, textvariable=self._var).pack()
+        tk.Button(self, text='Select file', command=self.getFilename).pack()
+
+    def getFilename(self):
+        filename = tkFileDialog.askopenfilename()
+        self._var.set(filename)
+        
+class DirectoryOptionEditor(OptionEditor):
+    option_type = conf.DirectoryOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+        
+        tk.Entry(self, textvariable=self._var).pack()
+        tk.Button(self, text='Select directory', command=self.getDirectory).pack()
+
+    def getDirectory(self):
+        directory = tkFileDialog.askdirectory()
+        self._var.set(directory)
        
 class Configurator(tk.Frame):
     def __init__(self, parent):
