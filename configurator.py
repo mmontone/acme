@@ -802,9 +802,19 @@ class ConfigurationNavigator(tk.Frame):
             tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
                 
             row = row + 1
-                
+            
+        buttons = tk.Frame(self._right_panel)
+        
+        save = tk.Button(buttons, text="Save", command=self.save_options)
+        save.pack(side=tk.RIGHT, padx=2)
+        
+        restore = tk.Button(buttons, text="Restore", command=self.restore_options)
+        restore.pack(side=tk.RIGHT, padx=2)
+        
+        buttons.grid(row=row, column=3, sticky=tk.SE)
+                    
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-                
+                        
         self.pack()
         
     def select_config(self, ev):
@@ -816,6 +826,12 @@ class ConfigurationNavigator(tk.Frame):
         
         for subsection in section.subsections():
             self.insert_section(subsection, sid)
+            
+    def save_options(self):
+        print "Save options"
+        
+    def restore_options(self):
+        print "Restore options"
         
                 
 class AboutDialog(tk.Toplevel):
