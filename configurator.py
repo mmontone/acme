@@ -3,6 +3,8 @@ import ttk
 import widgets as w
 import configuration as conf
 import tkMessageBox
+import tkColorChooser
+import tkFileDialog
 import os
     
 class ConfigurationSchemaNavigator(tk.Frame):
@@ -901,6 +903,22 @@ class ChoiceOptionEditor(OptionEditor):
         
     def value(self):
         return self._var.get()
+    
+class ColorOptionEditor(OptionEditor):
+    option_type = conf.ColorOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+        self._var.set('No color selected')
+        
+        tk.Label(self, textvariable=self._var).pack()
+        tk.Button(self, text='Select Color', command=self.getColor).pack()
+        
+    def getColor(self):
+        color = tkColorChooser.askcolor()
+        self._var.set(color)
        
 class Configurator(tk.Frame):
     def __init__(self, parent):
