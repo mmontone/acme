@@ -45,6 +45,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         #print(self.tree.tag_configure('schema'))
         #self.tree.tag_configure('schema', font=('Helvetica', '16'))
         
+        self.tree.selection_set(self.tree.get_children()[0])
+        
         self.tree.grid(column=0, row=0, sticky=tk.N+tk.S)
         
         # The editor
@@ -755,13 +757,14 @@ class ConfigurationNavigator(tk.Frame):
         self._left_panel = tk.Frame(self)
         
         self._selected_config = tk.StringVar()
-        self._selected_config.set(configs[0].name)
-        
-        self._configs = tk.Listbox(self._left_panel, listvar=self._selected_config)
+                        
+        self._configs = tk.Listbox(self._left_panel, exportselection=0)
         self._configs.bind('<ButtonRelease-1>', self.select_config)
         
         for config in configs:
             self._configs.insert(tk.END, config.name)
+            
+        self._configs.select_set(0)
             
         self._configs.pack()
         
@@ -777,6 +780,7 @@ class ConfigurationNavigator(tk.Frame):
         for section in sections:
             self.insert_section(section)
             
+        self._sections.selection_set(self._sections.get_children()[0])
         self._sections.pack()
         self._left_panel.pack(side=tk.LEFT)
            
@@ -1050,7 +1054,10 @@ class Configurator(tk.Frame):
         s1.add_option(auth)
         
         logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
-        s1.add_option(logfile)        
+        s1.add_option(logfile)
+        
+        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
+        s1.add_option(color)        
         
         self._schemas[sch1.name] = sch1
     
