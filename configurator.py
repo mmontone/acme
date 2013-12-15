@@ -677,6 +677,10 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if editor:
             self.option_type_editor = editor(self.f, option_type())
             self.option_type_editor.grid(row=2, column=1)
+        
+        # Clear the default value
+        self._default_value_var.set(0)
+        self.set_default_value()
             
     def set_default_value(self):
         self._default_value_editor.grid_forget()
