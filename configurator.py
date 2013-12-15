@@ -1066,14 +1066,26 @@ class Configurator(tk.Frame):
         host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
         s1.add_option(host)
         
-        auth = conf.ConfigurationSchemaOption('Authentication', conf.BooleanOptionType(), documentation='Enable authentication?')
-        s1.add_option(auth)
+        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
+        s1.add_option(port)
+        
+        s2 = conf.ConfigurationSchemaSection("Authentication")
+        sch1.section(s2)
+        
+        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
+        s2.add_option(auth)
+        
+        s3 = conf.ConfigurationSchemaSection("Logging")
+        sch1.section(s3)
         
         logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
-        s1.add_option(logfile)
+        s3.add_option(logfile)
+        
+        s4 = conf.ConfigurationSchemaSection("General preferences")
+        sch1.section(s4)
         
         color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
-        s1.add_option(color)        
+        s4.add_option(color)        
         
         self._schemas[sch1.name] = sch1
     
