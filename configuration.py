@@ -132,7 +132,7 @@ class ConfigurationSchemaSection:
         self.parent.remove_section(self)
         
     def path(self):
-        self._parent.path() + self.name
+        return self._parent.path() + self.name
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
@@ -201,7 +201,7 @@ class ConfigurationSchemaOption:
         return self
     
     def path(self):
-        self.section.path() + self.name
+        return self.section.path() + self.name
     
 class OptionType(object):
     _name = "Option type"
@@ -262,9 +262,9 @@ class ListOptionType(OptionType):
     
 class Configuration():
     
-    def __init__(self, name='', **options):
+    def __init__(self, name='', schema='', **options):
         self._name = name
-        self._schema = options.get('schema') or None
+        self._schema = schema
         self._parent = options.get('parent') or None
         self._options = {}
         
@@ -299,6 +299,14 @@ class Configuration():
         option = ConfigurationOption(schema_option, value=value)
         self._options[schema_option] = option
         
+    def option_value(self, schema_option):
+        option = self._options.get(schema_option, None)
+        if option:
+            return option.value
+        
+    def sections(self):
+        return self._schema.sections()
+        
 class ConfigurationOption():
     
     def __init__(self, schema, **options):
@@ -324,7 +332,7 @@ class ConfigurationOption():
         return self
     
     def path(self):
-        self.schema.path()
+        return self.schema.path()
         
     def __hash__(self):
         return hash(self.path())

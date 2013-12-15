@@ -22,7 +22,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         ysb = ttk.Scrollbar(self.pane, orient='vertical', command=self.tree.yview)
         xsb = ttk.Scrollbar(self.pane, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
-        self.tree.heading('#0', text='Configuration schemas', anchor='w')
+        #self.tree.heading('#0', text='Configuration schemas', anchor='w')
         
         self.tree.bind('<Leave>', lambda ev:configurator.status.set(''))
                 
@@ -748,49 +748,71 @@ class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
         tk.Frame.__init__(self, master)
         
-        configs = tk.Frame(self)
+        # Configuration
+        self._items = {}
         
-        self.tree = ttk.Treeview(configs)
-        ysb = ttk.Scrollbar(configs, orient='vertical', command=self.tree.yview)
-        xsb = ttk.Scrollbar(configs, orient='horizontal', command=self.tree.xview)
-        self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
-        self.tree.heading('#0', text='Configuration', anchor='w')
-
-        #abspath = os.path.abspath(path)
-        #root_node = self.tree.insert('', 'end', text="Configuration schemas", open=True)
-        #self.process_directory(root_node, abspath)
-
-        self.tree.grid(row=0, column=0)
-        ysb.grid(row=0, column=1, sticky='ns')
-        xsb.grid(row=1, column=0, sticky='ew')
+        # ui
+        self._left_panel = tk.Frame(self)
         
-        self.tree.bind("<Button-1>", self.onDoubleClick)
-        configs.pack(side=tk.LEFT)
+        self._selected_config = tk.StringVar()
+        self._selected_config.set(configs[0].name)
         
-        self.panel = tk.Frame(self)
-        tk.Label(self.panel, text="Hello!!").pack()
-        self.panel.pack()
+        self._configs = tk.Listbox(self._left_panel, listvar=self._selected_config)
+        self._configs.bind('<ButtonRelease-1>', self.select_config)
+        
+        for config in configs:
+            self._configs.insert(tk.END, config.name)
+            
+        self._configs.pack()
+        
+        self._sections = ttk.Treeview(self._left_panel)
+        
+        ysb = ttk.Scrollbar(self._left_panel, orient='vertical', command=self._sections.yview)
+        xsb = ttk.Scrollbar(self._left_panel, orient='horizontal', command=self._sections.xview)
+        self._sections.configure(yscroll=ysb.set, xscroll=xsb.set)
+        
+        config = configs[0]
+        sections = config.sections()
+        
+        for section in sections:
+            self.insert_section(section)
+            
+        self._sections.pack()
+        self._left_panel.pack(side=tk.LEFT)
+           
+        self._right_panel = tk.Frame(self)
+        
+        row = 0
+        
+        for option in sections[0].options():
+            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0)
+            print "Option" + str(option.option_type)
+            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
+            print "Editor" + str(option_editor)
+            option_value = config.option_value(option)
+            if option_value:
+                option_editor.set_value(option_value)
                 
-        self.grid()
+            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1)
+            
+            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2)
+                
+            row = row + 1
+                
+        self._right_panel.pack(side=tk.LEFT)
+                
+        self.pack()
         
-    def onDoubleClick(self, event):
-        if isinstance(self.tree.selection(), tuple):
-            item = self.tree.selection()[0] 
-            print "You clicked on ", self.tree.item(item, "text")
-            self.panel.pack_forget()
-            self.panel= tk.Frame(self)
-            
-            self.panel.pack()
-            tk.Label(self.panel, text=("You clicked on ", self.tree.item(item, "text"))).pack()
-            
-
-    def process_directory(self, parent, path):
-        for p in os.listdir(path):
-            abspath = os.path.join(path, p)
-            isdir = os.path.isdir(abspath)
-            oid = self.tree.insert(parent, 'end', text=p, open=False)
-            if isdir:
-                self.process_directory(oid, abspath)
+    def select_config(self, ev):
+        editor = ConfigurationEditor(self, config)
+        
+    def insert_section(self, section, parent=''):
+        sid = self._sections.insert(parent, 'end', text=section.name)
+        self._items[sid] = section
+        
+        for subsection in section.subsections():
+            self.insert_section(subsection, sid)
+        
                 
 class AboutDialog(tk.Toplevel):
 
@@ -953,6 +975,22 @@ class DirectoryOptionEditor(OptionEditor):
     def getDirectory(self):
         directory = tkFileDialog.askdirectory()
         self._var.set(directory)
+        
+class URIOptionEditor(OptionEditor):
+    option_type = conf.URIOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+        if self._option_schema and self._option_schema.default_value:
+            self._var.set(self._option_schema.default_value)
+            
+        entry = tk.Entry(self, textvariable=self._var)
+        entry.pack()
+        
+    def value(self):
+        return self._var.get()
        
 class Configurator(tk.Frame):
     def __init__(self, parent):
@@ -1019,12 +1057,11 @@ class Configurator(tk.Frame):
         return ConfigurationSchemaNavigator(self, self._schemas.values())
     
     def init_configs_navigator(self):
-        dev = conf.Configuration(self._schemas['Web'])
-        test = conf.Configuration(self._schemas['Web'])
-        prod = conf.Configuration(self._schemas['Database'])
+        dev = conf.Configuration('Dev', self._schemas['Web'])
+        test = conf.Configuration('Test', self._schemas['Web'])
+        prod = conf.Configuration('Prod', self._schemas['Database'])
         
-        return tk.Frame(self)
-        #return ConfigurationNavigator(self, [dev, test,prod])                        
+        return ConfigurationNavigator(self, [dev, test,prod])                        
        
     def help_about(self):
         d = AboutDialog(self)
