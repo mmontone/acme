@@ -64,6 +64,9 @@ class ConfigurationSchema:
     
     def __str__(self):
         return self.name 
+    
+    def path(self):
+        return self.name
         
 class ConfigurationSchemaSection:
     def __init__(self, name='', **args):
@@ -127,6 +130,9 @@ class ConfigurationSchemaSection:
     
     def remove(self):
         self.parent.remove_section(self)
+        
+    def path(self):
+        self._parent.path() + self.name
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
@@ -135,6 +141,7 @@ class ConfigurationSchemaOption:
         self._documentation = args.get('documentation') or 'Not documented'
         self._section = None
         self._is_required = args.get('required') or True
+        self._default_value = args.get('default_value') or None
     
     @property
     def name(self):
@@ -183,6 +190,18 @@ class ConfigurationSchemaOption:
     def is_required(self, value):
         self._is_required = value
         return self
+    
+    @property
+    def default_value(self):
+        return self._default_value
+    
+    @default_value.setter
+    def default_value(self, value):
+        self._default_value = value
+        return self
+    
+    def path(self):
+        self.section.path() + self.name
     
 class OptionType(object):
     _name = "Option type"
@@ -237,3 +256,75 @@ class ListOptionType(OptionType):
         
     def options():
         return self._options
+    
+class Configuration():
+    
+    def __init__(self, name='', **options):
+        self._name = name
+        self._schema = options.get('schema') or None
+        self._parent = options.get('parent') or None
+        self._options = {}
+        
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, value):
+        self._name = value
+        return self
+    
+    @property
+    def schema(self):
+        return self._schema
+    
+    @schema.setter
+    def schema(self, value):
+        self._schema = value
+        return self
+    
+    @property
+    def parent(self):
+        return self._parent
+    
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
+        return self
+    
+    def set_option_value(self, schema_option, value):
+        option = ConfigurationOption(schema_option, value=value)
+        self._options[schema_option] = option
+        
+class ConfigurationOption():
+    
+    def __init__(self, schema, **options):
+        self._schema = schema
+        self._value = options.get('value') or None
+        
+    @property
+    def schema(self):
+        return self._schema
+    
+    @schema.setter
+    def schema(self, value):
+        self._schema = value
+        return self
+    
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        self._value = value
+        return self
+    
+    def path(self):
+        self.schema.path()
+        
+    def __hash__(self):
+        return hash(self.path())
+
+    def __eq__(self, other):
+        return self.path() == other.path()

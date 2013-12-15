@@ -602,6 +602,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 
         
+        # Option type editor
         if option.option_type:
             editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
             if editor:
@@ -613,20 +614,36 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
             
         self.option_type_editor.grid(row=2, column=1, sticky=tk.W)
         
+        # Default value
+        tk.Label(self.f, text="Default value: ").grid(row=3, column=0, sticky=tk.W)
+        
+        self._default_value_var = tk.IntVar()
+        if option.default_value:
+            self._default_value_var.set(1)
+        
+        tk.Checkbutton(self.f, variable=self._default_value_var, command=self.set_default_value).grid(row=3, column=1, sticky=tk.W)
+        
+        if option.option_type and option.default_value:
+            editor = OptionEditor.for_option_schema(option)
+            self._default_value_editor = editor(self.f, option_schema=option)
+        else:
+            self._default_value_editor = tk.Frame(self.f)
+            
+        self._default_value_editor.grid(row=4, column=1, sticky=tk.W)       
+        
         # Required?
-        tk.Label(self.f, text="Is required?: ").grid(row=3, column=0, sticky=tk.W)
+        tk.Label(self.f, text="Is required?: ").grid(row=5, column=0, sticky=tk.W)
         self.option_required = tk.IntVar()
         self.option_required.set(1 if option.is_required else 0)
         required = tk.Checkbutton(self.f, variable=self.option_required)
         set_status_message(required, "Whether the option is required. If the option is required, then it is mandatory to set its value in the configuration")
-        required.grid(row=3, column=1, sticky=tk.W)
-        
-        
+        required.grid(row=5, column=1, sticky=tk.W)
+                
         # Documentation
-        tk.Label(self.f, text="Documentation:").grid(row=4, column=0, sticky=tk.W)
+        tk.Label(self.f, text="Documentation:").grid(row=6, column=0, sticky=tk.W)
         self.option_documentation = tk.Text(self.f, width=60, height=10)
         self.option_documentation.insert(tk.END, self.option.documentation)
-        self.option_documentation.grid(row=4, column=1, sticky=tk.W)
+        self.option_documentation.grid(row=6, column=1, sticky=tk.W)
         
         buttons = tk.Frame(self.f)
     
@@ -642,7 +659,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         set_status_message(remove, "Remove the option")
         remove.pack(side=tk.LEFT, padx=2)
         
-        buttons.grid(row=5, column=1, sticky=tk.SE)
+        buttons.grid(row=7, column=1, sticky=tk.SE)
         
         self.f.pack()
         
@@ -658,6 +675,19 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if editor:
             self.option_type_editor = editor(self.f, option_type())
             self.option_type_editor.grid(row=2, column=1)
+            
+    def set_default_value(self):
+        self._default_value_editor.grid_forget()
+        
+        if self._default_value_var.get() == 1:
+            option_type = conf.OptionType.get_named(self.option_type.get())
+            
+            editor = OptionEditor.for_option_type(option_type)
+            self._default_value_editor = editor(self.f, option_type=option_type)
+        else:
+            self._default_value_editor = tk.Frame(self.f)
+            
+        self._default_value_editor.grid(row=4, column=1, sticky=tk.W) 
     
     def save_option(self):
         self.option.name = self.option_name.get()
@@ -784,7 +814,94 @@ class AboutDialog(tk.Toplevel):
     def ok(self):
 
         self.destroy()
+        
+class OptionEditor(object, tk.Frame):
+    def __init__(self, master, **args):
+        tk.Frame.__init__(self, master)
+        
+        self._option_schema = None
+        self._option_schema = args.get('option_schema') or None
+        if args.get('option'):
+            self._option_schema = args.get('option').schema
+                
+    @classmethod
+    def for_option(cls, option):
+        return cls.for_option_schema(option.schema)
     
+    @classmethod
+    def for_option_schema(cls, option_schema):
+        return cls.for_option_type(option_schema.option_type)
+       
+    @classmethod
+    def for_option_type(cls, option_type):
+        subclasses = OptionEditor.__subclasses__()
+        return next((editor for editor in subclasses if editor.option_type == option_type), None)
+        
+class StringOptionEditor(OptionEditor):
+    option_type = conf.StringOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+        if self._option_schema and self._option_schema.default_value:
+            self._var.set(self._option_schema.default_value)
+            
+        entry = tk.Entry(self, textvariable=self._var)
+        entry.pack()
+        
+    def value(self):
+        return self._var.get()
+        
+class NumberOptionEditor(OptionEditor):
+    option_type = conf.NumberOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+                
+        self._var = tk.StringVar()
+        if self._option_schema and self._option_schema.default_value:
+            self._var.set(str(self._option_schema.default_value))
+        
+        sb = tk.Spinbox(self, textvariable=self._var)
+        sb.pack()
+        
+    def value(self):
+        return int(self._var.get())
+        
+class BooleanOptionEditor(OptionEditor):
+    option_type = conf.BooleanOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+                
+        self._var = tk.IntVar()
+        if self._option_schema and self._option_schema.default_value:
+            self._var.set(1)
+                        
+        cb = tk.Checkbutton(self, variable=self._var)
+        cb.pack()
+        
+class ChoiceOptionEditor(OptionEditor):
+    option_type = conf.ChoiceOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._var = tk.StringVar()
+        if self._option_schema and self._option_schema.default_value:
+            self._var.set(self._option_schema.default_value)
+        
+        #lb = tk.Listbox(self, listvar=self._var)
+        
+        #for option in self._option_schema.options():
+        #    lb.insert(tk.END, option)
+            
+        #lb.pack()
+        
+    def value(self):
+        return self._var.get()
+       
 class Configurator(tk.Frame):
     def __init__(self, parent):
         
@@ -817,11 +934,11 @@ class Configurator(tk.Frame):
         tabs = ttk.Notebook(self, name='notebook')
         tabs.enable_traversal()
         
-        configs_nav = self.init_configs_navigator()
-        tabs.add(configs_nav, text='Configurations')
-        
         navigator = self.init_schemas_navigator()
         tabs.add(navigator, text='Configuration schemas')
+        
+        configs_nav = self.init_configs_navigator()
+        tabs.add(configs_nav, text='Configurations')
                       
         tabs.pack(fill=tk.BOTH, expand=tk.Y, padx=2, pady=3)
         
@@ -830,26 +947,32 @@ class Configurator(tk.Frame):
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
         
     def init_schemas_navigator(self):
-        schemas = []
+        self._schemas = {}
         
         sch1 = conf.ConfigurationSchema("Web")
         host = conf.ConfigurationSchemaOption("host", conf.StringOptionType(), documentation="Server host")
         s1 = conf.ConfigurationSchemaSection("Server").add_option(host)
         sch1.section(s1)
-        schemas.append(sch1)
+        self._schemas[sch1.name] = sch1
     
         db = conf.ConfigurationSchema("Database")
-        db_engine = conf.ConfigurationSchemaOption("engine", conf.ChoiceOptionType(["Postgresql", "Mysql"]), documentation="The database engine")
+        db_engine = conf.ConfigurationSchemaOption("engine", 
+                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
+                                                   documentation="The database engine")
         db_engine.is_required = True
         db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
         db.section(db_server)
-        schemas.append(db)
-        
-        return ConfigurationSchemaNavigator(self, schemas)
+        self._schemas[db.name] = db
+                
+        return ConfigurationSchemaNavigator(self, self._schemas.values())
     
     def init_configs_navigator(self):
-        return self.init_schemas_navigator()
-                        
+        dev = conf.Configuration(self._schemas['Web'])
+        test = conf.Configuration(self._schemas['Web'])
+        prod = conf.Configuration(self._schemas['Database'])
+        
+        return tk.Frame(self)
+        #return ConfigurationNavigator(self, [dev, test,prod])                        
        
     def help_about(self):
         d = AboutDialog(self)
