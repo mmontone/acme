@@ -780,12 +780,12 @@ class ConfigurationNavigator(tk.Frame):
         self._sections.pack()
         self._left_panel.pack(side=tk.LEFT)
            
-        self._right_panel = tk.Frame(self)
+        self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
         row = 0
         
         for option in sections[0].options():
-            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0)
+            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
             print "Option" + str(option.option_type)
             option_editor = OptionEditor.for_option_type(option.option_type.__class__)
             print "Editor" + str(option_editor)
@@ -793,13 +793,13 @@ class ConfigurationNavigator(tk.Frame):
             if option_value:
                 option_editor.set_value(option_value)
                 
-            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1)
+            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
             
-            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2)
+            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
                 
             row = row + 1
                 
-        self._right_panel.pack(side=tk.LEFT)
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
                 
         self.pack()
         
@@ -1040,9 +1040,18 @@ class Configurator(tk.Frame):
         self._schemas = {}
         
         sch1 = conf.ConfigurationSchema("Web")
-        host = conf.ConfigurationSchemaOption("host", conf.StringOptionType(), documentation="Server host")
-        s1 = conf.ConfigurationSchemaSection("Server").add_option(host)
+        s1 = conf.ConfigurationSchemaSection("Server")
         sch1.section(s1)
+        
+        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
+        s1.add_option(host)
+        
+        auth = conf.ConfigurationSchemaOption('Authentication', conf.BooleanOptionType(), documentation='Enable authentication?')
+        s1.add_option(auth)
+        
+        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
+        s1.add_option(logfile)        
+        
         self._schemas[sch1.name] = sch1
     
         db = conf.ConfigurationSchema("Database")
