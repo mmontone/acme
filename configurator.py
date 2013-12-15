@@ -760,6 +760,7 @@ class ConfigurationNavigator(tk.Frame):
                         
         self._configs = tk.Listbox(self._left_panel, exportselection=0)
         self._configs.bind('<ButtonRelease-1>', self.select_config)
+        self._configs.bind('<ButtonRelease-3>', self.configs_popup)
         
         for config in configs:
             self._configs.insert(tk.END, config.name)
@@ -769,6 +770,7 @@ class ConfigurationNavigator(tk.Frame):
         self._configs.pack()
         
         self._sections = ttk.Treeview(self._left_panel)
+        self._sections.bind('<ButtonRelease-3>', self.sections_popup)
         
         ysb = ttk.Scrollbar(self._left_panel, orient='vertical', command=self._sections.yview)
         xsb = ttk.Scrollbar(self._left_panel, orient='horizontal', command=self._sections.xview)
@@ -806,10 +808,10 @@ class ConfigurationNavigator(tk.Frame):
         buttons = tk.Frame(self._right_panel)
         
         save = tk.Button(buttons, text="Save", command=self.save_options)
-        save.pack(side=tk.RIGHT, padx=2)
+        save.pack(side=tk.LEFT, padx=2)
         
         restore = tk.Button(buttons, text="Restore", command=self.restore_options)
-        restore.pack(side=tk.RIGHT, padx=2)
+        restore.pack(side=tk.LEFT, padx=2)
         
         buttons.grid(row=row, column=3, sticky=tk.SE)
                     
@@ -832,6 +834,24 @@ class ConfigurationNavigator(tk.Frame):
         
     def restore_options(self):
         print "Restore options"
+        
+    def sections_popup(self, ev):
+        print "Sections popup"
+        item = self._sections.identify_row(ev.y)
+        print "Section: " + self._items[item].name 
+         
+    def configs_popup(self, ev):
+        print "Configs popup"
+        index = self._configs.nearest(ev.y)
+        
+        _, yoffset, _, height = self._configs.bbox(index)
+        if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
+            # Outside of widget.
+            print "No config"
+            return
+        
+        item = self._configs.get(index)
+        print "Config: " + item
         
                 
 class AboutDialog(tk.Toplevel):
