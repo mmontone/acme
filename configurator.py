@@ -8,6 +8,7 @@ import tkFileDialog
 import os
 import pytz # for timezones
 import pycountry # for countries and languages
+import tkCalendar
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -1119,6 +1120,14 @@ class TimeOptionEditor(OptionEditor):
         
         self._seconds = tk.Spinbox(self, from_=0, to=59)
         self._seconds.pack(side=tk.LEFT)
+        
+class DateOptionEditor(OptionEditor):
+    option_type = conf.DateOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        tkCalendar.Calendar(self,date="21/11/2006",dateformat="%d/%m/%Y").pack()
           
 class Configurator(tk.Frame):
     def __init__(self, parent):
