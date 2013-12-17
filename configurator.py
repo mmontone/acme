@@ -522,7 +522,7 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
         tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
         self.option_type = tk.StringVar()
         option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
-        options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
+        options = tk.OptionMenu(self.f, self.option_type, option_types, command=self.edit_option_type)
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 
         
@@ -965,11 +965,7 @@ class ChoiceOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        #self._var = tk.StringVar()
-        #if self._option_schema and self._option_schema.default_value:
-        #    self._var.set(self._option_schema.default_value)
-        
-        lb = tk.Listbox(self, listvar=self._var)
+        lb = tk.Listbox(self)
         
         for option in self._option_schema.options():
             lb.insert(tk.END, option)
@@ -1104,7 +1100,26 @@ class URIOptionEditor(OptionEditor):
         
     def value(self):
         return self._var.get()
-       
+    
+class TimeOptionEditor(OptionEditor):
+    option_type = conf.TimeOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._hours_var = tk.IntVar()
+        self._minutes_var = tk.IntVar()
+        self._seconds_var = tk.IntVar()
+        
+        self._hours = tk.Spinbox(self, from_=0, to=23)
+        self._hours.pack(side=tk.LEFT)
+        
+        self._minutes = tk.Spinbox(self, from_=0, to=59)
+        self._minutes.pack(side=tk.LEFT)
+        
+        self._seconds = tk.Spinbox(self, from_=0, to=59)
+        self._seconds.pack(side=tk.LEFT)
+          
 class Configurator(tk.Frame):
     def __init__(self, parent):
         

@@ -254,6 +254,15 @@ class LanguageOptionType(OptionType):
 class CurrencyOptionType(OptionType):
     _name = "Currency"
     
+class DateOptionType(OptionType):
+    _name = "Date"
+    
+class TimeOptionType(OptionType):
+    _name = "Time"
+    
+class DatetimeOptionType(OptionType):
+    _name = "Datetime"
+    
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
