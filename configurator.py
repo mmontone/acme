@@ -800,9 +800,16 @@ class ConfigurationNavigator(tk.Frame):
            
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
+        self.insert_section_editor(sections[0])
+                           
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                        
+        self.pack()
+        
+    def insert_section_editor(self, section):
         row = 0
         
-        for option in sections[0].options():
+        for option in section.options():
             tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
             print "Option" + str(option.option_type)
             option_editor = OptionEditor.for_option_type(option.option_type.__class__)
@@ -810,7 +817,7 @@ class ConfigurationNavigator(tk.Frame):
             option_value = self._config.option_value(option)
             if option_value:
                 option_editor.set_value(option_value)
-                
+             
             option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
             
             tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
@@ -826,10 +833,6 @@ class ConfigurationNavigator(tk.Frame):
         restore.pack(side=tk.LEFT, padx=2)
         
         buttons.grid(row=row, column=3, sticky=tk.SE)
-                    
-        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-                        
-        self.pack()
         
     def select_config(self, ev):
         # Grab the selected configuration
@@ -851,21 +854,8 @@ class ConfigurationNavigator(tk.Frame):
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
         # Put the options editing on the right panel
-        row = 0
-        
-        for option in sections[0].options():
-            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
-            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
-            option_value = self._config.option_value(option)
-            if option_value:
-                option_editor.set_value(option_value)
+        self.insert_section_editor(sections[0])
                 
-            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
-            
-            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
-                
-            row = row + 1
-        
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
     def select_section(self, ev):
@@ -878,20 +868,7 @@ class ConfigurationNavigator(tk.Frame):
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
         # Put the options editing on the right panel
-        row = 0
-        
-        for option in section.options():
-            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
-            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
-            option_value = self._config.option_value(option)
-            if option_value:
-                option_editor.set_value(option_value)
-                
-            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
-            
-            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
-                
-            row = row + 1
+        self.insert_section_editor(section)
         
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)               
         
