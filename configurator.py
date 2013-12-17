@@ -1285,11 +1285,20 @@ class Configurator(tk.Frame):
         logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
         s3.add_option(logfile)
         
+        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
+        s3.add_option(datetime)
+        
         s4 = conf.ConfigurationSchemaSection("General preferences")
         sch1.section(s4)
         
+        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
+        s4.add_option(fontsize)
+        
+        s5 = conf.ConfigurationSchemaSection('Colors')
+        s4.add_section(s5)
+        
         color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
-        s4.add_option(color)        
+        s5.add_option(color)        
         
         self._schemas[sch1.name] = sch1
     
