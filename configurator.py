@@ -6,6 +6,7 @@ import tkMessageBox
 import tkColorChooser
 import tkFileDialog
 import os
+import pytz # for timezones
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -745,7 +746,13 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         
         w.ListEditor.__init__(self, parent, listvar=self.options_var)
         set_status_message(self, "The possible option choices")
-       
+        
+class TimezoneOptionTypeEditor(OptionTypeEditor, w.ListEditor):
+    option_type = conf.TimezoneOptionType
+    
+    def __init__(self, parent, option_type):
+        OptionTypeEditor.__init__(self, parent, option_type)
+               
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
         tk.Frame.__init__(self, master)
@@ -956,19 +963,35 @@ class ChoiceOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        self._var = tk.StringVar()
-        if self._option_schema and self._option_schema.default_value:
-            self._var.set(self._option_schema.default_value)
+        #self._var = tk.StringVar()
+        #if self._option_schema and self._option_schema.default_value:
+        #    self._var.set(self._option_schema.default_value)
         
-        #lb = tk.Listbox(self, listvar=self._var)
+        lb = tk.Listbox(self, listvar=self._var)
         
-        #for option in self._option_schema.options():
-        #    lb.insert(tk.END, option)
+        for option in self._option_schema.options():
+            lb.insert(tk.END, option)
             
-        #lb.pack()
+        lb.pack()
         
     def value(self):
         return self._var.get()
+    
+class TimezoneOptionEditor(OptionEditor):
+    option_type = conf.TimezoneOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        lb = tk.Listbox(self)
+        
+        for tz in pytz.all_timezones:
+            lb.insert(tk.END, str(tz))
+            
+        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
+        lb.configure(yscroll=ysb.set)
+        lb.pack(side=tk.LEFT)
+        ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     
 class ColorOptionEditor(OptionEditor):
     option_type = conf.ColorOptionType

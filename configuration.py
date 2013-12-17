@@ -242,6 +242,9 @@ class DirectoryOptionType(OptionType):
 class ColorOptionType(OptionType):
     _name = "Color"
     
+class TimezoneOptionType(OptionType):
+    _name = "Timezone"
+    
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
