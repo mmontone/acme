@@ -762,32 +762,34 @@ class ConfigurationNavigator(tk.Frame):
         
         # Configuration
         self._items = {}
-        
+        self._configs = configs
+                
         # ui
         self._left_panel = tk.Frame(self)
         
         self._selected_config = tk.StringVar()
                         
-        self._configs = tk.Listbox(self._left_panel, exportselection=0)
-        self._configs.bind('<ButtonRelease-1>', self.select_config)
-        self._configs.bind('<ButtonRelease-3>', self.configs_popup)
+        self._configs_list = tk.Listbox(self._left_panel, exportselection=0)
+        self._configs_list.bind('<ButtonRelease-1>', self.select_config)
+        self._configs_list.bind('<ButtonRelease-3>', self.configs_popup)
         
         for config in configs:
-            self._configs.insert(tk.END, config.name)
+            self._configs_list.insert(tk.END, config.name)
             
-        self._configs.select_set(0)
+        self._configs_list.select_set(0)
             
-        self._configs.pack()
+        self._configs_list.pack()
         
         self._sections = ttk.Treeview(self._left_panel)
+        self._sections.bind('<ButtonRelease-1>', self.select_section)
         self._sections.bind('<ButtonRelease-3>', self.sections_popup)
         
         ysb = ttk.Scrollbar(self._left_panel, orient='vertical', command=self._sections.yview)
         xsb = ttk.Scrollbar(self._left_panel, orient='horizontal', command=self._sections.xview)
         self._sections.configure(yscroll=ysb.set, xscroll=xsb.set)
         
-        config = configs[0]
-        sections = config.sections()
+        self._config = configs[0]
+        sections = self._config.sections()
         
         for section in sections:
             self.insert_section(section)
@@ -805,7 +807,7 @@ class ConfigurationNavigator(tk.Frame):
             print "Option" + str(option.option_type)
             option_editor = OptionEditor.for_option_type(option.option_type.__class__)
             print "Editor" + str(option_editor)
-            option_value = config.option_value(option)
+            option_value = self._config.option_value(option)
             if option_value:
                 option_editor.set_value(option_value)
                 
@@ -830,7 +832,68 @@ class ConfigurationNavigator(tk.Frame):
         self.pack()
         
     def select_config(self, ev):
-        editor = ConfigurationEditor(self, config)
+        # Grab the selected configuration
+        selection = self._configs_list.curselection()
+        self._config = self._configs[int(selection[0])]
+        
+        # Refill the sections list with the configuration sections
+        self._sections.delete(*self._sections.get_children())
+        self._items = {}
+        
+        sections = self._config.sections()
+        for section in sections:
+            self.insert_section(section)
+            
+        self._sections.selection_set(self._sections.get_children()[0])
+        
+        # Clear the right panel
+        self._right_panel.forget()
+        self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        
+        # Put the options editing on the right panel
+        row = 0
+        
+        for option in sections[0].options():
+            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
+            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
+            option_value = self._config.option_value(option)
+            if option_value:
+                option_editor.set_value(option_value)
+                
+            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
+            
+            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
+                
+            row = row + 1
+        
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+    def select_section(self, ev):
+        id = self._sections.identify_row(ev.y)
+        section = self._items[id]
+        print "Section: " + section.name
+        
+        # Clear the right panel
+        self._right_panel.forget()
+        self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        
+        # Put the options editing on the right panel
+        row = 0
+        
+        for option in section.options():
+            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
+            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
+            option_value = self._config.option_value(option)
+            if option_value:
+                option_editor.set_value(option_value)
+                
+            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
+            
+            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
+                
+            row = row + 1
+        
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)               
         
     def insert_section(self, section, parent=''):
         sid = self._sections.insert(parent, 'end', text=section.name)
@@ -966,12 +1029,12 @@ class ChoiceOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        lb = tk.Listbox(self)
+        #lb = tk.Listbox(self)
         
-        for option in self._option_schema.options():
-            lb.insert(tk.END, option)
+        #for option in self._option_schema.options():
+        #    lb.insert(tk.END, option)
             
-        lb.pack()
+        #lb.pack()
         
     def value(self):
         return self._var.get()

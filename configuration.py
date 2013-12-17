@@ -281,6 +281,24 @@ class ListOptionType(OptionType):
     def options():
         return self._options
     
+class CompoundOptionType(OptionType):
+    def __init__(self, *option_types):
+        self._option_types = option_types
+        
+    @property
+    def option_types(self):
+        return self._option_types 
+    
+    @option_types.setter
+    def option_types(self, value):
+        self._option_types = value
+        return self
+        
+class OneOfOptionType(CompoundOptionType):
+    _name = "One of"
+       
+       
+    
 class Configuration():
     
     def __init__(self, name='', schema='', **options):
