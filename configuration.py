@@ -204,7 +204,7 @@ class ConfigurationSchemaOption:
         return self.section.path() + self.name
     
 class OptionType(object):
-    _name = "Option type"
+    _name = None
     
     @classmethod
     def option_name(cls):
@@ -297,7 +297,9 @@ class CompoundOptionType(OptionType):
 class OneOfOptionType(CompoundOptionType):
     _name = "One of"
        
-       
+    
+class ManyOptionType(CompoundOptionType):
+    _name = "Many"   
     
 class Configuration():
     

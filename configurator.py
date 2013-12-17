@@ -611,7 +611,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_type = tk.StringVar()
         if option.option_type:
             self.option_type.set(option.option_type.name)
-        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        option_types = map(lambda o: o.option_name(), filter(lambda ot: ot.name, conf.OptionType.__subclasses__()))
         options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 
