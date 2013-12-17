@@ -888,21 +888,46 @@ class ConfigurationNavigator(tk.Frame):
     def sections_popup(self, ev):
         print "Sections popup"
         item = self._sections.identify_row(ev.y)
-        print "Section: " + self._items[item].name 
-         
+        section = self._items[item]
+        print "Section: " +  section.name
+                 
     def configs_popup(self, ev):
         print "Configs popup"
-        index = self._configs.nearest(ev.y)
+        index = self._configs_list.nearest(ev.y)
         
-        _, yoffset, _, height = self._configs.bbox(index)
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        
+        _, yoffset, _, height = self._configs_list.bbox(index)
         if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
             # Outside of widget.
-            print "No config"
-            return
+            popup.add_command(label="Add configuration", command=self.create_config)
+        else:
         
-        item = self._configs.get(index)
-        print "Config: " + item
+            config = self._configs_list.get(index)
+            print "Config: " + config
+                    
+            popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
+            popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
+            
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
         
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
+    
+    def create_config(self):
+        print "Create config"
+        
+    def edit_config(self, config, index):
+        print "Edit config " + str(config)
+        
+    def remove_config(self, config, index):
+        print "Remove config " + str(config)        
                 
 class AboutDialog(tk.Toplevel):
 
