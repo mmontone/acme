@@ -245,6 +245,15 @@ class ColorOptionType(OptionType):
 class TimezoneOptionType(OptionType):
     _name = "Timezone"
     
+class CountryOptionType(OptionType):
+    _name = "Country"
+    
+class LanguageOptionType(OptionType):
+    _name = "Language"
+    
+class CurrencyOptionType(OptionType):
+    _name = "Currency"
+    
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     

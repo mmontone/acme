@@ -7,6 +7,7 @@ import tkColorChooser
 import tkFileDialog
 import os
 import pytz # for timezones
+import pycountry # for countries and languages
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -747,12 +748,6 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         w.ListEditor.__init__(self, parent, listvar=self.options_var)
         set_status_message(self, "The possible option choices")
         
-class TimezoneOptionTypeEditor(OptionTypeEditor, w.ListEditor):
-    option_type = conf.TimezoneOptionType
-    
-    def __init__(self, parent, option_type):
-        OptionTypeEditor.__init__(self, parent, option_type)
-               
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
         tk.Frame.__init__(self, master)
@@ -992,6 +987,54 @@ class TimezoneOptionEditor(OptionEditor):
         lb.configure(yscroll=ysb.set)
         lb.pack(side=tk.LEFT)
         ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+class CountryOptionEditor(OptionEditor):
+    option_type = conf.CountryOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        lb = tk.Listbox(self)
+        
+        for country in pycountry.countries:
+            lb.insert(tk.END, country.name)
+            
+        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
+        lb.configure(yscroll=ysb.set)
+        lb.pack(side=tk.LEFT)
+        ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+class LanguageOptionEditor(OptionEditor):
+    option_type = conf.LanguageOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        lb = tk.Listbox(self)
+        
+        for lang in pycountry.languages:
+            lb.insert(tk.END, lang.name)
+            
+        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
+        lb.configure(yscroll=ysb.set)
+        lb.pack(side=tk.LEFT)
+        ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+class CurrencyOptionEditor(OptionEditor):
+    option_type = conf.CurrencyOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        lb = tk.Listbox(self)
+        
+        for currency in pycountry.currencies:
+            lb.insert(tk.END, currency.name)
+            
+        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
+        lb.configure(yscroll=ysb.set)
+        lb.pack(side=tk.LEFT)
+        ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)                
     
 class ColorOptionEditor(OptionEditor):
     option_type = conf.ColorOptionType
