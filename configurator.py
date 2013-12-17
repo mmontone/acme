@@ -20,11 +20,18 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.pane = tk.Frame(self)
         
         # The tree
-        self.tree = ttk.Treeview(self.pane)
-        ysb = ttk.Scrollbar(self.pane, orient='vertical', command=self.tree.yview)
-        xsb = ttk.Scrollbar(self.pane, orient='horizontal', command=self.tree.xview)
+        tr = tk.Frame(self.pane)
+        self.tree = ttk.Treeview(tr)
+        ysb = ttk.Scrollbar(tr, orient='vertical', command=self.tree.yview)
+        ysb.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        xsb = ttk.Scrollbar(tr, orient='horizontal', command=self.tree.xview)
+        xsb.pack(side=tk.BOTTOM, fill=tk.X)
+        
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         #self.tree.heading('#0', text='Configuration schemas', anchor='w')
+        
+        self.tree.pack(fill=tk.Y)
         
         self.tree.bind('<Leave>', lambda ev:configurator.status.set(''))
                 
@@ -49,7 +56,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         self.tree.selection_set(self.tree.get_children()[0])
         
-        self.tree.grid(column=0, row=0, sticky=tk.N+tk.S)
+        tr.grid(column=0, row=0, sticky=tk.N+tk.S)
         
         # The editor
         self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
