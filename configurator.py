@@ -1128,6 +1128,30 @@ class DateOptionEditor(OptionEditor):
         OptionEditor.__init__(self, master, **options)
         
         tkCalendar.Calendar(self,date="21/11/2006",dateformat="%d/%m/%Y").pack()
+       
+        
+class DatetimeOptionEditor(OptionEditor):
+    option_type = conf.DatetimeOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        tkCalendar.Calendar(self,date="21/11/2006",dateformat="%d/%m/%Y").pack()
+        
+        time = tk.Frame(self)
+        
+        self._hours_var = tk.IntVar()
+        self._minutes_var = tk.IntVar()
+        self._seconds_var = tk.IntVar()
+        
+        self._hours = tk.Spinbox(time, from_=0, to=23)
+        self._hours.pack(side=tk.LEFT)
+        
+        self._minutes = tk.Spinbox(time, from_=0, to=59)
+        self._minutes.pack(side=tk.LEFT)
+        
+        self._seconds = tk.Spinbox(time, from_=0, to=59)
+        self._seconds.pack(side=tk.LEFT)
+        time.pack()
           
 class Configurator(tk.Frame):
     def __init__(self, parent):
