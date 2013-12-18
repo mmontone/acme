@@ -952,6 +952,8 @@ class ConfigurationNavigator(tk.Frame):
         
     def edit_config(self, config, index):
         print "Edit config " + str(config)
+        editor = ConfigurationEditor(self, config, self._configs)
+        self.wait_window(editor)        
         
     def remove_config(self, config, index):
         print "Remove config " + str(config)
@@ -981,7 +983,70 @@ class ConfigurationNavigator(tk.Frame):
         print "Unset option " + str(option)
         
     def restore_option(self, option):
-        print "Restore option " + str(option)        
+        print "Restore option " + str(option) 
+        
+class ConfigurationEditor(tk.Toplevel):
+    
+    def __init__(self, parent, config, configs):
+        tk.Toplevel.__init__(self, parent)
+        
+        self._config = config
+        self._configs = configs
+        
+        self.transient(parent)
+        self.title(config.name + ' configuration')
+        
+        self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
+                                  parent.winfo_rooty()+50))
+        
+        # Name editing
+        tk.Label(self, text='Name: ').grid(row=0, column=0, sticky=tk.NW)
+        self._config_name = tk.StringVar()
+        self._config_name.set(config.name)
+        tk.Entry(self, textvariable=self._config_name).grid(row=0, column=1, sticky=tk.NW)
+        
+        # Documentation editing
+        tk.Label(self, text="Documentation:").grid(row=1, column=0, sticky=tk.W + tk.N)
+        self._config_doc = tk.Text(self, width=60, height=10)
+        self._config_doc.insert(tk.END, config.documentation)
+        self._config_doc.grid(row=1, column=1, sticky=tk.W)
+        
+        # Schema
+        tk.Label(self, text="Schema: ").grid(row=2, column=0, sticky=tk.W + tk.N)
+        self._schemas = tk.Listbox(self)
+        
+        index = 0
+        for schema in conf.list_configuration_schemas():
+            self._schemas.insert(index, schema.name)
+            if schema == config.schema:
+                self._schemas.selection_set(index)
+            index = index + 1
+        self._schemas.grid(row=2, column=1, sticky=tk.NW)
+        
+        # Parent
+        tk.Label(self, text="Parent: ").grid(row=3, column=0, sticky=tk.NW)
+        self._config_parent = tk.StringVar()
+        if config.parent:
+            self._config_parent.set(config.parent.name)
+            
+        self._config_parents = tk.OptionMenu(self, self._config_parent, *map(lambda c: c.name, configs))
+        self._config_parents.grid(row=3, column=1, sticky=tk.NW)
+        
+        # Dialog buttons
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Save", command=self.save_config)
+        set_status_message(save, "Save changes to configuration")
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        set_status_message(cancel, "Cancel the editing")
+        cancel.pack(side=tk.LEFT, padx=2)
+              
+        buttons.grid(row=4, column=1, sticky=tk.SE)
+    
+    def save_config(self):
+        print "Save config"                
+               
                 
 class AboutDialog(tk.Toplevel):
 

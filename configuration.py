@@ -16,7 +16,7 @@ def list_configuration_schemas():
     global configuration_schemas
     return configuration_schemas
 
-class ConfigurationSchema:
+class ConfigurationSchema():
     def __init__(self, name='', **args):
         self._name = name
         self._sections = []
@@ -314,6 +314,7 @@ class Configuration():
         self._schema = schema
         self._parent = options.get('parent') or None
         self._options = {}
+        self._documentation = options.get('documentation') or ''
         
     @property
     def name(self):
@@ -340,6 +341,15 @@ class Configuration():
     @parent.setter
     def parent(self, value):
         self._parent = value
+        return self
+    
+    @property
+    def documentation(self):
+        return self._documentation
+    
+    @documentation.setter
+    def documentation(self, value):
+        self._documentation = value
         return self
     
     def set_option_value(self, schema_option, value):
