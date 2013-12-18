@@ -1040,7 +1040,7 @@ class ConfigurationEditor(tk.Toplevel):
         if config.parent:
             self._config_parent.set(config.parent.name)
             
-        self._config_parents = tk.OptionMenu(self, self._config_parent, *map(lambda c: c.name, configs))
+        self._config_parents = tk.OptionMenu(self, self._config_parent, *[''] + map(lambda c: c.name, configs))
         self._config_parents.grid(row=3, column=1, sticky=tk.NW)
         
         # Dialog buttons
