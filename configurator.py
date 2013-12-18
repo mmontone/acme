@@ -949,6 +949,13 @@ class ConfigurationNavigator(tk.Frame):
     
     def create_config(self):
         print "Create config"
+        def save_config(config):
+            self._configs.append(config)
+            self._configs_list.insert(tk.END, config.name)
+            
+        editor = ConfigurationEditor(self, conf.Configuration(), 
+                                     self._configs, title='New configuration',
+                                     onsave=save_config)
         
     def edit_config(self, config, index):
         print "Edit config " + str(config)
@@ -995,7 +1002,8 @@ class ConfigurationEditor(tk.Toplevel):
         self._onsave = options.get('onsave') or None
         
         self.transient(parent)
-        self.title(config.name + ' configuration')
+        title = options.get('title') or config.name + ' configuration' 
+        self.title(title)
         
         self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
                                   parent.winfo_rooty()+50))
