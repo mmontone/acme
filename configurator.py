@@ -810,10 +810,16 @@ class ConfigurationNavigator(tk.Frame):
         row = 0
         
         for option in section.options():
-            tk.Label(self._right_panel, text=option.name).grid(row=row, column=0, padx=30, sticky=tk.W)
-            print "Option" + str(option.option_type)
+            label = tk.Label(self._right_panel, text=option.name)
+            
+            # Option label popup
+            label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
+            
+            label.grid(row=row, column=0, padx=30, sticky=tk.W)
+            
+            #print "Option" + str(option.option_type)
             option_editor = OptionEditor.for_option_type(option.option_type.__class__)
-            print "Editor" + str(option_editor)
+            #print "Editor" + str(option_editor)
             option_value = self._config.option_value(option)
             if option_value:
                 option_editor.set_value(option_value)
@@ -927,7 +933,30 @@ class ConfigurationNavigator(tk.Frame):
         print "Edit config " + str(config)
         
     def remove_config(self, config, index):
-        print "Remove config " + str(config)        
+        print "Remove config " + str(config)
+        
+    def option_popup(self, ev, option):
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        
+        popup.add_command(label="Unset", command=lambda:self.unset_option(option))
+        popup.add_command(label="Restore", command=lambda:self.restore_option(option))
+            
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
+        
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
+            
+    def unset_option(self, option):
+        print "Unset option " + str(option)
+        
+    def restore_option(self, option):
+        print "Restore option " + str(option)        
                 
 class AboutDialog(tk.Toplevel):
 
