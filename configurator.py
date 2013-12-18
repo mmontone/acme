@@ -713,7 +713,11 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         option_type = conf.OptionType.get_named(self.option_type.get())
         self.option.option_type = option_type()
         self.option.is_required = self.option_required.get() == 1
-        
+        if self._default_value_var.get() == 1:
+            self.option.default_value = self._default_value_editor.value()
+        else:
+            self.option.default_value = None
+            
         configurator.status.set(self.option.name + " option has been updated")
         
         if self._onsave:
@@ -1002,7 +1006,7 @@ class OptionEditor(object, tk.Frame):
     
     @classmethod
     def for_option_schema(cls, option_schema):
-        return cls.for_option_type(option_schema.option_type)
+        return cls.for_option_type(option_schema.option_type.__class__)
        
     @classmethod
     def for_option_type(cls, option_type):
