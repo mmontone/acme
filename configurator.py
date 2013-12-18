@@ -930,8 +930,9 @@ class ConfigurationNavigator(tk.Frame):
             popup.add_command(label="Add configuration", command=self.create_config)
         else:
         
-            config = self._configs_list.get(index)
-            print "Config: " + config
+            config_name = self._configs_list.get(index)
+            config = next((config for config in self._configs if config.name == config_name), None)
+            print "Config: " + str(config)
                     
             popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
             popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
@@ -954,6 +955,10 @@ class ConfigurationNavigator(tk.Frame):
         
     def remove_config(self, config, index):
         print "Remove config " + str(config)
+        answer = tkMessageBox.askquestion('Remove?', 'Remove ' + config.name + ' configuration?')
+        if answer == 'yes':
+            self._configs.remove(config)
+            self._configs_list.delete(index)
         
     def option_popup(self, ev, option):
         # create a menu
