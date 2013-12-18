@@ -987,11 +987,12 @@ class ConfigurationNavigator(tk.Frame):
         
 class ConfigurationEditor(tk.Toplevel):
     
-    def __init__(self, parent, config, configs):
+    def __init__(self, parent, config, configs, **options):
         tk.Toplevel.__init__(self, parent)
         
         self._config = config
         self._configs = configs
+        self._onsave = options.get('onsave') or None
         
         self.transient(parent)
         self.title(config.name + ' configuration')
@@ -1012,11 +1013,13 @@ class ConfigurationEditor(tk.Toplevel):
         self._config_doc.grid(row=1, column=1, sticky=tk.W)
         
         # Schema
+        self._all_schemas = conf.list_configuration_schemas()
+        
         tk.Label(self, text="Schema: ").grid(row=2, column=0, sticky=tk.W + tk.N)
         self._schemas = tk.Listbox(self)
         
         index = 0
-        for schema in conf.list_configuration_schemas():
+        for schema in self._all_schemas:
             self._schemas.insert(index, schema.name)
             if schema == config.schema:
                 self._schemas.selection_set(index)
@@ -1045,8 +1048,26 @@ class ConfigurationEditor(tk.Toplevel):
         buttons.grid(row=4, column=1, sticky=tk.SE)
     
     def save_config(self):
-        print "Save config"                
-               
+        print "Save config"
+        
+        self._config.name = self._config_name.get()
+        self._config.documentation = self._config_doc.get(1.0, tk.END)
+        
+        index = self._schemas.curselection()
+        schema = self._all_schemas[int(index[0])]
+        self._config.schema = schema
+        
+        if self._config_parent.get() <> '':
+            parent = next((config for config in self._configs if config.name == self._config_parent.get()), None)
+        else:
+            parent = None
+        
+        self._config.parent = parent
+        
+        if self._onsave:
+            self._onsave(self._config)
+            
+        self.destroy()              
                 
 class AboutDialog(tk.Toplevel):
 
