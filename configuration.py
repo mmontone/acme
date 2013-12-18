@@ -26,7 +26,7 @@ class ConfigurationSchema:
                 
     def section(self, section):
         self._sections.append(section)
-        section.schema = self
+        section.parent = self
         return self
     
     def sections(self):
@@ -132,7 +132,7 @@ class ConfigurationSchemaSection:
         self.parent.remove_section(self)
         
     def path(self):
-        return self._parent.path() + self.name
+        return self.parent.path() + self.name
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):

@@ -767,6 +767,7 @@ class ConfigurationNavigator(tk.Frame):
         # Configuration
         self._items = {}
         self._configs = configs
+        self._option_editors = {}
                 
         # ui
         self._left_panel = tk.Frame(self)
@@ -794,6 +795,7 @@ class ConfigurationNavigator(tk.Frame):
         
         self._config = configs[0]
         sections = self._config.sections()
+        self._section = sections[0]
         
         for section in sections:
             self.insert_section(section)
@@ -811,6 +813,7 @@ class ConfigurationNavigator(tk.Frame):
         self.pack()
         
     def insert_section_editor(self, section):
+        self._option_editors = {}
         row = 0
         
         for option in section.options():
@@ -822,13 +825,20 @@ class ConfigurationNavigator(tk.Frame):
             label.grid(row=row, column=0, padx=30, sticky=tk.W)
             
             #print "Option" + str(option.option_type)
-            option_editor = OptionEditor.for_option_type(option.option_type.__class__)
+            option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
+                        
             #print "Editor" + str(option_editor)
+                         
+            option_editor = option_editor_class(self._right_panel, option_schema=option)
+            
+            option_editor.grid(row=row, column=1, padx=10, sticky=tk.W)
+            
             option_value = self._config.option_value(option)
+            
             if option_value:
                 option_editor.set_value(option_value)
-             
-            option_editor(self._right_panel, option_schema=option).grid(row=row, column=1, padx=10, sticky=tk.W)
+            
+            self._option_editors[option] = option_editor
             
             tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
                 
@@ -836,10 +846,10 @@ class ConfigurationNavigator(tk.Frame):
             
         buttons = tk.Frame(self._right_panel)
         
-        save = tk.Button(buttons, text="Save", command=self.save_options)
+        save = tk.Button(buttons, text="Save", command=self.save_section)
         save.pack(side=tk.LEFT, padx=2)
         
-        restore = tk.Button(buttons, text="Restore", command=self.restore_options)
+        restore = tk.Button(buttons, text="Restore", command=self.restore_section)
         restore.pack(side=tk.LEFT, padx=2)
         
         buttons.grid(row=row, column=3, sticky=tk.SE)
@@ -854,6 +864,7 @@ class ConfigurationNavigator(tk.Frame):
         self._items = {}
         
         sections = self._config.sections()
+        self._section = sections[0]
         for section in sections:
             self.insert_section(section)
             
@@ -870,15 +881,15 @@ class ConfigurationNavigator(tk.Frame):
         
     def select_section(self, ev):
         id = self._sections.identify_row(ev.y)
-        section = self._items[id]
-        print "Section: " + section.name
+        self._section = self._items[id]
+        print "Section: " + self._section.name
         
         # Clear the right panel
         self._right_panel.forget()
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
         # Put the options editing on the right panel
-        self.insert_section_editor(section)
+        self.insert_section_editor(self._section)
         
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)               
         
@@ -889,11 +900,16 @@ class ConfigurationNavigator(tk.Frame):
         for subsection in section.subsections():
             self.insert_section(subsection, sid)
             
-    def save_options(self):
-        print "Save options"
+    def save_section(self):
+        for option, editor in self._option_editors.iteritems():
+            if editor.value_changed():
+                print "Setting option " + str(option.path()) + " value to " + str(editor.value())
+                self._config.set_option_value(option, editor.value())
+            
+        configurator.status.set('Section saved')
         
-    def restore_options(self):
-        print "Restore options"
+    def restore_section(self):
+        print "Restore section"
         
     def sections_popup(self, ev):
         print "Sections popup"
@@ -1019,47 +1035,80 @@ class StringOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        self._var = tk.StringVar()
+        self._initial_value = ''
         if self._option_schema and self._option_schema.default_value:
-            self._var.set(self._option_schema.default_value)
+            self._initial_value = self._option_schema.default_value
+             
+        self._var = tk.StringVar()
+        self._var.set(self._initial_value)
             
         entry = tk.Entry(self, textvariable=self._var)
         entry.pack()
         
     def value(self):
         return self._var.get()
+    
+    def set_value(self, value):
+        self._var.set(value)
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class NumberOptionEditor(OptionEditor):
     option_type = conf.NumberOptionType
     
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
-                
-        self._var = tk.StringVar()
+        
+        self._initial_value = None
         if self._option_schema and self._option_schema.default_value:
-            self._var.set(str(self._option_schema.default_value))
+            self._initial_value = self._option_schema.default_value
+            
+        self._var = tk.StringVar()
+        if self._initial_value:
+            self._var.set(str(self._initial_value))
         
         sb = tk.Spinbox(self, textvariable=self._var)
         sb.pack()
         
     def value(self):
-        return int(self._var.get())
+        value = self._var.get()
+        if value <> '':
+            return int(self._var.get())
+        else:
+            return None
+    
+    def set_value(self, value):
+        self._var.set(value)
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class BooleanOptionEditor(OptionEditor):
     option_type = conf.BooleanOptionType
     
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
-                
-        self._var = tk.IntVar()
+        
+        self._initial_value = False
+        
         if self._option_schema and self._option_schema.default_value:
-            self._var.set(1)
+            self._initial_value = True        
+        
+        self._var = tk.IntVar()
+        self._var.set(self._initial_value)
                         
         cb = tk.Checkbutton(self, variable=self._var)
         cb.pack()
         
     def value(self):
         return self._var.get() == 1
+    
+    def set_value(self, value):
+        self._var.set(1 if value else 0)
+    
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class ChoiceOptionEditor(OptionEditor):
     option_type = conf.ChoiceOptionType
@@ -1251,14 +1300,20 @@ class DateOptionEditor(OptionEditor):
         self._calendar.pack()
         
     def value(self):
-        return self._calendar.dt       
+        return self._calendar.dt
         
 class DatetimeOptionEditor(OptionEditor):
     option_type = conf.DatetimeOptionType
     
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
-        tkCalendar.Calendar(self,date="21/11/2006",dateformat="%d/%m/%Y").pack()
+        
+        if self._option_schema and self._option_schema.default_value:
+            date = self._option_schema.default_value
+        else:
+            date = None
+            
+        tkCalendar.Calendar(self,date=date,dateformat="%d/%m/%Y").pack()
         
         time = tk.Frame(self)
         
@@ -1328,9 +1383,11 @@ class Configurator(tk.Frame):
         sch1.section(s1)
         
         host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
+        host.default_value = 'http://localhost'
         s1.add_option(host)
         
         port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
+        port.default_value = 8080
         s1.add_option(port)
         
         s2 = conf.ConfigurationSchemaSection("Authentication")
