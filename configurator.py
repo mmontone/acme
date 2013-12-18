@@ -1058,6 +1058,9 @@ class BooleanOptionEditor(OptionEditor):
         cb = tk.Checkbutton(self, variable=self._var)
         cb.pack()
         
+    def value(self):
+        return self._var.get() == 1
+        
 class ChoiceOptionEditor(OptionEditor):
     option_type = conf.ChoiceOptionType
     
@@ -1080,15 +1083,27 @@ class TimezoneOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        lb = tk.Listbox(self)
+        self._lb = tk.Listbox(self)
         
+        index = 0
         for tz in pytz.all_timezones:
-            lb.insert(tk.END, str(tz))
+            self._lb.insert(index, str(tz))
+            if self._option_schema and self._option_schema.default_value == str(tz):
+                self._lb.selection_set(index)
+            index = index + 1           
             
-        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
-        lb.configure(yscroll=ysb.set)
-        lb.pack(side=tk.LEFT)
+        ysb = ttk.Scrollbar(self, orient='vertical', command=self._lb.yview)
+        self._lb.configure(yscroll=ysb.set)
+        self._lb.pack(side=tk.LEFT)
         ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    
+    def value(self):
+        selections = self._lb.curselection()
+        if len(selections) < 1:
+            return None
+        else:
+            selection = pytz.all_timezones[int(selections[0])]
+            return selection
         
 class CountryOptionEditor(OptionEditor):
     option_type = conf.CountryOptionType
@@ -1145,14 +1160,16 @@ class ColorOptionEditor(OptionEditor):
         OptionEditor.__init__(self, master, **options)
         
         self._var = tk.StringVar()
-        self._var.set('No color selected')
-        
-        tk.Label(self, textvariable=self._var).pack()
+                
+        tk.Entry(self, textvariable=self._var).pack()
         tk.Button(self, text='Select Color', command=self.getColor).pack()
         
     def getColor(self):
         color = tkColorChooser.askcolor()
         self._var.set(color)
+        
+    def value(self):
+        return self._var.get()
         
 class FilenameOptionEditor(OptionEditor):
     option_type = conf.FilenameOptionType
@@ -1225,8 +1242,16 @@ class DateOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        tkCalendar.Calendar(self,date="21/11/2006",dateformat="%d/%m/%Y").pack()
-       
+        if self._option_schema and self._option_schema.default_value:
+            date = self._option_schema.default_value
+        else:
+            date = None
+        
+        self._calendar = tkCalendar.Calendar(self,date=date,dateformat="%d/%m/%Y")
+        self._calendar.pack()
+        
+    def value(self):
+        return self._calendar.dt       
         
 class DatetimeOptionEditor(OptionEditor):
     option_type = conf.DatetimeOptionType
