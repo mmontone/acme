@@ -44,6 +44,12 @@ class ConfigurationSchema():
     def parents(self):
         return self._parents
     
+    def set_parents(self, parents):
+        self._parents = parents
+    
+    def add_parent(self, parent):
+        self._parents.append(parent)
+        
     @property
     def name(self):
         return self._name
@@ -506,12 +512,34 @@ class ConfigurationSchemasXMLUnserializer():
     def __init__(self, **cfg):
         self._schemas = []
         self._tree = None
-        
+                
     def read(self, source):       
         self._tree = et.parse(source)
-        
+        self.unserialize()
+        return self._schemas
+                
     def unserialize(self):
-        pass
-        
+        for schema in self._tree.getiterator('schema'):
+            name = schema.attrib['name']
+            doc = schema.findtext('documentation')
+            
+            sch = ConfigurationSchema(name, documentation=doc)
+            
+            for parent in schema.getiterator('parent'):
+                sch.add_parent(get_configuration_schema(parent.attrib['name']))
+                
+            for section in schema.getiterator('section'):
+                sch.section(self.unserialize_section(section))
+                
+            self._schemas.append(sch)
+            
+        return self._schemas            
+            
+    def unserialize_section(self, section_elem):
+        name = section_elem.attrib['name']
+        doc = section_elem.findtext('documentation')
+        section = ConfigurationSchemaSection(name, documentation=doc)
+        return section
+                
 class YAMLSerializer(Serializer):
     pass

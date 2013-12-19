@@ -294,7 +294,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.wait_window(dialog)
         
     def load_schemas(self):
-        print "Load schemas"
+        def load_schemas(schemas):
+            print "Load schemas"
+            
+        dialog = LoadSchemasDialog(self, onload=load_schemas)
+        self.wait_window(dialog)
         
 class SaveSchemasDialog(tk.Toplevel):
     
@@ -339,7 +343,56 @@ class SaveSchemasDialog(tk.Toplevel):
         
     def get_filename(self):
         filename = tkFileDialog.askopenfilename()
-        self._filename.set(filename)                 
+        self._filename.set(filename)
+        
+class LoadSchemasDialog(tk.Toplevel):
+    
+    def __init__(self, master, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        self._schemas = []
+        self._onload= options.get('onload') or None
+        
+        self.title('Load schemas')
+        
+        tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
+        
+        default_schema_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.schema'
+        
+        self._filename = tk.StringVar()
+        self._filename.set(default_schema_filename)
+        tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
+        tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
+        
+        tk.Label(self, text='Format: ').grid(row=1, column=0, sticky=tk.NW)
+        
+        self._format = tk.StringVar()
+        self._format.set('xml')
+               
+        tk.OptionMenu(self, self._format, 'xml', 'yaml').grid(row=1, column=1, sticky=tk.NW)
+        
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Load", command=self.load_schemas)
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
+        
+        buttons.grid(row=2, column=1, sticky=tk.SE)
+        
+    def load_schemas(self):
+        print "Load schemas"
+        unserializer = conf.ConfigurationSchemasXMLUnserializer()
+        schemas = unserializer.read(self._filename.get())
+        
+        if self._onload:
+            self._onload(schemas)
+            
+        self.destroy()
+        
+    def get_filename(self):
+        filename = tkFileDialog.askopenfilename()
+        self._filename.set(filename)                  
             
 class ConfigurationSchemaEditor(tk.Frame):
     def __init__(self, master, schema, **options):
