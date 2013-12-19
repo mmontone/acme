@@ -81,6 +81,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         popup = tk.Menu(self, tearoff=0)
         popup.add_command(label="New configuration schema", command=self.create_schema)
         popup.add_command(label="Save schemas", command=self.save_schemas)
+        popup.add_command(label="Load schemas", command=self.load_schemas)
         popup.add_separator()
         popup.add_command(label="Dismiss")
             
@@ -282,10 +283,18 @@ class ConfigurationSchemaNavigator(tk.Frame):
     
     def save_schemas(self):
         def save_schemas(schemas, filename, format):
-            print "Save schemas"
+            # Serialize the schemas
+            serializer = conf.ConfigurationSchemasXMLSerializer()
+            for schema in schemas:
+                serializer.serialize(schema)
+            print filename
+            serializer.write(filename)
             
         dialog = SaveSchemasDialog(self, self.schemas, onsave=save_schemas)
         self.wait_window(dialog)
+        
+    def load_schemas(self):
+        print "Load schemas"
         
 class SaveSchemasDialog(tk.Toplevel):
     
@@ -324,6 +333,9 @@ class SaveSchemasDialog(tk.Toplevel):
         
     def save_schemas(self):
         print "Save schemas"
+        if self._onsave:
+            self._onsave(self._schemas, self._filename.get(), self._format.get())
+        self.destroy()
         
     def get_filename(self):
         filename = tkFileDialog.askopenfilename()

@@ -1,3 +1,6 @@
+#import xml.etree.ElementTree as et
+from lxml import etree as et
+
 configuration_schemas = []
 
 def get_configuration_schema(name):
@@ -396,3 +399,26 @@ class ConfigurationOption():
 
     def __eq__(self, other):
         return self.path() == other.path()
+    
+class Serializer:
+    pass
+
+class XMLSerializer(Serializer):
+    pass
+
+class ConfigurationSchemasXMLSerializer(XMLSerializer):
+    def __init__(self):
+        self._root =  et.Element("schemas")
+          
+    def serialize(self, schema):
+        schema_element = et.SubElement(self._root, "schema")
+        schema_element.attrib['name'] = schema.name
+        doc = et.SubElement(schema_element, 'documentation')
+        doc.text = schema.documentation
+           
+    def write(self, recipient):
+        tree = et.ElementTree(self._root)
+        tree.write(recipient, pretty_print=True)        
+        
+class YAMLSerializer(Serializer):
+    pass
