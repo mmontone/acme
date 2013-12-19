@@ -562,6 +562,9 @@ class ConfigurationSchemasXMLUnserializer():
         for option in section_elem.iterchildren(tag='option'):
             section.add_option(self.unserialize_option(option))
             
+        for subsection in section_elem.iterchildren(tag='section'):
+            section.add_section(self.unserialize_section(subsection))
+            
         return section
     
     def unserialize_option(self, option_elem):
