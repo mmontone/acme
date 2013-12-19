@@ -436,29 +436,24 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         schema_element.attrib['name'] = schema.name
         doc = et.SubElement(schema_element, 'documentation')
         doc.text = schema.documentation
-        parents = et.SubElement(schema_element, 'parents')
         for parent in schema.parents():
-            parent_element = et.SubElement(parents, 'parent')
+            parent_element = et.SubElement(schema_element, 'parent')
             parent_element.attrib['name'] = parent.name
             
-        sections = et.SubElement(schema_element, 'sections')
         for section in schema.sections():
-            self.serialize_section(section, sections)
+            self.serialize_section(section, schema_element)
                         
     def serialize_section(self, section, sections):
         section_element = et.SubElement(sections, 'section')
         section_element.attrib['name'] = section.name
         doc = et.SubElement(section_element, 'documentation')
         doc.text = section.documentation
-        
-        options = et.SubElement(section_element, 'options')
-        
+               
         for option in section.options():
-            self.serialize_option(option, options)
+            self.serialize_option(option, section_element)
         
-        subsections = et.SubElement(section_element, 'sections')
         for subsection in section.subsections():
-            self.serialize_section(subsection, subsections)
+            self.serialize_section(subsection, section_element)
     
     def serialize_option(self, option, options):
         option_elem = et.SubElement(options, 'option')
@@ -504,7 +499,19 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
             
     def write(self, recipient):
         tree = et.ElementTree(self._root)
-        tree.write(recipient, pretty_print=True)        
+        tree.write(recipient, pretty_print=True)
+        
+class ConfigurationSchemasXMLUnserializer():
+    
+    def __init__(self, **cfg):
+        self._schemas = []
+        self._tree = None
+        
+    def read(self, source):       
+        self._tree = et.parse(source)
+        
+    def unserialize(self):
+        pass
         
 class YAMLSerializer(Serializer):
     pass
