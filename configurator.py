@@ -1104,7 +1104,10 @@ class ConfigurationNavigator(tk.Frame):
         self.wait_window(dialog)
         
     def save_configs(self):
-        print "Save configs"
+        def save_configs(configs):
+            print "Save configs"
+        dialog = SaveConfigurationsDialog(self, self._configs, onsave=save_configs)
+        self.wait_window(dialog)
         
     def edit_config(self, config, index):
         print "Edit config " + str(config)
@@ -1269,6 +1272,51 @@ class LoadConfigurationsDialog(tk.Toplevel):
         if self._onload:
             self._onload(configs)
             
+        self.destroy()
+        
+    def get_filename(self):
+        filename = tkFileDialog.askopenfilename()
+        self._filename.set(filename)
+        
+class SaveConfigurationsDialog(tk.Toplevel):
+    
+    def __init__(self, master, configs, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        self._configs = configs
+        self._onsave = options.get('onsave') or None
+        
+        self.title('Save configs')
+        
+        tk.Label(self, text='Save to: ').grid(row=0, column=0, sticky=tk.NW)
+        
+        default_config_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.config'
+        
+        self._filename = tk.StringVar()
+        self._filename.set(default_config_filename)
+        tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
+        tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
+        
+        tk.Label(self, text='Format: ').grid(row=1, column=0, sticky=tk.NW)
+        
+        self._format = tk.StringVar()
+        self._format.set('xml')
+               
+        tk.OptionMenu(self, self._format, 'xml', 'yaml').grid(row=1, column=1, sticky=tk.NW)
+        
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Save", command=self.save_configs)
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
+        
+        buttons.grid(row=2, column=1, sticky=tk.SE)
+        
+    def save_configs(self):
+        print "Save configs"
+        if self._onsave:
+            self._onsave(self._configs, self._filename.get(), self._format.get())
         self.destroy()
         
     def get_filename(self):
