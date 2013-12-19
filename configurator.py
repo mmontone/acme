@@ -144,8 +144,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         if tkMessageBox.askquestion("Remove?", "Remove " + schema.name + " configuration schema?") == 'yes':
             schema.remove
             self.tree.delete(id)
-            del self.items[id]
-            
+            del self.items[id]            
             
     def select_section(self, ev):
         item_id = str(self.tree.focus())
@@ -982,7 +981,7 @@ class ConfigurationNavigator(tk.Frame):
         
         buttons.grid(row=row, column=3, sticky=tk.SE)
         
-    def select_config(self, ev):
+    def select_config(self, ev=None):
         # Grab the selected configuration
         selection = self._configs_list.curselection()
         self._config = self._configs[int(selection[0])]
@@ -1056,6 +1055,8 @@ class ConfigurationNavigator(tk.Frame):
         if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
             # Outside of widget.
             popup.add_command(label="Add configuration", command=self.create_config)
+            popup.add_command(label="Save configurations", command=self.save_configs)
+            popup.add_command(label="Load configurations", command=self.load_configs)
         else:
         
             config_name = self._configs_list.get(index)
@@ -1082,9 +1083,28 @@ class ConfigurationNavigator(tk.Frame):
             self._configs.append(config)
             self._configs_list.insert(tk.END, config.name)
                         
-        editor = ConfigurationEditor(self, conf.Configuration(), 
-                                     self._configs, title='New configuration',
-                                     onsave=save_config)
+        ConfigurationEditor(self, conf.Configuration(), 
+                                  self._configs, title='New configuration',
+                                  onsave=save_config)
+    def load_configs(self):
+        def load_configs(configs):
+            print "Load configs"
+            
+            self._configs_list.delete(0, tk.END)
+            self._configs = []
+            
+            for config in configs:
+                self._configs.append(config)
+                self._configs_list.append(config.name)
+                
+            self._configs_list.selection_set(0)
+            self.select_section()
+                
+        dialog = LoadConfigurationsDialog(self, onload=load_configs)
+        self.wait_window(dialog)
+        
+    def save_configs(self):
+        print "Save configs"
         
     def edit_config(self, config, index):
         print "Edit config " + str(config)
@@ -1204,7 +1224,56 @@ class ConfigurationEditor(tk.Toplevel):
         if self._onsave:
             self._onsave(self._config)
             
-        self.destroy()              
+        self.destroy()
+        
+class LoadConfigurationsDialog(tk.Toplevel):
+    
+    def __init__(self, master, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        self._configs = []
+        self._onload= options.get('onload') or None
+        
+        self.title('Load configs')
+        
+        tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
+        
+        default_config_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.config'
+        
+        self._filename = tk.StringVar()
+        self._filename.set(default_config_filename)
+        tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
+        tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
+        
+        tk.Label(self, text='Format: ').grid(row=1, column=0, sticky=tk.NW)
+        
+        self._format = tk.StringVar()
+        self._format.set('xml')
+               
+        tk.OptionMenu(self, self._format, 'xml', 'yaml').grid(row=1, column=1, sticky=tk.NW)
+        
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Load", command=self.load_configs)
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
+        
+        buttons.grid(row=2, column=1, sticky=tk.SE)
+        
+    def load_configs(self):
+        print "Load configs"
+        unserializer = conf.ConfigurationsXMLUnserializer()
+        configs = unserializer.read(self._filename.get())
+        
+        if self._onload:
+            self._onload(configs)
+            
+        self.destroy()
+        
+    def get_filename(self):
+        filename = tkFileDialog.askopenfilename()
+        self._filename.set(filename)              
                 
 class AboutDialog(tk.Toplevel):
 
