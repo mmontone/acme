@@ -144,6 +144,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         if tkMessageBox.askquestion("Remove?", "Remove " + schema.name + " configuration schema?") == 'yes':
             schema.remove
             self.tree.delete(id)
+            del self.items[id]
             
             
     def select_section(self, ev):
@@ -297,7 +298,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         def load_schemas(schemas):
             print "Load schemas"
             
-            self.tree.delete(*self.items)
+            self.tree.delete(*self.tree.get_children())
             self.items = {}
             self.editor.grid_forget()
             
