@@ -297,6 +297,18 @@ class ConfigurationSchemaNavigator(tk.Frame):
         def load_schemas(schemas):
             print "Load schemas"
             
+            self.tree.delete(*self.items)
+            self.items = {}
+            self.editor.grid_forget()
+            
+            for schema in schemas:
+                self.insert_schema(schema)
+                
+            self.tree.selection_set(self.tree.get_children()[0])
+        
+            self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
+            self.editor.grid(column=1, row=0)
+                
         dialog = LoadSchemasDialog(self, onload=load_schemas)
         self.wait_window(dialog)
         

@@ -221,30 +221,45 @@ class OptionType(object):
     
     @classmethod
     def get_named(cls, name):
-        return next((option_type for option_type in cls.__subclasses__() if option_type.option_name() == name), None)
+        option_type = next((option_type for option_type in cls.__subclasses__() if option_type.option_name() == name), None)
+        if not option_type:
+            raise Exception('No option type named ' + name)
+        return option_type
     
     @property
     def name(self):
         return self.__class__.option_name()
+    
+    def parse_value(self, value):
+        return value
+    
+    def unparse_value(self, value):
+        return str(value)
    
 class StringOptionType(OptionType):
     _name = "String"
     
     def accept(self, visitor):
-        visitor.visit_StringOptionType(self)
+        return visitor.visit_StringOptionType(self)
     
 class NumberOptionType(OptionType):
     _name = "Number"
     
     def accept(self, visitor):
-        visitor.visit_NumberOptionType(self)
+        return visitor.visit_NumberOptionType(self)
+        
+    def parse_value(self, value):
+        return int(value)
     
 class BooleanOptionType(OptionType):
     _name = "Boolean"
     
     def accept(self, visitor):
-        visitor.visit_BooleanOptionType(self)
-    
+        return visitor.visit_BooleanOptionType(self)
+        
+    def parse_value(self, value):
+        return value == 'True'
+   
 class EmailOptionType(OptionType):
     _name = "Email"
     
@@ -255,7 +270,7 @@ class FilenameOptionType(OptionType):
     _name = "Filename"
     
     def accept(self, visitor):
-        visitor.visit_FilenameOptionType(self)
+        return visitor.visit_FilenameOptionType(self)
     
 class DirectoryOptionType(OptionType):
     _name = "Directory"
@@ -264,7 +279,7 @@ class ColorOptionType(OptionType):
     _name = "Color"
     
     def accept(self, visitor):
-        visitor.visit_ColorOptionType(self)
+        return visitor.visit_ColorOptionType(self)
     
 class TimezoneOptionType(OptionType):
     _name = "Timezone"
@@ -288,7 +303,7 @@ class DatetimeOptionType(OptionType):
     _name = "Datetime"
     
     def accept(self, visitor):
-        visitor.visit_DatetimeOptionType(self)
+        return visitor.visit_DatetimeOptionType(self)
     
 class ChoiceOptionType(OptionType):
     _name = "Choice"
@@ -299,8 +314,11 @@ class ChoiceOptionType(OptionType):
     def options(self):
         return self._options
     
+    def add_option(self, option):
+        self._options.append(option)
+    
     def accept(self, visitor):
-        visitor.visit_ChoiceOptionType(self)
+        return visitor.visit_ChoiceOptionType(self)
     
 class ListOptionType(OptionType):
     _name = "List"
@@ -472,7 +490,7 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         required.text = 'True' if option.is_required else 'False'
         if option.default_value:
             default_value = et.SubElement(option_elem, 'default')
-            default_value.text = str(option.default_value)
+            default_value.text = option.option_type.unparse_value(option.default_value)
     
     def serialize_option_type(self, option_type, element):
         element.attrib['name'] = option_type.name
@@ -519,16 +537,16 @@ class ConfigurationSchemasXMLUnserializer():
         return self._schemas
                 
     def unserialize(self):
-        for schema in self._tree.getiterator('schema'):
+        for schema in self._tree.getroot():
             name = schema.attrib['name']
             doc = schema.findtext('documentation')
             
             sch = ConfigurationSchema(name, documentation=doc)
             
-            for parent in schema.getiterator('parent'):
+            for parent in schema.iterchildren(tag='parent'):
                 sch.add_parent(get_configuration_schema(parent.attrib['name']))
                 
-            for section in schema.getiterator('section'):
+            for section in schema.iterchildren(tag='section'):
                 sch.section(self.unserialize_section(section))
                 
             self._schemas.append(sch)
@@ -538,8 +556,60 @@ class ConfigurationSchemasXMLUnserializer():
     def unserialize_section(self, section_elem):
         name = section_elem.attrib['name']
         doc = section_elem.findtext('documentation')
+        print "Unserializing section " + name
         section = ConfigurationSchemaSection(name, documentation=doc)
+        
+        for option in section_elem.iterchildren(tag='option'):
+            section.add_option(self.unserialize_option(option))
+            
         return section
-                
+    
+    def unserialize_option(self, option_elem):
+        name = option_elem.attrib['name']
+        doc = option_elem.findtext('documentation')
+        is_required = option_elem.findtext('required')
+        default_value = option_elem.findtext('default')
+        option_type_elem = option_elem.find('type')
+        option_type = self.unserialize_option_type(option_type_elem)
+        
+        print name + ":" + str(option_type)
+        
+        option = ConfigurationSchemaOption(name, option_type, documentation=doc)
+        if default_value:
+            option.default_value = option_type.parse_value(default_value)
+        return option
+        
+    def unserialize_option_type(self, option_type_elem):
+        self._option_type_elem = option_type_elem
+        
+        name = option_type_elem.attrib['name']
+        option_type_class = OptionType.get_named(name)
+        
+        option_type = option_type_class()
+        return option_type.accept(self)
+    
+    def visit_NumberOptionType(self, option_type):
+        return option_type
+    
+    def visit_StringOptionType(self, option_type):
+        return option_type
+    
+    def visit_BooleanOptionType(self, option_type):
+        return option_type
+    
+    def visit_FilenameOptionType(self, option_type):
+        return option_type
+    
+    def visit_ChoiceOptionType(self, option_type):
+        for option in self._option_type_elem.iterchildren(tag='option'):
+            option_type.add_option(option.attrib['value'])
+        return option_type
+    
+    def visit_DatetimeOptionType(self, option_type):
+        return option_type
+    
+    def visit_ColorOptionType(self, option_type):
+        return option_type
+    
 class YAMLSerializer(Serializer):
     pass
