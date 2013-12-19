@@ -224,11 +224,20 @@ class OptionType(object):
 class StringOptionType(OptionType):
     _name = "String"
     
+    def accept(self, visitor):
+        visitor.visit_StringOptionType(self)
+    
 class NumberOptionType(OptionType):
     _name = "Number"
     
+    def accept(self, visitor):
+        visitor.visit_NumberOptionType(self)
+    
 class BooleanOptionType(OptionType):
     _name = "Boolean"
+    
+    def accept(self, visitor):
+        visitor.visit_BooleanOptionType(self)
     
 class EmailOptionType(OptionType):
     _name = "Email"
@@ -239,11 +248,17 @@ class URIOptionType(OptionType):
 class FilenameOptionType(OptionType):
     _name = "Filename"
     
+    def accept(self, visitor):
+        visitor.visit_FilenameOptionType(self)
+    
 class DirectoryOptionType(OptionType):
     _name = "Directory"
     
 class ColorOptionType(OptionType):
     _name = "Color"
+    
+    def accept(self, visitor):
+        visitor.visit_ColorOptionType(self)
     
 class TimezoneOptionType(OptionType):
     _name = "Timezone"
@@ -266,6 +281,9 @@ class TimeOptionType(OptionType):
 class DatetimeOptionType(OptionType):
     _name = "Datetime"
     
+    def accept(self, visitor):
+        visitor.visit_DatetimeOptionType(self)
+    
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
@@ -274,6 +292,9 @@ class ChoiceOptionType(OptionType):
         
     def options(self):
         return self._options
+    
+    def accept(self, visitor):
+        visitor.visit_ChoiceOptionType(self)
     
 class ListOptionType(OptionType):
     _name = "List"
@@ -444,11 +465,42 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         option_elem.attrib['name'] = option.name
         doc = et.SubElement(option_elem, 'documentation')
         doc.text = option.documentation
+        option_type = et.SubElement(option_elem, 'type')
+        self.serialize_option_type(option.option_type, option_type)
         required = et.SubElement(option_elem, 'required')
         required.text = 'True' if option.is_required else 'False'
         if option.default_value:
             default_value = et.SubElement(option_elem, 'default')
             default_value.text = str(option.default_value)
+    
+    def serialize_option_type(self, option_type, element):
+        element.attrib['name'] = option_type.name
+        self._option_elem = element
+        
+        option_type.accept(self)
+    
+    def visit_StringOptionType(self, option_type):
+        pass
+            
+    def visit_NumberOptionType(self, option_type):
+        pass
+    
+    def visit_BooleanOptionType(self, option_type):
+        pass
+    
+    def visit_FilenameOptionType(self, option_type):
+        pass
+    
+    def visit_DatetimeOptionType(self, option_type):
+        pass
+    
+    def visit_ColorOptionType(self, option_type):
+        pass
+    
+    def visit_ChoiceOptionType(self, option_type):
+        for option in option_type.options():
+            opt = et.SubElement(self._option_elem, 'option')
+            opt.attrib['value'] = option     
             
     def write(self, recipient):
         tree = et.ElementTree(self._root)
