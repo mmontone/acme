@@ -1575,7 +1575,12 @@ class FilenameOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
+        self._initial_value = ''
+        if self._option_schema and self._option_schema.default_value:
+            self._initial_value = self._option_schema.default_value
+             
         self._var = tk.StringVar()
+        self._var.set(self._initial_value)
             
         tk.Entry(self, textvariable=self._var).pack()
         tk.Button(self, text='Select file', command=self.getFilename).pack()
@@ -1583,6 +1588,15 @@ class FilenameOptionEditor(OptionEditor):
     def getFilename(self):
         filename = tkFileDialog.askopenfilename()
         self._var.set(filename)
+        
+    def value(self):
+        return self._var.get()
+    
+    def set_value(self, value):
+        self._var.set(value)
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class DirectoryOptionEditor(OptionEditor):
     option_type = conf.DirectoryOptionType
@@ -1658,11 +1672,12 @@ class DatetimeOptionEditor(OptionEditor):
         OptionEditor.__init__(self, master, **options)
         
         if self._option_schema and self._option_schema.default_value:
-            date = self._option_schema.default_value
+            self._date = self._option_schema.default_value
         else:
-            date = None
+            self._date = None
             
-        tkCalendar.Calendar(self,date=date,dateformat="%d/%m/%Y").pack()
+        self._calendar = tkCalendar.Calendar(self,date=self._date,dateformat="%d/%m/%Y")
+        self._calendar.pack()
         
         time = tk.Frame(self)
         
@@ -1679,7 +1694,17 @@ class DatetimeOptionEditor(OptionEditor):
         self._seconds = tk.Spinbox(time, from_=0, to=59)
         self._seconds.pack(side=tk.LEFT)
         time.pack()
-          
+        
+    def value(self):
+        return self._calendar.dt
+    
+    def set_value(self, value):
+        self._calendar.dt = value
+        self._calendar.showmonth()
+    
+    def value_changed(self):
+        return self._calendar.dt <> self._date
+    
 class Configurator(tk.Frame):
     def __init__(self, parent):
         

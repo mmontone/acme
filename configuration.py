@@ -1,5 +1,6 @@
 #import xml.etree.ElementTree as et
 from lxml import etree as et
+import datetime
 
 configuration_schemas = []
 
@@ -335,6 +336,9 @@ class DatetimeOptionType(OptionType):
     
     def accept(self, visitor):
         return visitor.visit_DatetimeOptionType(self)
+    
+    def unparse_value(self, string):
+        return datetime.strptime(string, '%d/%m/%Y')
     
 class ChoiceOptionType(OptionType):
     _name = "Choice"
