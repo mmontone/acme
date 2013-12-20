@@ -1095,10 +1095,10 @@ class ConfigurationNavigator(tk.Frame):
             
             for config in configs:
                 self._configs.append(config)
-                self._configs_list.append(config.name)
+                self._configs_list.insert(tk.END, config.name)
                 
             self._configs_list.selection_set(0)
-            self.select_section()
+            self.select_config()
                 
         dialog = LoadConfigurationsDialog(self, onload=load_configs)
         self.wait_window(dialog)

@@ -76,6 +76,14 @@ class ConfigurationSchema():
     
     def path(self):
         return (self.name,)
+    
+    def option_in_path(self, path):
+        print path[0] + ':' + self.name
+        assert(path[0] == self.name)
+        section = next((s for s in self._sections if s.name == path[1]), None)
+        if not section:
+            raise Exception('Section ' + path[1] + ' not found')
+        return section.option_in_path(path[1:])
         
 class ConfigurationSchemaSection:
     def __init__(self, name='', **args):
@@ -142,6 +150,26 @@ class ConfigurationSchemaSection:
         
     def path(self):
         return self.parent.path() + (self.name,)
+    
+    def option_in_path(self, path):
+        assert(path[0] == self.name)
+        
+        if len(path) > 2:
+            # There are subsections in path
+            subsection = next((s for s in self._subsections if s.name == path[1]), None)
+            
+            if not subsection:
+                raise Exception('Subsection not found ' + path[1])
+            
+            return subsection.option_in_path(path[1:])
+        else:
+            # Find the option
+            option = next((o for o in self._options if o.name == path[1]), None)
+            
+            if not option:
+                raise Exception('Option not found ' + path[1])
+            
+            return option
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
@@ -492,7 +520,43 @@ class ConfigurationsXMLSerializer(XMLSerializer):
        
     def write(self, recipient):
         tree = et.ElementTree(self._root)
-        tree.write(recipient, pretty_print=True)        
+        tree.write(recipient, pretty_print=True)
+        
+class ConfigurationsXMLUnserializer():
+    def __init__(self):
+        self._configs = []
+                   
+    def read(self, source):       
+        self._tree = et.parse(source)
+        self.unserialize()
+        return self._configs
+                
+    def unserialize(self):
+        for config in self._tree.getroot():
+            name = config.attrib['name']
+            doc = config.findtext('documentation')
+                       
+            schema_name = config.find('schema').attrib['name']
+            schema = get_configuration_schema(schema_name)
+            
+            cfg = Configuration(name, schema, documentation=doc)
+            
+            parent = config.find('parent')
+            if parent:
+                # Install the parent name for the moment
+                # Not the parent itself, because it isnt available
+                cfg.parent = parent.attrib['name']
+                       
+            for option in config.iterchildren(tag='option'):
+                path = option.attrib['path'].split('.')
+                opt = schema.option_in_path(path)
+                value = opt.option_type.parse_value(option.attrib['value'])
+                #print 'Setting ' + str(opt) + ' value: ' + str(value)
+                cfg.set_option_value(opt, value)
+                
+            self._configs.append(cfg)
+                  
+        return self._configs          
 
 class ConfigurationSchemasXMLSerializer(XMLSerializer):
     def __init__(self):
