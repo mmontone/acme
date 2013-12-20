@@ -75,7 +75,7 @@ class ConfigurationSchema():
         return self.name 
     
     def path(self):
-        return self.name
+        return (self.name,)
         
 class ConfigurationSchemaSection:
     def __init__(self, name='', **args):
@@ -141,7 +141,7 @@ class ConfigurationSchemaSection:
         self.parent.remove_section(self)
         
     def path(self):
-        return self.parent.path() + self.name
+        return self.parent.path() + (self.name,)
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
@@ -210,7 +210,10 @@ class ConfigurationSchemaOption:
         return self
     
     def path(self):
-        return self.section.path() + self.name
+        return self.section.path() + (self.name,)
+    
+    def path_string(self):
+        return '.'.join(self.path())
     
 class OptionType(object):
     _name = None
@@ -411,6 +414,9 @@ class Configuration():
         
     def sections(self):
         return self._schema.sections()
+    
+    def options(self):
+        return self._options.values()
         
 class ConfigurationOption():
     
@@ -428,6 +434,10 @@ class ConfigurationOption():
         return self
     
     @property
+    def name(self):
+        return self._schema.name
+    
+    @property
     def value(self):
         return self._value
     
@@ -438,6 +448,9 @@ class ConfigurationOption():
     
     def path(self):
         return self.schema.path()
+    
+    def path_string(self):
+        return self.schema.path_string()
         
     def __hash__(self):
         return hash(self.path())
@@ -445,11 +458,41 @@ class ConfigurationOption():
     def __eq__(self, other):
         return self.path() == other.path()
     
+    def __str__(self):
+        return self.name
+    
 class Serializer:
     pass
 
 class XMLSerializer(Serializer):
     pass
+
+class ConfigurationsXMLSerializer(XMLSerializer):
+    def __init__(self):
+        self._root = et.Element('configurations')
+    
+    def serialize(self, config):
+        config_element = et.SubElement(self._root, 'configuration')
+        config_element.attrib['name'] = config.name
+                
+        schema = et.SubElement(config_element, 'schema')
+        schema.attrib['name'] = config.schema.name
+        
+        if config.parent:
+            parent = et.SubElement(config_element, 'parent')
+            parent.attrib['name'] = config.parent.name
+        
+        for option in config.options():
+            option_elem = et.SubElement(config_element, 'option')
+            option_elem.attrib['path'] = option.path_string()
+            option_elem.attrib['value'] = self.serialize_option_value(option)
+            
+    def serialize_option_value(self, option):
+        return str(option.value)
+       
+    def write(self, recipient):
+        tree = et.ElementTree(self._root)
+        tree.write(recipient, pretty_print=True)        
 
 class ConfigurationSchemasXMLSerializer(XMLSerializer):
     def __init__(self):

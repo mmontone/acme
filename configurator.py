@@ -1104,8 +1104,12 @@ class ConfigurationNavigator(tk.Frame):
         self.wait_window(dialog)
         
     def save_configs(self):
-        def save_configs(configs):
-            print "Save configs"
+        def save_configs(configs, filename, format):
+            serializer = conf.ConfigurationsXMLSerializer()
+            for config in configs:
+                serializer.serialize(config)
+            serializer.write(filename)
+            
         dialog = SaveConfigurationsDialog(self, self._configs, onsave=save_configs)
         self.wait_window(dialog)
         
