@@ -486,7 +486,7 @@ class ConfigurationSchemaCreator(tk.Toplevel):
         tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1, sticky=tk.W + tk.N)
         
         tk.Label(props, text="Parents:").grid(row=1, column=0, sticky=tk.W + tk.N)
-        self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
+        self.parents = w.DoubleListSelector(props, source=conf.ConfigurationSchema.configuration_schemas,
                                         selected=[])
         set_status_message(self.parents, "Add and remove parents to the configuration schema")
         self.parents.grid(row=1, column=1, sticky=tk.W)
@@ -1219,7 +1219,7 @@ class ConfigurationEditor(tk.Toplevel):
         self._config_doc.grid(row=1, column=1, sticky=tk.W)
         
         # Schema
-        self._all_schemas = conf.list_configuration_schemas()
+        self._all_schemas = conf.ConfigurationSchema.configuration_schemas
         
         tk.Label(self, text="Schema: ").grid(row=2, column=0, sticky=tk.W + tk.N)
         self._schemas = tk.Listbox(self)
