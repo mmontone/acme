@@ -423,7 +423,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         tk.Entry(props, textvariable=self.schema_name).grid(row=0, column=1, sticky=tk.W + tk.N)
         
         tk.Label(props, text="Parents:").grid(row=1, column=0, sticky=tk.W + tk.N)
-        self.parents = w.DoubleListSelector(props, source=conf.list_configuration_schemas(),
+        self.parents = w.DoubleListSelector(props, source=conf.ConfigurationSchema.configuration_schemas,
                                         selected=schema.parents())
         set_status_message(self.parents, "Add and remove parents to the configuration schema")
         self.parents.grid(row=1, column=1, sticky=tk.W)
@@ -650,7 +650,7 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
         tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
         self.option_type = tk.StringVar()
         option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
-        options = tk.OptionMenu(self.f, self.option_type, option_types, command=self.edit_option_type)
+        options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 
         

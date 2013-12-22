@@ -2,31 +2,27 @@
 from lxml import etree as et
 import datetime
 
-configuration_schemas = []
-
-def get_configuration_schema(name):
-    global configuration_schemas
-    return next((schema for schema in configuration_schemas if schema.name == name), None)
-
-def register_configuration_schema(schema):
-    global configuration_schemas
-    configuration_schemas.append(schema)
-    
-def unregister_configuration_schema(schema):
-    global configuration_schemas
-    configuration_schemas.remove(schema)
-    
-def list_configuration_schemas():
-    global configuration_schemas
-    return configuration_schemas
-
 class ConfigurationSchema():
+    configuration_schemas = []
+    
+    @classmethod
+    def get_named(cls, name):
+        return next((schema for schema in cls.configuration_schemas if schema.name == name), None)
+    
+    @classmethod
+    def register_schema(cls, schema):
+        cls.configuration_schemas.append(schema)
+        
+    @classmethod
+    def unregister_schema(cls, schema):
+        cls.configuration_schemas.remove(schema)
+    
     def __init__(self, name='', **args):
         self._name = name
         self._direct_sections = []
         self._documentation = args.get('documentation') or "Not documented"
         self._parents = args.get("parents") or []
-        register_configuration_schema(self)
+        ConfigurationSchema.register_schema(self)
                 
     def section(self, section):
         self._direct_sections.append(section)
@@ -562,7 +558,7 @@ class ConfigurationsXMLUnserializer():
             doc = config.findtext('documentation')
                        
             schema_name = config.find('schema').attrib['name']
-            schema = get_configuration_schema(schema_name)
+            schema = ConfigurationSchema.get_named(schema_name)
             
             cfg = Configuration(name, schema, documentation=doc)
             
@@ -676,7 +672,7 @@ class ConfigurationSchemasXMLUnserializer():
             sch = ConfigurationSchema(name, documentation=doc)
             
             for parent in schema.iterchildren(tag='parent'):
-                sch.add_parent(get_configuration_schema(parent.attrib['name']))
+                sch.add_parent(ConfigurationSchema.get_named(parent.attrib['name']))
                 
             for section in schema.iterchildren(tag='section'):
                 sch.section(self.unserialize_section(section))
