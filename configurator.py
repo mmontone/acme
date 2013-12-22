@@ -267,7 +267,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def insert_schema(self, schema):
         sc = self.tree.insert('', 'end', text=schema.name, tags='schema')
         self.items[sc] = schema
-        for section in schema.sections():
+        for section in schema.direct_sections():
             self.insert_section(section, sc)
             
     def insert_section(self, section, parent):
