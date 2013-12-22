@@ -86,9 +86,7 @@ class ConfigurationSchema():
         return (self.name,)
     
     def option_in_path(self, path):
-        print path[0] + ':' + self.name
-        assert(path[0] == self.name)
-        section = next((s for s in self._sections if s.name == path[1]), None)
+        section = next((s for s in self.sections() if s.name == path[1]), None)
         if not section:
             raise Exception('Section ' + path[1] + ' not found')
         return section.option_in_path(path[1:])
