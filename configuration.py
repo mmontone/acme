@@ -23,18 +23,25 @@ def list_configuration_schemas():
 class ConfigurationSchema():
     def __init__(self, name='', **args):
         self._name = name
-        self._sections = []
+        self._direct_sections = []
         self._documentation = args.get('documentation') or "Not documented"
         self._parents = args.get("parents") or []
         register_configuration_schema(self)
                 
     def section(self, section):
-        self._sections.append(section)
+        self._direct_sections.append(section)
         section.parent = self
         return self
     
+    def direct_sections(self):
+        return self._direct_sections
+    
     def sections(self):
-        return self._sections
+        sections = []
+        sections.extend(self.direct_sections())
+        for parent in self.parents():
+            sections.extend(parent.sections())
+        return sections        
     
     def get_section(self, name):
         return next((s for s in self._sections if s.name == name), None)

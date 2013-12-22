@@ -1795,7 +1795,7 @@ class Configurator(tk.Frame):
         self._schemas = {}
         
         sch1 = conf.ConfigurationSchema("Web")
-        s1 = conf.ConfigurationSchemaSection("Server")
+        s1 = conf.ConfigurationSchemaSection("Web server")
         sch1.section(s1)
         
         host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
@@ -1813,8 +1813,9 @@ class Configurator(tk.Frame):
         auth.is_required=False
         s2.add_option(auth)
         
+        sch_log = conf.ConfigurationSchema("Log")
         s3 = conf.ConfigurationSchemaSection("Logging")
-        sch1.section(s3)
+        sch_log.section(s3)
         
         logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
         s3.add_option(logfile)
@@ -1841,16 +1842,25 @@ class Configurator(tk.Frame):
                                                    conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
                                                    documentation="The database engine")
         db_engine.is_required = True
-        db_server = conf.ConfigurationSchemaSection("Server").add_option(db_engine)
+        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
         db.section(db_server)
+        
         self._schemas[db.name] = db
+        self._schemas[sch_log.name] = sch_log
+        
+        app_sch = conf.ConfigurationSchema('App')
+        app_sch.add_parent(db)
+        app_sch.add_parent(sch1)
+        app_sch.add_parent(sch_log)
+        
+        self._schemas[app_sch.name] = app_sch
                 
         return ConfigurationSchemaNavigator(self, self._schemas.values())
     
     def init_configs_navigator(self):
-        dev = conf.Configuration('Dev', self._schemas['Web'])
-        test = conf.Configuration('Test', self._schemas['Web'])
-        prod = conf.Configuration('Prod', self._schemas['Database'])
+        dev = conf.Configuration('Dev', self._schemas['App'])
+        test = conf.Configuration('Test', self._schemas['App'])
+        prod = conf.Configuration('Prod', self._schemas['Web'])
         
         return ConfigurationNavigator(self, [dev, test,prod])                        
        
