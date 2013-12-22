@@ -3,19 +3,23 @@ from lxml import etree as et
 import datetime
 
 class ConfigurationSchema():
-    configuration_schemas = []
+    _configuration_schemas = {}
     
     @classmethod
     def get_named(cls, name):
-        return next((schema for schema in cls.configuration_schemas if schema.name == name), None)
+        return cls._configuration_schemas.get(name)
     
     @classmethod
     def register_schema(cls, schema):
-        cls.configuration_schemas.append(schema)
+        cls._configuration_schemas[schema.name] = schema
         
     @classmethod
     def unregister_schema(cls, schema):
-        cls.configuration_schemas.remove(schema)
+        del cls._configuration_schemas[schema.name]
+        
+    @classmethod
+    def configuration_schemas(cls):
+        return cls._configuration_schemas.values()        
     
     def __init__(self, name='', **args):
         self._name = name
@@ -73,7 +77,7 @@ class ConfigurationSchema():
         return self
     
     def remove(self):
-        unregister_configuration_schema(self)
+        ConfigurationSchema.unregister_schema(self)
     
     def __str__(self):
         return self.name 
@@ -422,11 +426,11 @@ class Configuration():
     
     @property
     def schema(self):
-        return self._schema
+        return ConfigurationSchema.get_named(self._schema)
     
     @schema.setter
     def schema(self, value):
-        self._schema = value
+        self._schema = value.name
         return self
     
     @property
@@ -592,7 +596,7 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
             parent_element = et.SubElement(schema_element, 'parent')
             parent_element.attrib['name'] = parent.name
             
-        for section in schema.sections():
+        for section in schema.direct_sections():
             self.serialize_section(section, schema_element)
                         
     def serialize_section(self, section, sections):
