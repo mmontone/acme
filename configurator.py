@@ -944,7 +944,11 @@ class ConfigurationNavigator(tk.Frame):
         row = 0
         
         for option in section.options():
-            label = tk.Label(self._right_panel, text=option.name)
+            label_text = option.name
+            if option.is_required and not option.default_value:
+                label_text = label_text + ' (required)'
+                
+            label = tk.Label(self._right_panel, text=label_text)
             
             # Option label popup
             label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
@@ -967,7 +971,7 @@ class ConfigurationNavigator(tk.Frame):
             
             self._option_editors[option] = option_editor
             
-            tk.Label(self._right_panel, text=option.documentation).grid(row=row, column=2, padx=20, sticky=tk.W)
+            tk.Label(self._right_panel, text=option.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=2, padx=20, sticky=tk.W)
                 
             row = row + 1
             
