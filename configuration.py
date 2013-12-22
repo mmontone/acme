@@ -454,6 +454,11 @@ class Configuration():
         option = self._options.get(schema_option, None)
         if option:
             return option.value
+        else:
+            if self.parent:
+                return parent.option_value(schema_option)
+            else:
+                return None
         
     def sections(self):
         return self._schema.sections()
