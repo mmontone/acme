@@ -171,6 +171,17 @@ class ConfigurationSchemaSection:
                 raise Exception('Option not found ' + path[1])
             
             return option
+        
+    def validate(self, config):
+        # Validate the section using config
+        errors = []
+        for option in self.options():
+            if option.is_required and (not option.default_value) and config.option_value(option) == None:
+                errors.append({'option':option, 'message': option.name + ' is required'})
+        if len(errors) > 0:
+            return errors
+        else:
+            return None               
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
