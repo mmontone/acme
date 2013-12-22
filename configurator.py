@@ -945,8 +945,8 @@ class ConfigurationNavigator(tk.Frame):
         if errors:
             print "Errors!!!"
             errors_panel = tk.Frame(self._right_panel)
-            for error in errors:
-                tk.Label(errors_panel, text=error['message']).pack()
+            for error in errors.values():
+                tk.Label(errors_panel, text=error['message'], foreground='Red').pack()
             errors_panel.pack()
         
         options = tk.Frame(self._right_panel)
@@ -957,7 +957,11 @@ class ConfigurationNavigator(tk.Frame):
             if option.is_required and not option.default_value:
                 label_text = label_text + ' (required)'
                 
-            label = tk.Label(options, text=label_text)
+            label_color = 'Black'
+            if errors and errors.get(option.name):
+                label_color = 'Red'
+                
+            label = tk.Label(options, text=label_text, foreground=label_color)
             
             # Option label popup
             label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
@@ -1049,19 +1053,28 @@ class ConfigurationNavigator(tk.Frame):
                 print "Setting option " + str(option.path()) + " value to " + str(editor.value())
                 self._config.set_option_value(option, editor.value())
                 
-            errors = section.validate(self._config)
-            if errors:
-                # Clear the right panel
-                self._right_panel.forget()
-                self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        errors = section.validate(self._config)
+        if errors:
+            # Clear the right panel
+            self._right_panel.forget()
+            self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
-                # Put the options editing on the right panel
-                self.insert_section_editor(self._section, errors=errors)
+            # Put the options editing on the right panel
+            self.insert_section_editor(self._section, errors=errors)
         
-                self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-                configurator.status.set('There are errors')
-            else:
-                configurator.status.set('Section saved')
+            self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            configurator.status.set('There are errors')
+        else:
+            configurator.status.set('Section saved')
+                
+            # We do this to clear possible past errors
+            self._right_panel.forget()
+            self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        
+            # Put the options editing on the right panel
+            self.insert_section_editor(self._section)
+        
+            self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)                
         
     def restore_section(self, section):
         print "Restore section " + section.name

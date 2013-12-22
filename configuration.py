@@ -174,11 +174,11 @@ class ConfigurationSchemaSection:
         
     def validate(self, config):
         # Validate the section using config
-        errors = []
+        errors = {}
         for option in self.options():
             if option.is_required and (not option.default_value) and config.option_value(option) == None:
-                errors.append({'option':option, 'message': option.name + ' is required'})
-        if len(errors) > 0:
+                errors[option.name] = {'option':option, 'message': option.name + ' is required'}
+        if len(errors.values()) > 0:
             return errors
         else:
             return None               
