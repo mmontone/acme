@@ -957,6 +957,8 @@ class ConfigurationNavigator(tk.Frame):
             if option.is_required and not option.default_value:
                 label_text = label_text + ' (required)'
                 
+            label_text=label_text + ':'
+                
             label_color = 'Black'
             if errors and errors.get(option.name):
                 label_color = 'Red'
@@ -1808,6 +1810,7 @@ class Configurator(tk.Frame):
         sch1.section(s2)
         
         auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
+        auth.is_required=False
         s2.add_option(auth)
         
         s3 = conf.ConfigurationSchemaSection("Logging")
