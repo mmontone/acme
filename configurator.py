@@ -1100,6 +1100,7 @@ class ConfigurationNavigator(tk.Frame):
             popup.add_command(label="Add configuration", command=self.create_config)
             popup.add_command(label="Save configurations", command=self.save_configs)
             popup.add_command(label="Load configurations", command=self.load_configs)
+            popup.add_command(label="Validate configurations", command=self.validate_configs)
         else:
         
             config_name = self._configs_list.get(index)
@@ -1108,6 +1109,7 @@ class ConfigurationNavigator(tk.Frame):
                     
             popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
             popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
+            popup.add_command(label="Validate", command=lambda:self.validate_config(config, index))
             
         popup.add_separator()
         popup.add_command(label="Dismiss")
@@ -1166,6 +1168,31 @@ class ConfigurationNavigator(tk.Frame):
         if answer == 'yes':
             self._configs.remove(config)
             self._configs_list.delete(index)
+            
+    def validate_config(self, config, index):
+        errors = config.validate()
+        
+        if errors:
+            errors_msg = ''
+            for error in errors:
+                errors_msg = errors_msg + error['message'] + "\n"
+            tkMessageBox.showerror('Invalid configuration', errors_msg)
+        else:
+            tkMessageBox.showinfo('Valid configuration', 'The configuration is valid')
+    
+    def validate_configs(self):
+        error_msg = ""
+        for config in self._configs:
+            errors = config.validate()
+            if errors:
+                error_msg = error_msg + '\n' + config.name + " configuration is invalid: \n"
+                for error in errors:
+                    error_msg = error_msg + "    " + error['message'] + '\n'
+        if error_msg <> '':
+            tkMessageBox.showerror('Invalid configurations', error_msg)
+        else:
+            tkMessageBox.showinfo('Valid configurations', 'All configurations are valid')
+                
         
     def option_popup(self, ev, option):
         # create a menu
@@ -1437,10 +1464,15 @@ class StringOptionEditor(OptionEditor):
         entry.pack()
         
     def value(self):
-        return self._var.get()
+        value = self._var.get() 
+        if value == '':
+            return None
+        else:
+            return value
     
     def set_value(self, value):
         self._var.set(value)
+        self._initial_value = value
         
     def value_changed(self):
         return self.value() <> self._initial_value

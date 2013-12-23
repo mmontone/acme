@@ -470,6 +470,17 @@ class Configuration():
     
     def options(self):
         return self._options.values()
+    
+    def validate(self):
+        errors = []
+        for section in self.sections():
+            section_errors = section.validate(self)
+            if section_errors:
+                errors.extend(section_errors.values())
+        if len(errors) > 1:
+            return errors
+        else:
+            return None
         
 class ConfigurationOption():
     
