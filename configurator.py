@@ -416,8 +416,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         self._onremove = options.get('onremove') or None
         
         # ui
-        tk.Label(self, text=schema.name + " configuration schema").pack()
-        props = tk.Frame(self)
+        props = tk.LabelFrame(self,text=schema.name + " configuration schema", padx=10, pady=10,font=('Arial',10, 'bold'))
         tk.Label(props, text="Name: ").grid(row=0, column=0, sticky=tk.W)
         self.schema_name = tk.StringVar()
         self.schema_name.set(schema.name or "")
@@ -530,9 +529,7 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self._onremove = options.get('onremove') or None
         
         # ui
-        tk.Label(self, text=section.name + " section").pack()
-        
-        f = tk.Frame(self)
+        f = tk.LabelFrame(self,text=section.name + ' section',padx=10, pady=10, font=('Arial',10, 'bold'))
         
         tk.Label(f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
         self.section_name = tk.StringVar()
@@ -724,9 +721,8 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self._onremove = options.get('onremove') or None
         
         # ui 
-        tk.Label(self, text=option.name + " option").pack()
         
-        self.f = tk.Frame(self)
+        self.f = tk.LabelFrame(self,text=option.name + " option", padx=10, pady=10, font=('Arial',10, 'bold'))
                 
         # Name
         tk.Label(self.f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
@@ -980,15 +976,15 @@ class ConfigurationNavigator(tk.Frame):
         
         if errors:
             print "Errors!!!"
-            errors_panel = tk.LabelFrame(self._right_panel, text='Errors')
+            errors_panel = tk.LabelFrame(self._right_panel, text='Errors', font=('Arial',10, 'bold'), padx=10, pady=10)
             for error in errors.values():
                 tk.Label(errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
             errors_panel.pack(fill=tk.X, expand=True)
         
-        options = tk.LabelFrame(self._right_panel, text=section.name)
+        options = tk.LabelFrame(self._right_panel, text=section.name, font=('Arial',10, 'bold'), padx=10, pady=10)
         row = 0
         if section.documentation is not None and section.documentation <> '':
-            tk.Label(options, text=section.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=0, columnspan=3, pady=10)
+            tk.Label(options, text=section.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=0, columnspan=3)
             row = row + 1       
         
         for option in section.options():
