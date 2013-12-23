@@ -957,12 +957,14 @@ class ConfigurationNavigator(tk.Frame):
         row = 0
         
         for option in section.options():
+            option_value, origin = self._config.option_value(option)
+            
             label_text = option.name
             if option.is_required and not option.default_value:
                 label_text = label_text + ' (required)'
                 
             label_text=label_text + ':'
-                
+            
             label_color = 'Black'
             if errors and errors.get(option.name):
                 label_color = 'Red'
@@ -983,14 +985,16 @@ class ConfigurationNavigator(tk.Frame):
             
             option_editor.grid(row=row, column=1, padx=10, sticky=tk.W)
             
-            option_value = self._config.option_value(option)
-            
             if option_value:
                 option_editor.set_value(option_value)
             
             self._option_editors[option] = option_editor
             
-            tk.Label(options, text=option.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=2, padx=20, sticky=tk.W)
+            documentation = option.documentation
+            if origin and origin <> self._config:
+                documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
+            doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
+            doc.grid(row=row, column=2, padx=20, sticky=tk.W)
                 
             row = row + 1
             

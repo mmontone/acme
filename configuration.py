@@ -458,12 +458,13 @@ class Configuration():
     def option_value(self, schema_option):
         option = self._options.get(schema_option, None)
         if option:
-            return option.value
+            # Return a tuple, the option value and its origin (the configuration that has its value)
+            return option.value, self
         else:
             if self.parent:
                 return self.parent.option_value(schema_option)
             else:
-                return None
+                return None, None
         
     def sections(self):
         return self.schema.sections()
