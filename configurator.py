@@ -966,17 +966,21 @@ class ConfigurationNavigator(tk.Frame):
         self.pack()
         
     def insert_section_editor(self, section, errors=None):
+        tk.Label(self._right_panel, text=self._config.name + ' configuration', font=('Verdana', 10, 'bold')).pack()
+        tk.Label(self._right_panel, text=self._config.documentation, font=('Verdana', 8, 'italic')).pack()
+        
         self._option_editors = {}
         
         if errors:
             print "Errors!!!"
-            errors_panel = tk.Frame(self._right_panel)
+            errors_panel = tk.LabelFrame(self._right_panel, text='Errors')
             for error in errors.values():
-                tk.Label(errors_panel, text=error['message'], foreground='Red').pack()
-            errors_panel.pack()
+                tk.Label(errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
+            errors_panel.pack(fill=tk.X, expand=True)
         
-        options = tk.Frame(self._right_panel)
-        row = 0
+        options = tk.LabelFrame(self._right_panel, text=section.name)
+        tk.Label(options, text=section.documentation, font=('Verdana', 8, 'italic')).grid(row=0, column=0, columnspan=3, pady=10)
+        row = 1
         
         for option in section.options():
             option_value, origin = self._config.option_value(option)
@@ -996,7 +1000,7 @@ class ConfigurationNavigator(tk.Frame):
             # Option label popup
             label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
             
-            label.grid(row=row, column=0, padx=30, sticky=tk.NW)
+            label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
             
             #print "Option" + str(option.option_type)
             option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
@@ -1005,7 +1009,7 @@ class ConfigurationNavigator(tk.Frame):
                          
             option_editor = option_editor_class(options, option_schema=option)
             
-            option_editor.grid(row=row, column=1, padx=10, sticky=tk.NW)
+            option_editor.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
             
             if option_value:
                 option_editor.set_value(option_value)
@@ -1016,7 +1020,7 @@ class ConfigurationNavigator(tk.Frame):
             if origin and origin <> self._config:
                 documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
             doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
-            doc.grid(row=row, column=2, padx=20, sticky=tk.NW)
+            doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
                 
             row = row + 1
             
@@ -1051,7 +1055,7 @@ class ConfigurationNavigator(tk.Frame):
         # Clear the right panel
         self._right_panel.forget()
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
-        
+                
         # Put the options editing on the right panel
         self.insert_section_editor(sections[0])
                 
