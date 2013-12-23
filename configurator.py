@@ -969,6 +969,12 @@ class ConfigurationNavigator(tk.Frame):
         tk.Label(self._right_panel, text=self._config.name + ' configuration', font=('Verdana', 10, 'bold')).pack()
         tk.Label(self._right_panel, text=self._config.documentation, font=('Verdana', 8, 'italic')).pack()
         
+        config_props = tk.Frame(self._right_panel)
+        tk.Label(config_props, text='Schema: ' + self._config.schema.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
+        if self._config.parent is not None:
+            tk.Label(config_props, text='Parent: ' + self._config.parent.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
+        config_props.pack()        
+        
         self._option_editors = {}
         
         if errors:
