@@ -967,7 +967,8 @@ class ConfigurationNavigator(tk.Frame):
         
     def insert_section_editor(self, section, errors=None):
         tk.Label(self._right_panel, text=self._config.name + ' configuration', font=('Verdana', 10, 'bold')).pack()
-        tk.Label(self._right_panel, text=self._config.documentation, font=('Verdana', 8, 'italic')).pack()
+        if self._config.documentation is not None and self._config.documentation <> '':
+            tk.Label(self._right_panel, text=self._config.documentation, font=('Verdana', 8, 'italic')).pack()
         
         config_props = tk.Frame(self._right_panel)
         tk.Label(config_props, text='Schema: ' + self._config.schema.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
@@ -985,8 +986,10 @@ class ConfigurationNavigator(tk.Frame):
             errors_panel.pack(fill=tk.X, expand=True)
         
         options = tk.LabelFrame(self._right_panel, text=section.name)
-        tk.Label(options, text=section.documentation, font=('Verdana', 8, 'italic')).grid(row=0, column=0, columnspan=3, pady=10)
-        row = 1
+        row = 0
+        if section.documentation is not None and section.documentation <> '':
+            tk.Label(options, text=section.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=0, columnspan=3, pady=10)
+            row = row + 1       
         
         for option in section.options():
             option_value, origin = self._config.option_value(option)
