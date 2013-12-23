@@ -1153,9 +1153,23 @@ class ConfigurationNavigator(tk.Frame):
             for config in configs:
                 serializer.serialize(config)
             serializer.write(filename)
-            
-        dialog = SaveConfigurationsDialog(self, self._configs, onsave=save_configs)
-        self.wait_window(dialog)
+        
+        error_msg = ''    
+        for config in self._configs:
+            errors = config.validate()
+            if errors:
+                error_msg = error_msg + '\n' + config.name + " configuration is invalid: \n"
+                for error in errors:
+                    error_msg = error_msg + "    " + error['message'] + '\n'
+        def open_save_dialog():
+            dialog = SaveConfigurationsDialog(self, self._configs, onsave=save_configs)
+            self.wait_window(dialog)
+        if error_msg <> '':
+            answer = tkMessageBox.askquestion('Save configurations?', 'There are invalid configurations, save anyway? \n' + error_msg)
+            if answer == 'yes':
+                open_save_dialog()
+        else:
+            open_save_dialog()
         
     def edit_config(self, config, index):
         print "Edit config " + str(config)
@@ -1176,7 +1190,7 @@ class ConfigurationNavigator(tk.Frame):
             errors_msg = ''
             for error in errors:
                 errors_msg = errors_msg + error['message'] + "\n"
-            tkMessageBox.showerror('Invalid configuration', errors_msg)
+            tkMessageBox.showerror('Invalid configuration', 'The configuration is invalid \n\n' + errors_msg)
         else:
             tkMessageBox.showinfo('Valid configuration', 'The configuration is valid')
     
@@ -1189,7 +1203,7 @@ class ConfigurationNavigator(tk.Frame):
                 for error in errors:
                     error_msg = error_msg + "    " + error['message'] + '\n'
         if error_msg <> '':
-            tkMessageBox.showerror('Invalid configurations', error_msg)
+            tkMessageBox.showerror('Invalid configurations', 'There are invalid configurations\n' + error_msg)
         else:
             tkMessageBox.showinfo('Valid configurations', 'All configurations are valid')
                 
