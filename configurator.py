@@ -891,7 +891,7 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         set_status_message(self, "The possible option choices")
         
     def options(self):
-        return self.options_var.get().split(',')
+        return list(eval(self.options_var.get()))
     
     def option_type_instance(self):
         # Return an instance of the edited option type

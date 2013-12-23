@@ -91,13 +91,12 @@ class ListEditor(tk.Frame):
            
     def add_item(self):
         if self.new_item.get():
-            items = self.list_var.get().split(',')
-            print items
+            items = list(eval(self.list_var.get()))
             items.append(self.new_item.get())
             self.list_var.set(' '.join(items))
     
     def remove_item(self):
-        items = self.list_var.get().split(',')
+        items = list(eval(self.list_var.get()))
         new_items = list(items)
         for i in map(int, self.list.curselection()):
             new_items.remove(items[i])
