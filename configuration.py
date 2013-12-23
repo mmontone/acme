@@ -409,9 +409,12 @@ class ManyOptionType(OptionType, CompoundOptionType):
     
 class Configuration():
     
-    def __init__(self, name='', schema='', **options):
+    def __init__(self, name='', schema=None, **options):
         self._name = name
-        self._schema = schema.name
+        if schema is not None:
+            self._schema = schema.name
+        else:
+            self._schema = None
         self._parent = options.get('parent') or None
         self._options = {}
         self._documentation = options.get('documentation') or ''
@@ -427,7 +430,8 @@ class Configuration():
     
     @property
     def schema(self):
-        return ConfigurationSchema.get_named(self._schema)
+        if self._schema is not None: 
+            return ConfigurationSchema.get_named(self._schema)
     
     @schema.setter
     def schema(self, value):
