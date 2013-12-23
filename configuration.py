@@ -410,7 +410,7 @@ class Configuration():
     
     def __init__(self, name='', schema='', **options):
         self._name = name
-        self._schema = schema
+        self._schema = schema.name
         self._parent = options.get('parent') or None
         self._options = {}
         self._documentation = options.get('documentation') or ''
@@ -466,7 +466,7 @@ class Configuration():
                 return None
         
     def sections(self):
-        return self._schema.sections()
+        return self.schema.sections()
     
     def options(self):
         return self._options.values()
