@@ -746,6 +746,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         # Option type editor
         if option.option_type:
             editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
+            print "Editor for : " + str(option.option_type.__class__) + str(editor)
             if editor:
                 self.option_type_editor = editor(self.f, option.option_type)
             else:
@@ -837,8 +838,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
     def save_option(self):
         self.option.name = self.option_name.get()
         self.option.documentation = self.option_documentation.get(1.0, tk.END)
-        option_type = conf.OptionType.get_named(self.option_type.get())
-        self.option.option_type = option_type()
+        self.option.option_type = self.option_type_editor.option_type_instance()
         self.option.is_required = self.option_required.get() == 1
         if self._default_value_var.get() == 1:
             self.option.default_value = self._default_value_editor.value()
@@ -874,6 +874,9 @@ class OptionTypeEditor(object, tk.Frame):
     def for_option_type(cls, option_type):
         subclasses = OptionTypeEditor.__subclasses__()
         return next((editor for editor in subclasses if editor.option_type == option_type), None)
+    
+    def option_type(self):
+        return self.__class__.option_type()
 
 class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     option_type = conf.ChoiceOptionType
@@ -886,6 +889,14 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         
         w.ListEditor.__init__(self, parent, listvar=self.options_var)
         set_status_message(self, "The possible option choices")
+        
+    def options(self):
+        return self.options_var.get().split(',')
+    
+    def option_type_instance(self):
+        # Return an instance of the edited option type
+        return conf.ChoiceOptionType(self.options())
+        
         
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
