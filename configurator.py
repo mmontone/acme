@@ -32,7 +32,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         #self.tree.heading('#0', text='Configuration schemas', anchor='w')
         
-        self.tree.pack(fill=tk.Y)
+        self.tree.pack(fill=tk.Y, expand=True)
         
         self.tree.bind('<Leave>', lambda ev:configurator.status.set(''))
                 
@@ -917,7 +917,11 @@ class ConfigurationNavigator(tk.Frame):
         self._sections.bind('<ButtonRelease-3>', self.sections_popup)
         
         ysb = ttk.Scrollbar(self._left_panel, orient='vertical', command=self._sections.yview)
+        ysb.pack(side=tk.RIGHT, fill=tk.Y)
+        
         xsb = ttk.Scrollbar(self._left_panel, orient='horizontal', command=self._sections.xview)
+        xsb.pack(side=tk.BOTTOM, fill=tk.X)
+        
         self._sections.configure(yscroll=ysb.set, xscroll=xsb.set)
         
         self._config = configs[0]
@@ -928,14 +932,14 @@ class ConfigurationNavigator(tk.Frame):
             self.insert_section(section)
             
         self._sections.selection_set(self._sections.get_children()[0])
-        self._sections.pack()
-        self._left_panel.pack(side=tk.LEFT)
+        self._sections.pack(fill=tk.Y, expand=True)
+        self._left_panel.pack(side=tk.LEFT, fill=tk.Y)
            
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
         self.insert_section_editor(sections[0])
                            
-        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH)
                         
         self.pack()
         
@@ -990,7 +994,7 @@ class ConfigurationNavigator(tk.Frame):
                 
             row = row + 1
             
-        options.pack()
+        options.pack(fill=tk.X)
             
         buttons = tk.Frame(self._right_panel)
         
@@ -1831,7 +1835,7 @@ class Configurator(tk.Frame):
         configs_nav = self.init_configs_navigator()
         tabs.add(configs_nav, text='Configurations')
                       
-        tabs.pack(fill=tk.BOTH, expand=tk.Y, padx=2, pady=3)
+        tabs.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
         
         # Status bar
         self.status = w.StatusBar(self)
@@ -1906,6 +1910,7 @@ class Configurator(tk.Frame):
     def init_configs_navigator(self):
         dev = conf.Configuration('Dev', self._schemas['App'])
         test = conf.Configuration('Test', self._schemas['App'])
+        test.parent = dev
         prod = conf.Configuration('Prod', self._schemas['Web'])
         
         return ConfigurationNavigator(self, [dev, test,prod])                        

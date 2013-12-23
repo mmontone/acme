@@ -461,7 +461,7 @@ class Configuration():
             return option.value
         else:
             if self.parent:
-                return parent.option_value(schema_option)
+                return self.parent.option_value(schema_option)
             else:
                 return None
         
