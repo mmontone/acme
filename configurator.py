@@ -828,8 +828,14 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if self._default_value_var.get() == 1:
             option_type = conf.OptionType.get_named(self.option_type.get())
             
-            editor = OptionEditor.for_option_type(option_type)
-            self._default_value_editor = editor(self.f, option_type=option_type)
+            if OptionTypeEditor.for_option_type(option_type) is not None:
+                option_type = self.option_type_editor.option_type_instance()
+                editor = OptionEditor.for_option_type(option_type.__class__)
+                self._default_value_editor = editor(self.f, option_type=option_type)
+            else:      
+                editor = OptionEditor.for_option_type(option_type)
+                self._default_value_editor = editor(self.f, option_type=option_type)
+                
         else:
             self._default_value_editor = tk.Frame(self.f)
             
@@ -1464,6 +1470,10 @@ class OptionEditor(object, tk.Frame):
         
         self._option_schema = None
         self._option_schema = args.get('option_schema') or None
+        self._option_type = args.get('option_type')
+        if self._option_type is None and self._option_schema is not None:
+            self._option_type = self._option_schema.option_type
+            
         if args.get('option'):
             self._option_schema = args.get('option').schema
                 
@@ -1574,7 +1584,7 @@ class ChoiceOptionEditor(OptionEditor):
         
         self._initial_value = None
         self._lb = tk.Listbox(self)
-        self._choices = self._option_schema.option_type.options()
+        self._choices = self._option_type.options()
         index = 0
         for option in self._choices:
             self._lb.insert(index, option)
