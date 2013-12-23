@@ -974,7 +974,7 @@ class ConfigurationNavigator(tk.Frame):
             # Option label popup
             label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
             
-            label.grid(row=row, column=0, padx=30, sticky=tk.W)
+            label.grid(row=row, column=0, padx=30, sticky=tk.NW)
             
             #print "Option" + str(option.option_type)
             option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
@@ -983,7 +983,7 @@ class ConfigurationNavigator(tk.Frame):
                          
             option_editor = option_editor_class(options, option_schema=option)
             
-            option_editor.grid(row=row, column=1, padx=10, sticky=tk.W)
+            option_editor.grid(row=row, column=1, padx=10, sticky=tk.NW)
             
             if option_value:
                 option_editor.set_value(option_value)
@@ -994,21 +994,21 @@ class ConfigurationNavigator(tk.Frame):
             if origin and origin <> self._config:
                 documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
             doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
-            doc.grid(row=row, column=2, padx=20, sticky=tk.W)
+            doc.grid(row=row, column=2, padx=20, sticky=tk.NW)
                 
             row = row + 1
             
-        options.pack(fill=tk.X)
+        options.pack(fill=tk.Y, expand=True)
             
         buttons = tk.Frame(self._right_panel)
         
-        save = tk.Button(buttons, text="Save", command=lambda: self.save_section(section))
-        save.pack(side=tk.LEFT, padx=2)
-        
         restore = tk.Button(buttons, text="Restore", command=lambda:self.restore_section(section))
-        restore.pack(side=tk.LEFT, padx=2)
+        restore.pack(side=tk.RIGHT, padx=2)
         
-        buttons.pack()
+        save = tk.Button(buttons, text="Save", command=lambda: self.save_section(section))
+        save.pack(side=tk.RIGHT, padx=2)
+        
+        buttons.pack(fill=tk.X)
         
     def select_config(self, ev=None):
         # Grab the selected configuration
