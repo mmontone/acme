@@ -769,6 +769,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if option.option_type and option.default_value:
             editor = OptionEditor.for_option_schema(option)
             self._default_value_editor = editor(self.f, option_schema=option)
+            self._default_value_editor.set_value(option.default_value)
         else:
             self._default_value_editor = tk.Frame(self.f)
             
@@ -829,6 +830,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         if self._default_value_var.get() == 1:
             option_type = conf.OptionType.get_named(self.option_type.get())
             
+            # Hack. Clean this!!
             if OptionTypeEditor.for_option_type(option_type) is not None:
                 option_type = self.option_type_editor.option_type_instance()
                 editor = OptionEditor.for_option_type(option_type.__class__)
@@ -836,6 +838,8 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
             else:      
                 editor = OptionEditor.for_option_type(option_type)
                 self._default_value_editor = editor(self.f, option_type=option_type)
+                
+            #self._default_value_editor.set_value(self.option.default_value)
                 
         else:
             self._default_value_editor = tk.Frame(self.f)
