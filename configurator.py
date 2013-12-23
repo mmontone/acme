@@ -289,6 +289,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
                 serializer.serialize(schema)
             print filename
             serializer.write(filename)
+            tkMessageBox.showinfo('Schemas saved successfully', 'Schemas have been saved to ' + filename)
             
         dialog = SaveSchemasDialog(self, self.schemas, onsave=save_schemas)
         self.wait_window(dialog)
@@ -1178,6 +1179,7 @@ class ConfigurationNavigator(tk.Frame):
             for config in configs:
                 serializer.serialize(config)
             serializer.write(filename)
+            tkMessageBox.showinfo('Configurations saved successfully', 'Configurations have been saved on ' + filename)
         
         error_msg = ''    
         for config in self._configs:
