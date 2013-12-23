@@ -1848,11 +1848,11 @@ class Configurator(tk.Frame):
         tabs.enable_traversal()
         
         navigator = self.init_schemas_navigator()
-        tabs.add(navigator, text='Configuration schemas')
-        
         configs_nav = self.init_configs_navigator()
+        
         tabs.add(configs_nav, text='Configurations')
-                      
+        tabs.add(navigator, text='Configuration schemas')
+                             
         tabs.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
         
         # Status bar

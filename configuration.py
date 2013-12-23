@@ -578,7 +578,7 @@ class ConfigurationsXMLUnserializer():
             cfg = Configuration(name, schema, documentation=doc)
             
             parent = config.find('parent')
-            if parent:
+            if parent is not None:
                 # Install the parent name for the moment
                 # Not the parent itself, because it isnt available
                 cfg.parent = parent.attrib['name']
