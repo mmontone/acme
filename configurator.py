@@ -1557,15 +1557,33 @@ class ChoiceOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        #lb = tk.Listbox(self)
-        
-        #for option in self._option_schema.options():
-        #    lb.insert(tk.END, option)
+        self._initial_value = None
+        self._lb = tk.Listbox(self)
+        self._choices = self._option_schema.option_type.options()
+        index = 0
+        for option in self._choices:
+            self._lb.insert(index, option)
+            index = index + 1
             
-        #lb.pack()
+        self._lb.pack()
         
     def value(self):
-        return self._var.get()
+        index = self._lb.curselection()
+        if not index:
+            return None
+        else:
+            return self._choices[int(index[0])]
+    
+    def set_value(self, value):
+        for index, choice in enumerate(self._choices):
+            if choice == value:
+                self._lb.selection_set(index)
+                self._initial_value = choice
+                return
+        raise Exception('Option ' + value + ' not found')
+    
+    def value_changed(self):
+        return self._initial_value <> self.value() 
     
 class TimezoneOptionEditor(OptionEditor):
     option_type = conf.TimezoneOptionType
