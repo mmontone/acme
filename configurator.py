@@ -998,7 +998,7 @@ class ConfigurationNavigator(tk.Frame):
                 
             row = row + 1
             
-        options.pack(fill=tk.Y, expand=True)
+        options.pack(fill=tk.BOTH, expand=tk.Y)
             
         buttons = tk.Frame(self._right_panel)
         
