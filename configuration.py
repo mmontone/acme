@@ -24,7 +24,7 @@ class ConfigurationSchema():
     def __init__(self, name='', **args):
         self._name = name
         self._direct_sections = []
-        self._documentation = args.get('documentation') or "Not documented"
+        self._documentation = args.get('documentation') or ""
         self._parents = args.get("parents") or []
         ConfigurationSchema.register_schema(self)
                 
@@ -96,7 +96,7 @@ class ConfigurationSchemaSection:
         self._name = name
         self._subsections = []
         self._options = []
-        self._documentation = args.get('documentation') or 'Not documented'
+        self._documentation = args.get('documentation') or ''
         self._parent = args.get('parent') or None
         
     @property
@@ -193,7 +193,7 @@ class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
         self._name = name
         self._option_type = option_type
-        self._documentation = args.get('documentation') or 'Not documented'
+        self._documentation = args.get('documentation') or ''
         self._section = None
         self._is_required = args.get('required') or True
         self._default_value = args.get('default_value') or None
