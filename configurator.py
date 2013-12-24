@@ -1583,9 +1583,24 @@ class NumberOptionEditor(OptionEditor):
         self._var = tk.StringVar()
         if self._initial_value:
             self._var.set(str(self._initial_value))
+            
+        vcmd = (self.register(self.validate),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         
-        self._sb = tk.Spinbox(self, textvariable=self._var)
+        #self._sb = tk.Spinbox(self, textvariable=self._var)
+        self._sb = tk.Entry(self, textvariable=self._var, validate='key', validatecommand=vcmd)
         self._sb.pack()
+        
+    def validate(self, action, index, value_if_allowed,
+                       prior_value, text, validation_type, trigger_type, widget_name):
+        if text in '0123456789.-+':
+            try:
+                float(value_if_allowed)
+                return True
+            except ValueError:
+                return False
+        else:
+            return False
     
     def disable(self):
         self._sb.configure(state=tk.DISABLED)
