@@ -1026,6 +1026,10 @@ class ConfigurationNavigator(tk.Frame):
             documentation = option.documentation
             if origin and origin <> self._config:
                 documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
+                
+            if not option_value and option.default_value:
+                documentation = documentation + '\n\n This option is set to its default value'
+                
             doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
             doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
                 
