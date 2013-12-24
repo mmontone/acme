@@ -19,8 +19,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         # The pane
         left_pane = tk.Frame(self)
-        self.pane = tk.Frame(self)
-        
+                
         # The tree
         self.tree = ttk.Treeview(left_pane)
         ysb = ttk.Scrollbar(left_pane, orient='vertical', command=self.tree.yview)
@@ -58,12 +57,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.tree.selection_set(self.tree.get_children()[0])
         
         # The editor
-        self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
-        self.editor.grid(column=1, row=0)
-        
+        self.editor = ConfigurationSchemaEditor(self, schemas[0])
+                
         left_pane.pack(side=tk.LEFT, fill=tk.Y)
-        self.pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
+        self.editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                
     def popup_tree(self, ev):
         
         item = self.tree.identify_row(ev.y)
@@ -97,11 +95,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         schema = self.find_schema(item_id)
         print 'Selected schema was %s' % item_id
         print schema
-        self.editor.grid_forget()
-        self.editor = ConfigurationSchemaEditor(self.pane, schema, 
+        self.editor.forget()
+        self.editor = ConfigurationSchemaEditor(self, schema, 
                                                 onsave=lambda: self.tree.item(item_id, text=schema.name),
                                                 onremove=lambda: self.tree.delete(item_id))
-        self.editor.grid(column=1, row=0)
+        self.editor.pack(expand=True, fill=tk.BOTH)
         
     def popup_schema(self, ev):
         # find the schema
@@ -151,11 +149,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print 'Selected section was %s' % item_id
         section = self.find_section(item_id)
         print section
-        self.editor.grid_forget()
-        self.editor = ConfigurationSchemaSectionEditor(self.pane, section,
+        self.editor.forget()
+        self.editor = ConfigurationSchemaSectionEditor(self, section,
                                                        onsave=lambda:self.tree.item(item_id, text=section.name), 
                                                        onremove=lambda: self.tree.delete(item_id))
-        self.editor.grid(column=1, row=0)
+        self.editor.pack(fill=tk.BOTH, expand=True)
         
     def popup_section(self, ev):
         # find the section
@@ -220,7 +218,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.items[id] = option
             configurator.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
             
-        creator = ConfigurationSchemaOptionCreator(self.pane, onsave=save_option)
+        creator = ConfigurationSchemaOptionCreator(self, onsave=save_option)
         self.wait_window(creator)        
     
     def select_option(self, ev):
@@ -228,11 +226,11 @@ class ConfigurationSchemaNavigator(tk.Frame):
         print 'Selected option was %s' % item_id
         option = self.find_option(item_id)
         print self.find_option(item_id)
-        self.editor.grid_forget()
-        self.editor = ConfigurationSchemaOptionEditor(self.pane, option, 
+        self.editor.forget()
+        self.editor = ConfigurationSchemaOptionEditor(self, option, 
                                                       onsave=lambda:self.tree.item(item_id, text=option.name), 
                                                       onremove=lambda: self.tree.delete(item_id))
-        self.editor.grid(column=1, row=0)
+        self.editor.pack(fill=tk.BOTH, expand=True)
         
     def popup_option(self, ev):
         item = self.tree.identify_row(ev.y)
@@ -307,8 +305,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
                 
             self.tree.selection_set(self.tree.get_children()[0])
         
-            self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
-            self.editor.grid(column=1, row=0)
+            self.editor = ConfigurationSchemaEditor(self, schemas[0])
+            self.editor.pack(fill=tk.BOTH, expand=True)
                 
         dialog = LoadSchemasDialog(self, onload=load_schemas)
         self.wait_window(dialog)
