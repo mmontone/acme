@@ -1914,7 +1914,7 @@ class DatetimeOptionEditor(OptionEditor):
     def value_changed(self):
         return self._calendar.dt <> self._date
     
-class Configurator(tk.Frame):
+class FullConfigurator(tk.Frame):
     def __init__(self, parent):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
@@ -2040,6 +2040,233 @@ class Configurator(tk.Frame):
     def quit(self):
         root.quit()
         
+class Configurator(tk.Frame):
+    def __init__(self, parent):
+        
+        tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
+        
+        parent.title('Configurator')
+        
+        # Menubar
+        self.menu_bar = tk.Menu(self)
+        
+        help_menu = tk.Menu(self.menu_bar)
+        help_menu.add_command(label='About', command=self.help_about)
+        set_status_message(help_menu, 'About configurator')
+        
+        self.menu_bar.add_cascade(label='Help', menu=help_menu)
+        
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
+        #self.menu_bar.icon = quit_icon
+        
+        self.menu_bar.add_command(label='Quit', command=self.quit)
+                
+        try:
+            parent.config(menu=self.menu_bar)
+        except AttributeError:
+            # master is a toplevel window (Python 1.4/Tkinter 1.63)
+            parent.tk.call(parent, "config", "-menu", menu_bar)
+            
+        self.init_schemas()    
+        configs_nav = self.init_configs_navigator()
+        
+        configs_nav.pack(fill=tk.BOTH, expand=True)
+        
+        # Status bar
+        self.status = w.StatusBar(self)
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def init_schemas(self):
+        self._schemas = {}
+        
+        sch1 = conf.ConfigurationSchema("Web")
+        s1 = conf.ConfigurationSchemaSection("Web server")
+        sch1.section(s1)
+        
+        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
+        host.default_value = 'http://localhost'
+        s1.add_option(host)
+        
+        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
+        port.default_value = 8080
+        s1.add_option(port)
+        
+        s2 = conf.ConfigurationSchemaSection("Authentication")
+        sch1.section(s2)
+        
+        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
+        auth.is_required=False
+        s2.add_option(auth)
+        
+        sch_log = conf.ConfigurationSchema("Log")
+        s3 = conf.ConfigurationSchemaSection("Logging")
+        sch_log.section(s3)
+        
+        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
+        s3.add_option(logfile)
+        
+        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
+        s3.add_option(datetime)
+        
+        s4 = conf.ConfigurationSchemaSection("General preferences")
+        sch1.section(s4)
+        
+        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
+        s4.add_option(fontsize)
+        
+        s5 = conf.ConfigurationSchemaSection('Colors')
+        s4.add_section(s5)
+        
+        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
+        s5.add_option(color)        
+        
+        self._schemas[sch1.name] = sch1
+    
+        db = conf.ConfigurationSchema("Database")
+        db_engine = conf.ConfigurationSchemaOption("engine", 
+                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
+                                                   documentation="The database engine")
+        db_engine.is_required = True
+        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
+        db.section(db_server)
+        
+        self._schemas[db.name] = db
+        self._schemas[sch_log.name] = sch_log
+        
+        app_sch = conf.ConfigurationSchema('App')
+        app_sch.add_parent(db)
+        app_sch.add_parent(sch1)
+        app_sch.add_parent(sch_log)
+        
+        self._schemas[app_sch.name] = app_sch       
+    
+    def init_configs_navigator(self):
+        dev = conf.Configuration('Dev', self._schemas['App'])
+        test = conf.Configuration('Test', self._schemas['App'])
+        test.parent = dev
+        prod = conf.Configuration('Prod', self._schemas['Web'])
+        
+        return ConfigurationNavigator(self, [dev, test,prod])                        
+       
+    def help_about(self):
+        d = AboutDialog(self)
+
+        self.wait_window(d)
+        
+    def quit(self):
+        root.quit()
+        
+class SchemasConfigurator(tk.Frame):
+    def __init__(self, parent):
+        
+        tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
+        
+        parent.title('Schemas configurator')
+        
+        # Menubar
+        self.menu_bar = tk.Menu(self)
+        
+        help_menu = tk.Menu(self.menu_bar)
+        help_menu.add_command(label='About', command=self.help_about)
+        set_status_message(help_menu, 'About configurator')
+        
+        self.menu_bar.add_cascade(label='Help', menu=help_menu)
+        
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
+        #self.menu_bar.icon = quit_icon
+        
+        self.menu_bar.add_command(label='Quit', command=self.quit)
+                
+        try:
+            parent.config(menu=self.menu_bar)
+        except AttributeError:
+            # master is a toplevel window (Python 1.4/Tkinter 1.63)
+            parent.tk.call(parent, "config", "-menu", menu_bar)
+            
+        navigator = self.init_schemas_navigator()
+         
+        navigator.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
+        
+        # Status bar
+        self.status = w.StatusBar(self)
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def init_schemas_navigator(self):
+        self._schemas = {}
+        
+        sch1 = conf.ConfigurationSchema("Web")
+        s1 = conf.ConfigurationSchemaSection("Web server")
+        sch1.section(s1)
+        
+        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
+        host.default_value = 'http://localhost'
+        s1.add_option(host)
+        
+        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
+        port.default_value = 8080
+        s1.add_option(port)
+        
+        s2 = conf.ConfigurationSchemaSection("Authentication")
+        sch1.section(s2)
+        
+        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
+        auth.is_required=False
+        s2.add_option(auth)
+        
+        sch_log = conf.ConfigurationSchema("Log")
+        s3 = conf.ConfigurationSchemaSection("Logging")
+        sch_log.section(s3)
+        
+        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
+        s3.add_option(logfile)
+        
+        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
+        s3.add_option(datetime)
+        
+        s4 = conf.ConfigurationSchemaSection("General preferences")
+        sch1.section(s4)
+        
+        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
+        s4.add_option(fontsize)
+        
+        s5 = conf.ConfigurationSchemaSection('Colors')
+        s4.add_section(s5)
+        
+        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
+        s5.add_option(color)        
+        
+        self._schemas[sch1.name] = sch1
+    
+        db = conf.ConfigurationSchema("Database")
+        db_engine = conf.ConfigurationSchemaOption("engine", 
+                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
+                                                   documentation="The database engine")
+        db_engine.is_required = True
+        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
+        db.section(db_server)
+        
+        self._schemas[db.name] = db
+        self._schemas[sch_log.name] = sch_log
+        
+        app_sch = conf.ConfigurationSchema('App')
+        app_sch.add_parent(db)
+        app_sch.add_parent(sch1)
+        app_sch.add_parent(sch_log)
+        
+        self._schemas[app_sch.name] = app_sch
+                
+        return ConfigurationSchemaNavigator(self, self._schemas.values())
+    
+    def help_about(self):
+        d = AboutDialog(self)
+
+        self.wait_window(d)
+        
+    def quit(self):
+        root.quit()
+        
 def set_status_message(widget, message):
     global configurator
     widget.bind('<Enter>', lambda ev:configurator.status.set(message))
@@ -2050,6 +2277,8 @@ def image(filename):
         
 if __name__ == '__main__':
     root = tk.Tk()
-    configurator = Configurator(root)
+    #configurator = FullConfigurator(root)
+    #configurator = Configurator(root)
+    configurator = SchemasConfigurator(root)
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
