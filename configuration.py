@@ -460,6 +460,10 @@ class Configuration():
         option = ConfigurationOption(schema_option, value=value)
         self._options[schema_option] = option
         
+    def unset_option(self, schema_option):
+        if self._options.get(schema_option):
+            del self._options[schema_option]
+        
     def option_value(self, schema_option):
         option = self._options.get(schema_option, None)
         if option:

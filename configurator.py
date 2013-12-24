@@ -913,6 +913,8 @@ class ConfigurationNavigator(tk.Frame):
         self._items = {}
         self._configs = configs
         self._option_editors = {}
+        self._set_options = {}
+        self._unset_options = {}
                 
         # ui
         self._left_panel = tk.Frame(self)
@@ -1003,7 +1005,7 @@ class ConfigurationNavigator(tk.Frame):
             label = tk.Label(options, text=label_text, foreground=label_color)
             
             # Option label popup
-            label.bind('<ButtonRelease-3>', lambda ev: self.option_popup(ev, option))
+            label.bind('<ButtonRelease-3>', lambda ev, option=option: self.option_popup(ev, option))
             
             label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
             
@@ -1070,6 +1072,9 @@ class ConfigurationNavigator(tk.Frame):
         id = self._sections.identify_row(ev.y)
         self._section = self._items[id]
         print "Section: " + self._section.name
+        
+        self._unset_options = {}
+        self._set_options = {}
                 
         # Clear the right panel
         self._right_panel.forget()
@@ -1093,6 +1098,16 @@ class ConfigurationNavigator(tk.Frame):
             if editor.value_changed():
                 print "Setting option " + str(option.path()) + " value to " + str(editor.value())
                 self._config.set_option_value(option, editor.value())
+                
+        for option in self._unset_options.values():
+            self._config.unset_option(option)
+            
+        for option in self._set_options.values():
+            editor = self._option_editors.get(option)
+            self._config.set_option_value(option, editor.value())
+        
+        self._unset_options={}
+        self._set_options={}
                 
         errors = section.validate(self._config)
         if errors:
@@ -1249,9 +1264,11 @@ class ConfigurationNavigator(tk.Frame):
                 
         
     def option_popup(self, ev, option):
+        print "Option " + option.name + " popup"
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         
+        popup.add_command(label="Set", command=lambda:self.set_option(option))
         popup.add_command(label="Unset", command=lambda:self.unset_option(option))
         popup.add_command(label="Restore", command=lambda:self.restore_option(option))
             
@@ -1265,9 +1282,20 @@ class ConfigurationNavigator(tk.Frame):
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
             
+    def set_option(self, option):
+        print "Set option " + str(option)
+        self._set_options[option.name] = option
+        if self._unset_options.get(option.name):
+            del self._unset_options[option.name]
+        self._option_editors[option].disable()
+            
     def unset_option(self, option):
-        print "Unset option " + str(option)
-        
+        print "Unset option " + str(option.name)
+        self._unset_options[option.name] = option
+        if self._set_options.get(option.name):
+            del self._set_options[option.name]
+        self._option_editors[option].disable()
+            
     def restore_option(self, option):
         print "Restore option " + str(option) 
         
@@ -1518,8 +1546,11 @@ class StringOptionEditor(OptionEditor):
         self._var = tk.StringVar()
         self._var.set(self._initial_value)
             
-        entry = tk.Entry(self, textvariable=self._var)
-        entry.pack()
+        self._entry = tk.Entry(self, textvariable=self._var)
+        self._entry.pack()
+        
+    def disable(self):
+        self._entry.configure(state=tk.DISABLED)
         
     def value(self):
         value = self._var.get() 
@@ -1549,8 +1580,11 @@ class NumberOptionEditor(OptionEditor):
         if self._initial_value:
             self._var.set(str(self._initial_value))
         
-        sb = tk.Spinbox(self, textvariable=self._var)
-        sb.pack()
+        self._sb = tk.Spinbox(self, textvariable=self._var)
+        self._sb.pack()
+    
+    def disable(self):
+        self._sb.configure(state=tk.DISABLED)
         
     def value(self):
         value = self._var.get()
@@ -1579,8 +1613,11 @@ class BooleanOptionEditor(OptionEditor):
         self._var = tk.IntVar()
         self._var.set(self._initial_value)
                         
-        cb = tk.Checkbutton(self, variable=self._var)
-        cb.pack()
+        self._cb = tk.Checkbutton(self, variable=self._var)
+        self._cb.pack()
+        
+    def disable(self):
+        self._cb.configure(state=tk.DISABLED)
         
     def value(self):
         return self._var.get() == 1
@@ -1606,6 +1643,9 @@ class ChoiceOptionEditor(OptionEditor):
             index = index + 1
             
         self._lb.pack()
+        
+    def disable(self):
+        self._lb.configure(state=tk.DISABLED)
         
     def value(self):
         index = self._lb.curselection()
