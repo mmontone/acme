@@ -18,15 +18,15 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.items = {}
         
         # The pane
+        left_pane = tk.Frame(self)
         self.pane = tk.Frame(self)
         
         # The tree
-        tr = tk.Frame(self.pane)
-        self.tree = ttk.Treeview(tr)
-        ysb = ttk.Scrollbar(tr, orient='vertical', command=self.tree.yview)
+        self.tree = ttk.Treeview(left_pane)
+        ysb = ttk.Scrollbar(left_pane, orient='vertical', command=self.tree.yview)
         ysb.pack(side=tk.RIGHT, fill=tk.Y)
         
-        xsb = ttk.Scrollbar(tr, orient='horizontal', command=self.tree.xview)
+        xsb = ttk.Scrollbar(left_pane, orient='horizontal', command=self.tree.xview)
         xsb.pack(side=tk.BOTTOM, fill=tk.X)
         
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
@@ -57,12 +57,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         self.tree.selection_set(self.tree.get_children()[0])
         
-        tr.grid(column=0, row=0, sticky=tk.N+tk.S)
-        
         # The editor
         self.editor = ConfigurationSchemaEditor(self.pane, schemas[0])
         self.editor.grid(column=1, row=0)
-        self.pane.pack(fill=tk.BOTH, expand=True)
+        
+        left_pane.pack(side=tk.LEFT, fill=tk.Y)
+        self.pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
     def popup_tree(self, ev):
         
@@ -434,7 +434,9 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema_doc.insert(tk.END, schema.documentation)
         self.schema_doc.grid(row=2, column=1, sticky=tk.W)
         
-        buttons = tk.Frame(props)
+        props.pack(expand=True, fill=tk.BOTH)
+        
+        buttons = tk.Frame(self)
         save = tk.Button(buttons, text="Save", command=self.save_schema)
         set_status_message(save, "Save changes to configuration schema")
         save.pack(side=tk.LEFT, padx=2)
@@ -447,8 +449,7 @@ class ConfigurationSchemaEditor(tk.Frame):
         set_status_message(remove, "Remove the configuration schema")
         remove.pack(side=tk.LEFT, padx=2)
         
-        buttons.grid(row=3, column=1, sticky=tk.SE)
-        props.pack()
+        buttons.pack(side=tk.RIGHT)
     
     def save_schema(self):
         self.schema.name = self.schema_name.get()
@@ -542,7 +543,9 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self.section_documentation.insert(tk.END, self.section.documentation)
         self.section_documentation.grid(row=1, column=1, sticky=tk.W)
         
-        buttons = tk.Frame(f)
+        f.pack(fill=tk.BOTH, expand=True)
+        
+        buttons = tk.Frame(self)
         
         save = tk.Button(buttons, text="Save", command=self.save_section)
         save.pack(side=tk.LEFT, padx=2)
@@ -556,9 +559,7 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         remove.pack(side=tk.LEFT, padx=2)
         set_status_message(remove, "Remove the section")
         
-        buttons.grid(row=2, column=1, sticky=tk.SE)
-        
-        f.pack()
+        buttons.pack(side=tk.RIGHT)
         
     def save_section(self):
         self.section.name = self.section_name.get()
@@ -786,7 +787,9 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_documentation.insert(tk.END, self.option.documentation)
         self.option_documentation.grid(row=6, column=1, sticky=tk.W)
         
-        buttons = tk.Frame(self.f)
+        self.f.pack(fill=tk.BOTH, expand=True)
+        
+        buttons = tk.Frame(self)
     
         save = tk.Button(buttons, text="Save", command=self.save_option)
         set_status_message(save, "Save option changes")
@@ -800,9 +803,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         set_status_message(remove, "Remove the option")
         remove.pack(side=tk.LEFT, padx=2)
         
-        buttons.grid(row=7, column=1, sticky=tk.SE)
-        
-        self.f.pack()
+        buttons.pack(side=tk.RIGHT)
         
     def edit_option_type(self, ev):
         print "Edit option type" + self.option_type.get() 
