@@ -2016,7 +2016,6 @@ class Configurator(tk.Frame):
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
-        self.init_schemas()    
         configs_nav = ConfigurationNavigator(self, configs)    
         
         configs_nav.pack(fill=tk.BOTH, expand=True)
@@ -2034,7 +2033,10 @@ class Configurator(tk.Frame):
         root.quit()
         
 class SchemasConfigurator(tk.Frame):
-    def __init__(self, parent, schemas=conf.ConfigurationSchema.configuration_schemas()):
+    def __init__(self, parent, schemas=None):
+        
+        if schemas is None:
+            schemas = conf.ConfigurationSchema.configuration_schemas()
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
@@ -2088,8 +2090,8 @@ def image(filename):
 if __name__ == '__main__':
     root = tk.Tk()
     configs = test.test_configs()
-    configurator = FullConfigurator(root, configs=configs)
-    #configurator = Configurator(root)
-    #configurator = SchemasConfigurator(root)
+    #configurator = FullConfigurator(root, configs=configs)
+    #configurator = Configurator(root, configs=configs)
+    configurator = SchemasConfigurator(root)
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
