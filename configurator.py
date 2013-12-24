@@ -9,6 +9,7 @@ import os
 import pytz # for timezones
 import pycountry # for countries and languages
 import tkCalendar
+import test
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -54,13 +55,16 @@ class ConfigurationSchemaNavigator(tk.Frame):
         #print(self.tree.tag_configure('schema'))
         #self.tree.tag_configure('schema', font=('Helvetica', '16'))
         
-        self.tree.selection_set(self.tree.get_children()[0])
+        if len(self.tree.get_children()) > 0:
+            self.tree.selection_set(self.tree.get_children()[0])
         
-        # The editor
-        self.editor = ConfigurationSchemaEditor(self, schemas[0])
-                
+            # The editor
+            self.editor = ConfigurationSchemaEditor(self, schemas[0])
+        else:
+            self.editor = tk.Frame(self)
+            
         left_pane.pack(side=tk.LEFT, fill=tk.Y)
-        self.editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) 
                 
     def popup_tree(self, ev):
         
@@ -944,20 +948,25 @@ class ConfigurationNavigator(tk.Frame):
         
         self._sections.configure(yscroll=ysb.set, xscroll=xsb.set)
         
-        self._config = configs[0]
-        sections = self._config.sections()
-        self._section = sections[0]
-        
-        for section in sections:
-            self.insert_section(section)
+        if len(configs) > 0:
+            self._config = configs[0]
+            sections = self._config.sections()
             
-        self._sections.selection_set(self._sections.get_children()[0])
+            if len(sections) > 1:
+                self._section = sections[0]
+        
+                for section in sections:
+                    self.insert_section(section)
+            
+                self._sections.selection_set(self._sections.get_children()[0])
+            
         self._sections.pack(fill=tk.Y, expand=True)
         self._left_panel.pack(side=tk.LEFT, fill=tk.Y)
            
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
-        self.insert_section_editor(sections[0])
+        if len(configs) > 0 and len(sections) > 1:
+            self.insert_section_editor(sections[0])
                            
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH)
                         
@@ -1057,18 +1066,21 @@ class ConfigurationNavigator(tk.Frame):
         self._items = {}
         
         sections = self._config.sections()
-        self._section = sections[0]
-        for section in sections:
-            self.insert_section(section)
+        
+        if len(sections) > 1:
+            self._section = sections[0]
+            for section in sections:
+                self.insert_section(section)
             
-        self._sections.selection_set(self._sections.get_children()[0])
+            self._sections.selection_set(self._sections.get_children()[0])
         
         # Clear the right panel
         self._right_panel.forget()
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
                 
-        # Put the options editing on the right panel
-        self.insert_section_editor(sections[0])
+        if len(sections) > 1:
+            # Put the options editing on the right panel
+            self.insert_section_editor(sections[0])
                 
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
@@ -1147,27 +1159,34 @@ class ConfigurationNavigator(tk.Frame):
                  
     def configs_popup(self, ev):
         print "Configs popup"
+        
+        def create_configs_menu():
+            popup.add_command(label="Add configuration", command=self.create_config)
+            popup.add_command(label="Save configurations", command=self.save_configs)
+            popup.add_command(label="Load configurations", command=self.load_configs)
+            popup.add_command(label="Validate configurations", command=self.validate_configs)
+            
         index = self._configs_list.nearest(ev.y)
         
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         
-        _, yoffset, _, height = self._configs_list.bbox(index)
-        if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
-            # Outside of widget.
-            popup.add_command(label="Add configuration", command=self.create_config)
-            popup.add_command(label="Save configurations", command=self.save_configs)
-            popup.add_command(label="Load configurations", command=self.load_configs)
-            popup.add_command(label="Validate configurations", command=self.validate_configs)
-        else:
+        if index >= 0:
+            _, yoffset, _, height = self._configs_list.bbox(index)
         
-            config_name = self._configs_list.get(index)
-            config = next((config for config in self._configs if config.name == config_name), None)
-            print "Config: " + str(config)
+            if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
+                # Outside of widget.
+                create_configs_menu()
+            else:
+                config_name = self._configs_list.get(index)
+                config = next((config for config in self._configs if config.name == config_name), None)
+                print "Config: " + str(config)
                     
-            popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
-            popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
-            popup.add_command(label="Validate", command=lambda:self.validate_config(config, index))
+                popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
+                popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
+                popup.add_command(label="Validate", command=lambda:self.validate_config(config, index))
+        else:
+            create_configs_menu()            
             
         popup.add_separator()
         popup.add_command(label="Dismiss")
@@ -1331,14 +1350,11 @@ class ConfigurationEditor(tk.Toplevel):
         self._config_doc.insert(tk.END, config.documentation)
         self._config_doc.grid(row=1, column=1, sticky=tk.W)
         
-        # Schema
-        self._all_schemas = conf.ConfigurationSchema.configuration_schemas()
-        
         tk.Label(self, text="Schema: ").grid(row=2, column=0, sticky=tk.W + tk.N)
         self._schemas = tk.Listbox(self)
         
         index = 0
-        for schema in self._all_schemas:
+        for schema in self.all_schemas():
             self._schemas.insert(index, schema.name)
             if schema == config.schema:
                 self._schemas.selection_set(index)
@@ -1366,6 +1382,9 @@ class ConfigurationEditor(tk.Toplevel):
               
         buttons.grid(row=4, column=1, sticky=tk.SE)
     
+    def all_schemas(self):
+        return conf.ConfigurationSchema.configuration_schemas()
+    
     def save_config(self):
         print "Save config"
         
@@ -1373,7 +1392,7 @@ class ConfigurationEditor(tk.Toplevel):
         self._config.documentation = self._config_doc.get(1.0, tk.END)
         
         index = self._schemas.curselection()
-        schema = self._all_schemas[int(index[0])]
+        schema = self.all_schemas()[int(index[0])]
         self._config.schema = schema
         
         if self._config_parent.get() <> '':
@@ -1915,8 +1934,11 @@ class DatetimeOptionEditor(OptionEditor):
         return self._calendar.dt <> self._date
     
 class FullConfigurator(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, configs=[], schemas=None):
         
+        if schemas is None:
+            schemas = conf.ConfigurationSchema.configuration_schemas()
+                
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
         parent.title('Configurator')
@@ -1946,8 +1968,8 @@ class FullConfigurator(tk.Frame):
         tabs = ttk.Notebook(self, name='notebook')
         tabs.enable_traversal()
         
-        navigator = self.init_schemas_navigator()
-        configs_nav = self.init_configs_navigator()
+        navigator = ConfigurationSchemaNavigator(self, schemas)
+        configs_nav = ConfigurationNavigator(self, configs) 
         
         tabs.add(configs_nav, text='Configurations')
         tabs.add(navigator, text='Configuration schemas')
@@ -1958,80 +1980,6 @@ class FullConfigurator(tk.Frame):
         self.status = w.StatusBar(self)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
         
-    def init_schemas_navigator(self):
-        self._schemas = {}
-        
-        sch1 = conf.ConfigurationSchema("Web")
-        s1 = conf.ConfigurationSchemaSection("Web server")
-        sch1.section(s1)
-        
-        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
-        host.default_value = 'http://localhost'
-        s1.add_option(host)
-        
-        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
-        port.default_value = 8080
-        s1.add_option(port)
-        
-        s2 = conf.ConfigurationSchemaSection("Authentication")
-        sch1.section(s2)
-        
-        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
-        auth.is_required=False
-        s2.add_option(auth)
-        
-        sch_log = conf.ConfigurationSchema("Log")
-        s3 = conf.ConfigurationSchemaSection("Logging")
-        sch_log.section(s3)
-        
-        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
-        s3.add_option(logfile)
-        
-        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
-        s3.add_option(datetime)
-        
-        s4 = conf.ConfigurationSchemaSection("General preferences")
-        sch1.section(s4)
-        
-        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
-        s4.add_option(fontsize)
-        
-        s5 = conf.ConfigurationSchemaSection('Colors')
-        s4.add_section(s5)
-        
-        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
-        s5.add_option(color)        
-        
-        self._schemas[sch1.name] = sch1
-    
-        db = conf.ConfigurationSchema("Database")
-        db_engine = conf.ConfigurationSchemaOption("engine", 
-                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
-                                                   documentation="The database engine")
-        db_engine.is_required = True
-        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
-        db.section(db_server)
-        
-        self._schemas[db.name] = db
-        self._schemas[sch_log.name] = sch_log
-        
-        app_sch = conf.ConfigurationSchema('App')
-        app_sch.add_parent(db)
-        app_sch.add_parent(sch1)
-        app_sch.add_parent(sch_log)
-        
-        self._schemas[app_sch.name] = app_sch
-                
-        return ConfigurationSchemaNavigator(self, self._schemas.values())
-    
-    def init_configs_navigator(self):
-        dev = conf.Configuration('Dev', self._schemas['App'])
-        test = conf.Configuration('Test', self._schemas['App'])
-        test.parent = dev
-        prod = conf.Configuration('Prod', self._schemas['Web'])
-        
-        return ConfigurationNavigator(self, [dev, test,prod])                        
-       
     def help_about(self):
         d = AboutDialog(self)
 
@@ -2041,7 +1989,7 @@ class FullConfigurator(tk.Frame):
         root.quit()
         
 class Configurator(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, configs=[]):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
@@ -2069,85 +2017,13 @@ class Configurator(tk.Frame):
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
         self.init_schemas()    
-        configs_nav = self.init_configs_navigator()
+        configs_nav = ConfigurationNavigator(self, configs)    
         
         configs_nav.pack(fill=tk.BOTH, expand=True)
         
         # Status bar
         self.status = w.StatusBar(self)
-        self.status.pack(side=tk.BOTTOM, fill=tk.X)
-        
-    def init_schemas(self):
-        self._schemas = {}
-        
-        sch1 = conf.ConfigurationSchema("Web")
-        s1 = conf.ConfigurationSchemaSection("Web server")
-        sch1.section(s1)
-        
-        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
-        host.default_value = 'http://localhost'
-        s1.add_option(host)
-        
-        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
-        port.default_value = 8080
-        s1.add_option(port)
-        
-        s2 = conf.ConfigurationSchemaSection("Authentication")
-        sch1.section(s2)
-        
-        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
-        auth.is_required=False
-        s2.add_option(auth)
-        
-        sch_log = conf.ConfigurationSchema("Log")
-        s3 = conf.ConfigurationSchemaSection("Logging")
-        sch_log.section(s3)
-        
-        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
-        s3.add_option(logfile)
-        
-        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
-        s3.add_option(datetime)
-        
-        s4 = conf.ConfigurationSchemaSection("General preferences")
-        sch1.section(s4)
-        
-        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
-        s4.add_option(fontsize)
-        
-        s5 = conf.ConfigurationSchemaSection('Colors')
-        s4.add_section(s5)
-        
-        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
-        s5.add_option(color)        
-        
-        self._schemas[sch1.name] = sch1
-    
-        db = conf.ConfigurationSchema("Database")
-        db_engine = conf.ConfigurationSchemaOption("engine", 
-                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
-                                                   documentation="The database engine")
-        db_engine.is_required = True
-        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
-        db.section(db_server)
-        
-        self._schemas[db.name] = db
-        self._schemas[sch_log.name] = sch_log
-        
-        app_sch = conf.ConfigurationSchema('App')
-        app_sch.add_parent(db)
-        app_sch.add_parent(sch1)
-        app_sch.add_parent(sch_log)
-        
-        self._schemas[app_sch.name] = app_sch       
-    
-    def init_configs_navigator(self):
-        dev = conf.Configuration('Dev', self._schemas['App'])
-        test = conf.Configuration('Test', self._schemas['App'])
-        test.parent = dev
-        prod = conf.Configuration('Prod', self._schemas['Web'])
-        
-        return ConfigurationNavigator(self, [dev, test,prod])                        
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)                     
        
     def help_about(self):
         d = AboutDialog(self)
@@ -2158,7 +2034,7 @@ class Configurator(tk.Frame):
         root.quit()
         
 class SchemasConfigurator(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, schemas=conf.ConfigurationSchema.configuration_schemas()):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
@@ -2185,7 +2061,7 @@ class SchemasConfigurator(tk.Frame):
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
-        navigator = self.init_schemas_navigator()
+        navigator = ConfigurationSchemaNavigator(self, schemas)
          
         navigator.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
         
@@ -2193,72 +2069,6 @@ class SchemasConfigurator(tk.Frame):
         self.status = w.StatusBar(self)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
         
-    def init_schemas_navigator(self):
-        self._schemas = {}
-        
-        sch1 = conf.ConfigurationSchema("Web")
-        s1 = conf.ConfigurationSchemaSection("Web server")
-        sch1.section(s1)
-        
-        host = conf.ConfigurationSchemaOption("Host", conf.StringOptionType(), documentation="Server host")
-        host.default_value = 'http://localhost'
-        s1.add_option(host)
-        
-        port = conf.ConfigurationSchemaOption("Port", conf.NumberOptionType(), documentation="Port number")
-        port.default_value = 8080
-        s1.add_option(port)
-        
-        s2 = conf.ConfigurationSchemaSection("Authentication")
-        sch1.section(s2)
-        
-        auth = conf.ConfigurationSchemaOption('Authentication enabled', conf.BooleanOptionType(), documentation='Enable authentication?')
-        auth.is_required=False
-        s2.add_option(auth)
-        
-        sch_log = conf.ConfigurationSchema("Log")
-        s3 = conf.ConfigurationSchemaSection("Logging")
-        sch_log.section(s3)
-        
-        logfile = conf.ConfigurationSchemaOption('Logfile', conf.FilenameOptionType(), documentation='Where the logging happens')
-        s3.add_option(logfile)
-        
-        datetime = conf.ConfigurationSchemaOption('Expire', conf.DatetimeOptionType(), documentation='Expiration')
-        s3.add_option(datetime)
-        
-        s4 = conf.ConfigurationSchemaSection("General preferences")
-        sch1.section(s4)
-        
-        fontsize = conf.ConfigurationSchemaOption('Font size', conf.NumberOptionType(), documentation='Font size')
-        s4.add_option(fontsize)
-        
-        s5 = conf.ConfigurationSchemaSection('Colors')
-        s4.add_section(s5)
-        
-        color = conf.ConfigurationSchemaOption('Background color', conf.ColorOptionType(), documentation='Background color')
-        s5.add_option(color)        
-        
-        self._schemas[sch1.name] = sch1
-    
-        db = conf.ConfigurationSchema("Database")
-        db_engine = conf.ConfigurationSchemaOption("engine", 
-                                                   conf.ChoiceOptionType(["Postgresql", "Mysql"]), 
-                                                   documentation="The database engine")
-        db_engine.is_required = True
-        db_server = conf.ConfigurationSchemaSection("Database server").add_option(db_engine)
-        db.section(db_server)
-        
-        self._schemas[db.name] = db
-        self._schemas[sch_log.name] = sch_log
-        
-        app_sch = conf.ConfigurationSchema('App')
-        app_sch.add_parent(db)
-        app_sch.add_parent(sch1)
-        app_sch.add_parent(sch_log)
-        
-        self._schemas[app_sch.name] = app_sch
-                
-        return ConfigurationSchemaNavigator(self, self._schemas.values())
-    
     def help_about(self):
         d = AboutDialog(self)
 
@@ -2277,8 +2087,9 @@ def image(filename):
         
 if __name__ == '__main__':
     root = tk.Tk()
-    #configurator = FullConfigurator(root)
+    configs = test.test_configs()
+    configurator = FullConfigurator(root, configs=configs)
     #configurator = Configurator(root)
-    configurator = SchemasConfigurator(root)
+    #configurator = SchemasConfigurator(root)
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()

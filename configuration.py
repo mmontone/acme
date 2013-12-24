@@ -11,6 +11,7 @@ class ConfigurationSchema():
     
     @classmethod
     def register_schema(cls, schema):
+        print "Registering schema " + schema.name
         cls._configuration_schemas[schema.name] = schema
         
     @classmethod
