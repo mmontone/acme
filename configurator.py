@@ -1456,24 +1456,36 @@ class ConfigurationEditor(tk.Toplevel):
     def save_config(self):
         print "Save config"
         
-        self._config.name = self._config_name.get()
-        self._config.documentation = self._config_doc.get(1.0, tk.END)
+        # Validation
+        errors = '' 
         
-        index = self._schemas.curselection()
-        schema = self.all_schemas()[int(index[0])]
-        self._config.schema = schema
-        
-        if self._config_parent.get() <> '':
-            parent = next((config for config in self._configs if config.name == self._config_parent.get()), None)
-        else:
-            parent = None
-        
-        self._config.parent = parent
-        
-        if self._onsave:
-            self._onsave(self._config)
+        if self._config_name.get() == '':
+            errors = errors + 'Fill in the configuration name\n'
             
-        self.destroy()
+        if len(self._schemas.curselection()) == 0:
+            errors = errors + 'Select the configuration schema\n'
+            
+        if len(errors) > 0:
+            tkMessageBox.showerror('Error', errors)
+        else:
+            self._config.name = self._config_name.get()
+            self._config.documentation = self._config_doc.get(1.0, tk.END)
+            
+            index = self._schemas.curselection()
+            schema = self.all_schemas()[int(index[0])]
+            self._config.schema = schema
+            
+            if self._config_parent.get() <> '':
+                parent = next((config for config in self._configs if config.name == self._config_parent.get()), None)
+            else:
+                parent = None
+            
+            self._config.parent = parent
+            
+            if self._onsave:
+                self._onsave(self._config)
+                
+            self.destroy()
         
 class LoadConfigurationsDialog(tk.Toplevel):
     
