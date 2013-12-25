@@ -825,7 +825,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         buttons.pack(side=tk.RIGHT)
         
     def edit_option_type(self, ev):
-        print "Edit option type" + self.option_type.get() 
+        print "Edit option type" + self.option_type.get()
         option_type = conf.OptionType.get_named(self.option_type.get())
         
         editor = OptionTypeEditor.for_option_type(option_type)
@@ -864,19 +864,34 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self._default_value_editor.grid(row=4, column=1, sticky=tk.W) 
     
     def save_option(self):
-        self.option.name = self.option_name.get()
-        self.option.documentation = self.option_documentation.get(1.0, tk.END)
-        self.option.option_type = self.option_type_editor.option_type_instance()
-        self.option.is_required = self.option_required.get() == 1
-        if self._default_value_var.get() == 1:
-            self.option.default_value = self._default_value_editor.value()
-        else:
-            self.option.default_value = None
-            
-        configurator.status.set(self.option.name + " option has been updated")
+        # Validation
+        errors = ''
+        if self.option_type.get() == '':
+            errors = errors + 'Select option type' + '\n'
+        if self.option_name.get() == '':
+            errors = errors + 'Fill the option name' + '\n'
         
-        if self._onsave:
-            self._onsave()
+        if errors <> '':
+            tkMessageBox.showerror('Error', errors)
+        else:
+            self.option.name = self.option_name.get()
+            self.option.documentation = self.option_documentation.get(1.0, tk.END)
+            if isinstance(self.option_type_editor, OptionTypeEditor):
+                self.option.option_type = self.option_type_editor.option_type_instance()
+            else:
+                option_type = conf.OptionType.get_named(self.option_type.get())
+                self.option.option_type = option_type()
+                 
+            self.option.is_required = self.option_required.get() == 1
+            if self._default_value_var.get() == 1:
+                self.option.default_value = self._default_value_editor.value()
+            else:
+                self.option.default_value = None
+                
+            configurator.status.set(self.option.name + " option has been updated")
+            
+            if self._onsave:
+                self._onsave()
             
     def restore_option(self):
         self.option_name.set(self.option.name)
@@ -903,9 +918,9 @@ class OptionTypeEditor(object, tk.Frame):
         subclasses = OptionTypeEditor.__subclasses__()
         return next((editor for editor in subclasses if editor.option_type == option_type), None)
     
-    def option_type(self):
+    def option_type_instance(self):
         return self.__class__.option_type()
-
+         
 class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     option_type = conf.ChoiceOptionType
     
