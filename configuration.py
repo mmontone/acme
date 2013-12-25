@@ -53,7 +53,7 @@ class ConfigurationSchema():
         return next((s for s in self._sections if s.name == name), None)
         
     def remove_section(self, section):
-        self._sections.remove(section)
+        self._direct_sections.remove(section)
             
     def parents(self):
         return map(lambda name: ConfigurationSchema.get_named(name), self._parents)
