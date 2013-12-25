@@ -2270,13 +2270,11 @@ if __name__ == '__main__':
         elif os.path.exists(os.getcwd() + '/' + args.schemas):
             schemas_file = os.getcwd() + '/' + args.schemas
         else:
-            print 'Schema file ' + args.schemas + ' does not exist'
-            quit()
+            sys.exit('Schema file ' + args.schemas + ' does not exist')
         
     if schemas_file is None:
         if not os.path.exists(os.getcwd() + '/configurator.schema'):
-            print 'Configuration schemas file not found'
-            quit()
+            sys.exit('Configuration schemas file not found')
         else:
             schemas_file = os.getcwd() + '/configurator.schema'
     
@@ -2291,8 +2289,7 @@ if __name__ == '__main__':
         elif os.path.exists(os.getcwd() + '/' + args.config):
             configs_file = os.path.exists(os.getcwd() + '/' + args.config)
         else:
-            print 'Configuration file ' + args.configs + ' does not exist'
-            quit()
+            sys.exit('Configuration file ' + args.configs + ' does not exist')     
     
     if configs_file is None:
         if os.path.exists(os.getcwd() + '/configurator.config'):
