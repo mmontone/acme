@@ -2035,6 +2035,14 @@ class FullConfigurator(tk.Frame):
         # Menubar
         self.menu_bar = tk.Menu(self)
         
+        # Schemas menu
+        schemas_menu = tk.Menu(self.menu_bar)
+        schemas_menu.add_command(label="New", command=self.create_schema)
+        schemas_menu.add_command(label="Save", command=self.save_schemas)
+        schemas_menu.add_command(label="Load", command=self.load_schemas)
+        self.menu_bar.add_cascade(label='Schemas', menu=schemas_menu)
+        
+        # Help menu
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
         set_status_message(help_menu, 'About configurator')
@@ -2052,22 +2060,31 @@ class FullConfigurator(tk.Frame):
         except AttributeError:
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
-            
+               
         # Tabs
         tabs = ttk.Notebook(self, name='notebook')
         tabs.enable_traversal()
         
-        navigator = ConfigurationSchemaNavigator(self, schemas)
-        configs_nav = ConfigurationNavigator(self, configs) 
+        self._schemas_nav = ConfigurationSchemaNavigator(self, schemas)
+        self._configs_nav = ConfigurationNavigator(self, configs) 
         
-        tabs.add(configs_nav, text='Configurations')
-        tabs.add(navigator, text='Configuration schemas')
+        tabs.add(self._configs_nav, text='Configurations')
+        tabs.add(self._schemas_nav, text='Configuration schemas')
                              
         tabs.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
         
         # Status bar
         self.status = w.StatusBar(self)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def create_schema(self):
+        self._schemas_nav.create_schema()
+        
+    def save_schemas(self):
+        self._schemas_nav.save_schemas()
+        
+    def load_schemas(self):
+        self._schemas_nav.load_schemas()
         
     def help_about(self):
         d = AboutDialog(self)
