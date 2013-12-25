@@ -702,19 +702,35 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
             self.option_type_editor.grid(row=2, column=1)
     
     def save_option(self):
-        option_name = self.option_name.get()
-        option_type = conf.OptionType.get_named(self.option_type.get())
+        # Validation
+        errors = []
+        if self.option_name.get() == '':
+            errors.append('Enter the option name')
         
-        option = conf.ConfigurationSchemaOption(option_name, option_type())
-        option.is_required=self.option_required.get() == 1
-        option.documentation = self.option_documentation.get(1.0, tk.END)
-        
-        configurator.status.set(option.name + " option has been created")
-        
-        if self._onsave:
-            self._onsave(option)
+        if self.option_type.get() == '':
+            errors.append('Select the option type')
             
-        self.destroy()
+        if len(errors) > 0:
+            message = ''
+            for error in errors:
+                message = message + error + '\n'
+                
+            tkMessageBox.showerror('Error', message)
+        else:
+            option_name = self.option_name.get()
+            
+            option_type = conf.OptionType.get_named(self.option_type.get())
+            
+            option = conf.ConfigurationSchemaOption(option_name, option_type())
+            option.is_required=self.option_required.get() == 1
+            option.documentation = self.option_documentation.get(1.0, tk.END)
+                   
+            configurator.status.set(option.name + " option has been created")
+            
+            if self._onsave:
+                self._onsave(option)
+                
+            self.destroy()
                       
 class ConfigurationSchemaOptionEditor(tk.Frame):
     def __init__(self, master, option, **options):
