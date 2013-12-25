@@ -455,12 +455,20 @@ class ConfigurationSchemaEditor(tk.Frame):
         buttons.pack(side=tk.RIGHT)
     
     def save_schema(self):
-        self.schema.name = self.schema_name.get()
-        self.schema.documentation = self.schema_doc.get(1.0, tk.END)
-        #self.schema.set_parents(self.parents.get_selection())
-        configurator.status.set(self.schema.name + " configuration schema has been updated")
-        if self._onsave:
-            self._onsave()
+        # Validation
+        errors = ''
+        if self.schema_name.get() == '':
+            errors = errors + 'Fill in the configuration schema name\n'
+            
+        if len(errors) > 0:
+            tkMessageBox.showerror('Error', errors)
+        else:
+            self.schema.name = self.schema_name.get()
+            self.schema.documentation = self.schema_doc.get(1.0, tk.END)
+            #self.schema.set_parents(self.parents.get_selection())
+            configurator.status.set(self.schema.name + " configuration schema has been updated")
+            if self._onsave:
+                self._onsave()
     
     def restore_schema(self):
         self.schema_name.set(self.schema.name)
