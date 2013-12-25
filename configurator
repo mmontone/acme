@@ -1,2 +1,5 @@
-#!/bin/sh
-python configurator.py "$@"
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONFIGURATOR="$DIR/configurator.py"
+python $CONFIGURATOR "$@"
