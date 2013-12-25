@@ -1787,17 +1787,36 @@ class ColorOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
+        self._initial_value = ''
+        if self._option_schema and self._option_schema.default_value:
+            self._initial_value = self._option_schema.default_value
+             
         self._var = tk.StringVar()
-                
-        tk.Entry(self, textvariable=self._var).pack()
-        tk.Button(self, text='Select Color', command=self.getColor).pack()
+        self._var.set(self._initial_value)
+                       
+        self._entry = tk.Entry(self, textvariable=self._var)
+        self._entry.pack()
+        
+        self._select_btn = tk.Button(self, text='Select Color', command=self.getColor)
+        self._select_btn.pack()
+        
+    def disable(self):
+        self._entry.configure(state=tk.DISABLED)
+        self._select_btn.configure(state=tk.DISABLED)
         
     def getColor(self):
-        color = tkColorChooser.askcolor()
-        self._var.set(color)
+        tuple, hex = tkColorChooser.askcolor()
+        self._var.set(hex)
+        
+    def set_value(self, value):
+        self._var.set(value)
+        self._initial_value = value
         
     def value(self):
         return self._var.get()
+    
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class FilenameOptionEditor(OptionEditor):
     option_type = conf.FilenameOptionType
