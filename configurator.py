@@ -10,6 +10,7 @@ import pytz # for timezones
 import pycountry # for countries and languages
 import tkCalendar
 import test
+import argparse
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -979,6 +980,7 @@ class ConfigurationNavigator(tk.Frame):
         
         config_props = tk.Frame(self._right_panel)
         tk.Label(config_props, text='Schema: ' + self._config.schema.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
+        
         if self._config.parent is not None:
             tk.Label(config_props, text='Parent: ' + self._config.parent.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
         config_props.pack()        
@@ -2088,10 +2090,66 @@ def image(filename):
     return os.path.dirname(os.path.realpath(__file__)) + "/images/" + filename
         
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Configurator. Configuration management utility.')
+    parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
+    parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
+    parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
+    parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
+    parser.add_argument('--debug', help='Run in debug mode', action='store_true')
+    args = parser.parse_args()
+    
+    schemas_file = None
+    
+    if args.schemas is not None:
+        if os.path.exists(args.schemas):
+            schemas_file = args.schemas
+        elif os.path.exists(os.getcwd() + '/' + args.schemas):
+            schemas_file = os.getcwd() + '/' + args.schemas
+        else:
+            print 'Schema file ' + args.schemas + ' does not exist'
+            quit()
+        
+    if schemas_file is None:
+        if not os.path.exists(os.getcwd() + '/configurator.schema'):
+            print 'Configuration schemas file not found'
+            quit()
+        else:
+            schemas_file = os.getcwd() + '/configurator.schema'
+    
+    # Try to load the schemas
+    unserializer = conf.ConfigurationSchemasXMLUnserializer()
+    schemas = unserializer.read(schemas_file)
+    
+    configs_file = None
+    if args.configs is not None:
+        if os.path.exists(args.config):
+            configs_file = args.configs
+        elif os.path.exists(os.getcwd() + '/' + args.config):
+            configs_file = os.path.exists(os.getcwd() + '/' + args.config)
+        else:
+            print 'Configuration file ' + args.configs + ' does not exist'
+            quit()
+    
+    if configs_file is None:
+        if os.path.exists(os.getcwd() + '/configurator.config'):
+            configs_file = os.getcwd() + '/configurator.config'
+            
+    # Try loading the configurations
+    configs = []
+    
+    if configs_file is not None:
+        unserializer = conf.ConfigurationsXMLUnserializer()
+        configs = unserializer.read(configs_file)
+        
+        
     root = tk.Tk()
-    configs = test.test_configs()
-    #configurator = FullConfigurator(root, configs=configs)
-    #configurator = Configurator(root, configs=configs)
-    configurator = SchemasConfigurator(root)
+    
+    if args.full:
+        configurator = FullConfigurator(root, configs=configs)
+    elif args.setup:
+        configurator = SchemasConfigurator(root)
+    else:
+        configurator = Configurator(root, configs=configs)
+    
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()

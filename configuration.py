@@ -7,7 +7,11 @@ class ConfigurationSchema():
     
     @classmethod
     def get_named(cls, name):
-        return cls._configuration_schemas.get(name)
+        schema = cls._configuration_schemas.get(name)
+        if schema is None:
+            raise Exception(name + ' schema not found')
+        else:
+            return schema
     
     @classmethod
     def register_schema(cls, schema):
@@ -40,6 +44,7 @@ class ConfigurationSchema():
     def sections(self):
         sections = []
         sections.extend(self.direct_sections())
+        
         for parent in self.parents():
             sections.extend(parent.sections())
         return sections        
@@ -51,13 +56,19 @@ class ConfigurationSchema():
         self._sections.remove(section)
             
     def parents(self):
-        return self._parents
+        return map(lambda name: ConfigurationSchema.get_named(name), self._parents)
     
     def set_parents(self, parents):
-        self._parents = parents
+        self._parents = []
+        for parent in parents:
+            self.add_parent(parent)
+        return self
     
     def add_parent(self, parent):
-        self._parents.append(parent)
+        if isinstance(parent, str):
+            self._parents.append(parent)
+        else:
+            self._parents.append(parent.name)
         
     @property
     def name(self):
@@ -408,7 +419,30 @@ class ManyOptionType(OptionType, CompoundOptionType):
     def __init__(self, *option_types):
         OptionType.__init__(self, *option_types)
     
-class Configuration():
+class Configuration(object):
+    
+    _configurations = {}
+    
+    @classmethod
+    def get_named(cls, name):
+        config = cls._configurations.get(name)
+        if config is None:
+            raise Exception(name + ' configuration not found')
+        else:
+            return config
+    
+    @classmethod
+    def register_config(cls, config):
+        print "Registering config " + config.name
+        cls._configurations[config.name] = config
+        
+    @classmethod
+    def unregister_config(cls, config):
+        del cls._configurations[config.name]
+        
+    @classmethod
+    def configurations(cls):
+        return cls._configurations.values()    
     
     def __init__(self, name='', schema=None, **options):
         self._name = name
@@ -419,6 +453,7 @@ class Configuration():
         self._parent = options.get('parent') or None
         self._options = {}
         self._documentation = options.get('documentation') or ''
+        Configuration.register_config(self)
         
     @property
     def name(self):
@@ -441,11 +476,18 @@ class Configuration():
     
     @property
     def parent(self):
-        return self._parent
+        if self._parent is None:
+            return None
+        else:
+            return Configuration.get_named(self._parent)
     
     @parent.setter
     def parent(self, value):
-        self._parent = value
+        if isinstance(value, str):
+            self._parent = value
+        else:
+            self._parent = value.name
+            
         return self
     
     @property
@@ -590,8 +632,6 @@ class ConfigurationsXMLUnserializer():
             
             parent = config.find('parent')
             if parent is not None:
-                # Install the parent name for the moment
-                # Not the parent itself, because it isnt available
                 cfg.parent = parent.attrib['name']
                        
             for option in config.iterchildren(tag='option'):
@@ -698,7 +738,7 @@ class ConfigurationSchemasXMLUnserializer():
             sch = ConfigurationSchema(name, documentation=doc)
             
             for parent in schema.iterchildren(tag='parent'):
-                sch.add_parent(ConfigurationSchema.get_named(parent.attrib['name']))
+                sch.add_parent(parent.attrib['name'])
                 
             for section in schema.iterchildren(tag='section'):
                 sch.section(self.unserialize_section(section))
