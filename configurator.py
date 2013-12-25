@@ -6,6 +6,7 @@ import tkMessageBox
 import tkColorChooser
 import tkFileDialog
 import os
+import sys
 import pytz # for timezones
 import pycountry # for countries and languages
 import tkCalendar
