@@ -520,17 +520,26 @@ class ConfigurationSchemaCreator(tk.Toplevel):
         props.pack()
     
     def save_schema(self):
-        schema = conf.ConfigurationSchema(self.schema_name.get())
-         
-        schema.documentation = self.schema_doc.get(1.0, tk.END)
-        #schema.set_parents(self.parents.get_selection())
+        # Validation
+        errors = ''
         
-        configurator.status.set(schema.name + " configuration schema has been updated")
-        
-        if self._onsave:
-            self._onsave(schema)
+        if self.schema_name.get() == '':
+            errors = errors + 'Fill in the configuration schema name'
             
-        self.destroy()
+        if len(errors) > 0:
+            tkMessageBox.showerror('Error', errors)
+        else:
+            schema = conf.ConfigurationSchema(self.schema_name.get())
+             
+            schema.documentation = self.schema_doc.get(1.0, tk.END)
+            #schema.set_parents(self.parents.get_selection())
+            
+            configurator.status.set(schema.name + " configuration schema has been updated")
+            
+            if self._onsave:
+                self._onsave(schema)
+                
+            self.destroy()
            
 class ConfigurationSchemaSectionEditor(tk.Frame):
     def __init__(self, master, section, **options):
