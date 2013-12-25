@@ -2035,6 +2035,13 @@ class FullConfigurator(tk.Frame):
         # Menubar
         self.menu_bar = tk.Menu(self)
         
+        # Configs menu
+        configs_menu = tk.Menu(self.menu_bar)
+        configs_menu.add_command(label="New", command=self.create_config)
+        configs_menu.add_command(label="Save", command=self.save_configs)
+        configs_menu.add_command(label="Load", command=self.load_configs)
+        self.menu_bar.add_cascade(label='Configurations', menu=configs_menu)
+        
         # Schemas menu
         schemas_menu = tk.Menu(self.menu_bar)
         schemas_menu.add_command(label="New", command=self.create_schema)
@@ -2076,6 +2083,20 @@ class FullConfigurator(tk.Frame):
         # Status bar
         self.status = w.StatusBar(self)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def create_config(self):
+        self._configs_nav.create_config()
+        
+    def save_configs(self):
+        self._configs_nav.save_configs()
+        
+    def load_configs(self):
+        self._configs_nav.load_configs()
+        
+    def help_about(self):
+        d = AboutDialog(self)
+
+        self.wait_window(d)
         
     def create_schema(self):
         self._schemas_nav.create_schema()
