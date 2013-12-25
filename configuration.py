@@ -483,7 +483,9 @@ class Configuration(object):
     
     @parent.setter
     def parent(self, value):
-        if isinstance(value, str):
+        if value is None:
+            self._parent = None
+        elif isinstance(value, str):
             self._parent = value
         else:
             self._parent = value.name
