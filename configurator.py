@@ -328,7 +328,7 @@ class SaveSchemasDialog(tk.Toplevel):
         
         tk.Label(self, text='Save to: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_schema_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.schema'
+        default_schema_filename = os.getcwd()  + '/configurator.schema'
         
         self._filename = tk.StringVar()
         self._filename.set(default_schema_filename)
@@ -373,7 +373,7 @@ class LoadSchemasDialog(tk.Toplevel):
         
         tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_schema_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.schema'
+        default_schema_filename = os.getcwd()  + '/configurator.schema'
         
         self._filename = tk.StringVar()
         self._filename.set(default_schema_filename)
@@ -1421,7 +1421,7 @@ class LoadConfigurationsDialog(tk.Toplevel):
         
         tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_config_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.config'
+        default_config_filename = os.getcwd()  + '/configurator.config'
         
         self._filename = tk.StringVar()
         self._filename.set(default_config_filename)
@@ -1470,7 +1470,7 @@ class SaveConfigurationsDialog(tk.Toplevel):
         
         tk.Label(self, text='Save to: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_config_filename = os.path.dirname(os.path.realpath(__file__)) + '/configurator.config'
+        default_config_filename = os.getcwd()  + '/configurator.config'
         
         self._filename = tk.StringVar()
         self._filename.set(default_config_filename)
