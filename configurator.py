@@ -2125,6 +2125,13 @@ class Configurator(tk.Frame):
         # Menubar
         self.menu_bar = tk.Menu(self)
         
+        # Configs menu
+        configs_menu = tk.Menu(self.menu_bar)
+        configs_menu.add_command(label="New", command=self.create_config)
+        configs_menu.add_command(label="Save", command=self.save_configs)
+        configs_menu.add_command(label="Load", command=self.load_configs)
+        self.menu_bar.add_cascade(label='Configurations', menu=configs_menu)
+        
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
         set_status_message(help_menu, 'About configurator')
@@ -2143,13 +2150,22 @@ class Configurator(tk.Frame):
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
-        configs_nav = ConfigurationNavigator(self, configs)    
+        self._configs_nav = ConfigurationNavigator(self, configs)    
         
-        configs_nav.pack(fill=tk.BOTH, expand=True)
+        self._configs_nav.pack(fill=tk.BOTH, expand=True)
         
         # Status bar
         self.status = w.StatusBar(self)
-        self.status.pack(side=tk.BOTTOM, fill=tk.X)                     
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def create_config(self):
+        self._configs_nav.create_config()
+        
+    def save_configs(self):
+        self._configs_nav.save_configs()
+        
+    def load_configs(self):
+        self._configs_nav.load_configs()                     
        
     def help_about(self):
         d = AboutDialog(self)
