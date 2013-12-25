@@ -2093,11 +2093,6 @@ class FullConfigurator(tk.Frame):
     def load_configs(self):
         self._configs_nav.load_configs()
         
-    def help_about(self):
-        d = AboutDialog(self)
-
-        self.wait_window(d)
-        
     def create_schema(self):
         self._schemas_nav.create_schema()
         
@@ -2188,6 +2183,13 @@ class SchemasConfigurator(tk.Frame):
         # Menubar
         self.menu_bar = tk.Menu(self)
         
+        # Schemas menu
+        schemas_menu = tk.Menu(self.menu_bar)
+        schemas_menu.add_command(label="New", command=self.create_schema)
+        schemas_menu.add_command(label="Save", command=self.save_schemas)
+        schemas_menu.add_command(label="Load", command=self.load_schemas)
+        self.menu_bar.add_cascade(label='Schemas', menu=schemas_menu)
+        
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
         set_status_message(help_menu, 'About configurator')
@@ -2206,13 +2208,22 @@ class SchemasConfigurator(tk.Frame):
             # master is a toplevel window (Python 1.4/Tkinter 1.63)
             parent.tk.call(parent, "config", "-menu", menu_bar)
             
-        navigator = ConfigurationSchemaNavigator(self, schemas)
+        self._schemas_nav = ConfigurationSchemaNavigator(self, schemas)
          
-        navigator.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
+        self._schemas_nav.pack(fill=tk.BOTH, expand=True, padx=2, pady=3)
         
         # Status bar
         self.status = w.StatusBar(self)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+    def create_schema(self):
+        self._schemas_nav.create_schema()
+        
+    def save_schemas(self):
+        self._schemas_nav.save_schemas()
+        
+    def load_schemas(self):
+        self._schemas_nav.load_schemas()
         
     def help_about(self):
         d = AboutDialog(self)
