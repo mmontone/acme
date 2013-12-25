@@ -1645,13 +1645,15 @@ class BooleanOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        self._initial_value = False
+        self._initial_value = None
         
-        if self._option_schema and self._option_schema.default_value:
-            self._initial_value = True        
+        if self._option_schema and self._option_schema.default_value is not None:
+            self._initial_value = self._option_schema.default_value        
         
         self._var = tk.IntVar()
-        self._var.set(self._initial_value)
+        
+        if self._initial_value is not None:
+            self._var.set(1 if self._initial_value else 0)
                         
         self._cb = tk.Checkbutton(self, variable=self._var)
         self._cb.pack()
