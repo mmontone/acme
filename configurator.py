@@ -648,13 +648,22 @@ class ConfigurationSchemaSectionCreator(tk.Toplevel):
         f.pack()
         
     def save_section(self):
-        self.section.name = self.section_name.get()
-        self.section.documentation = self.section_documentation.get(1.0, tk.END)
-        configurator.status.set(self.section.name + " section has been created")
+        # Validation
+        errors = ''
         
-        if self._onsave:
-            self._onsave(self.section)
-        self.destroy()
+        if self.section_name.get() == '':
+            errors = errors + 'Fill the section name\n'
+            
+        if len(errors) > 0:
+            tkMessageBox.showerror('Error', errors)
+        else:
+            self.section.name = self.section_name.get()
+            self.section.documentation = self.section_documentation.get(1.0, tk.END)
+            configurator.status.set(self.section.name + " section has been created")
+            
+            if self._onsave:
+                self._onsave(self.section)
+            self.destroy()
             
 class ConfigurationSchemaOptionCreator(tk.Toplevel):
     def __init__(self, master, **options):
