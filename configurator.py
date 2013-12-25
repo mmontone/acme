@@ -582,12 +582,21 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         buttons.pack(side=tk.RIGHT)
         
     def save_section(self):
-        self.section.name = self.section_name.get()
-        self.section.documentation = self.section_documentation.get(1.0, tk.END)
-        configurator.status.set(self.section.name + " section has been updated")
+        # Validation
+        errors = ''
         
-        if self._onsave:
-            self._onsave()
+        if self.section_name.get() == '':
+            errors = errors + 'Fill the section name\n'
+            
+        if len(errors) > 0:
+            tkMessageBox.showerror('Error', errors)
+        else:
+            self.section.name = self.section_name.get()
+            self.section.documentation = self.section_documentation.get(1.0, tk.END)
+            configurator.status.set(self.section.name + " section has been updated")
+            
+            if self._onsave:
+                self._onsave()
             
     def restore_section(self):
         self.section_name.set(self.section.name)
