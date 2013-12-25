@@ -1,0 +1,80 @@
+<schemas>
+  <schema name="Web">
+    <documentation></documentation>
+    <section name="Web server">
+      <documentation></documentation>
+      <option name="Host">
+        <documentation>Server host</documentation>
+        <type name="String"/>
+        <required>True</required>
+        <default>http://localhost</default>
+      </option>
+      <option name="Port">
+        <documentation>Port number</documentation>
+        <type name="Number"/>
+        <required>True</required>
+        <default>8080</default>
+      </option>
+    </section>
+    <section name="Authentication">
+      <documentation></documentation>
+      <option name="Authentication enabled">
+        <documentation>Enable authentication?</documentation>
+        <type name="Boolean"/>
+        <required>False</required>
+      </option>
+    </section>
+    <section name="General preferences">
+      <documentation></documentation>
+      <option name="Font size">
+        <documentation>Font size</documentation>
+        <type name="Number"/>
+        <required>True</required>
+      </option>
+      <section name="Colors">
+        <documentation></documentation>
+        <option name="Background color">
+          <documentation>Background color</documentation>
+          <type name="Color"/>
+          <required>True</required>
+        </option>
+      </section>
+    </section>
+  </schema>
+  <schema name="App">
+    <documentation></documentation>
+    <parent name="Database"/>
+    <parent name="Web"/>
+    <parent name="Log"/>
+  </schema>
+  <schema name="Log">
+    <documentation></documentation>
+    <section name="Logging">
+      <documentation></documentation>
+      <option name="Logfile">
+        <documentation>Where the logging happens</documentation>
+        <type name="Filename"/>
+        <required>True</required>
+      </option>
+      <option name="Expire">
+        <documentation>Expiration</documentation>
+        <type name="Datetime"/>
+        <required>True</required>
+      </option>
+    </section>
+  </schema>
+  <schema name="Database">
+    <documentation></documentation>
+    <section name="Database server">
+      <documentation></documentation>
+      <option name="engine">
+        <documentation>The database engine</documentation>
+        <type name="Choice">
+          <option value="Postgresql"/>
+          <option value="Mysql"/>
+        </type>
+        <required>True</required>
+      </option>
+    </section>
+  </schema>
+</schemas>
