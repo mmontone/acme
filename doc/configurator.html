@@ -1,0 +1,1606 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- 
+This manual is for Configurator version 0.1.
+
+Copyright C 2013 Mariano Montone
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being "A GNU Manual,"
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled "GNU Free Documentation License."
+
+(a) The FSF's Back-Cover Text is: "You have the freedom to copy and
+modify this GNU manual.  Buying copies from the FSF supports it in
+developing GNU and promoting software freedom."
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+ -->
+<!-- Created on December 26, 2013 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Configurator - An configuration management utility</title>
+
+<meta name="description" content="Configurator - An configuration management utility">
+<meta name="keywords" content="Configurator - An configuration management utility">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="Top"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configurator-_002d-A-configuration-management-utility"></a>
+<h1 class="settitle">Configurator - A configuration management utility</h1>
+
+<p>This is Configurator library documentation
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Introduction">1. Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        What is Configurator?
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Overview">2. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Configurator overview
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Running">3. Running</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Configuration-schemas">4. Configuration schemas</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               What configuration schemas are and how to define them
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configurations">5. Configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                      What configurations are and how to define them
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Examples">6. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Some examples
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Frontend">7. Frontend</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Configurator frontend
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Custom-option-types">8. Custom option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 How to define custom option types
+</td></tr>
+<tr><td align="left" valign="top"><a href="#System-reference">9. System reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    The system reference
+</td></tr>
+<tr><td align="left" valign="top"><a href="#References">10. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          Related work
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Index">11. Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                               Complete index.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment"> &mdash; The Detailed Node Listing &mdash;
+
+Introduction
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Summary">1.1 Summary</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                     A brief summary of what Configurator is
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installation">1.2 Installation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                How to install Configurator
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Feedback">1.3 Feedback</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    Bug reports, ideas, patches etc.
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conventions">1.4 Conventions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 Type-setting conventions in the manual
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Overview
+
+Running
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Running-overview">3.1 Running overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Running-modes">3.2 Running modes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Command-line-summary">3.3 Command line summary</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Configuration schemas
+
+Configurations
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Working-with-configurations">5.1 Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Examples
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Use-cases">6.1 Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Frontend
+
+Custom option types
+
+System References
+
+References
+
+Index
+
+</pre></th></tr></table>
+
+<hr size="1">
+<a name="Introduction"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Summary" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Introduction-1"></a>
+<h1 class="chapter">1. Introduction</h1>
+<a name="index-introduction"></a>
+
+<p>Configurator is a configuration management utility.
+</p>
+<p>You can get a copy and this manual at <a href="http://mmontone.github.io/configurator">http://mmontone.github.io/configurator</a>
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Summary">1.1 Summary</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                     A brief summary of what Configurator is
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installation">1.2 Installation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                How to install Configurator
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Feedback">1.3 Feedback</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    Bug reports, ideas, patches etc.
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conventions">1.4 Conventions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 Type-setting conventions in the manual
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Summary"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Introduction" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Summary-1"></a>
+<h2 class="section">1.1 Summary</h2>
+<a name="index-summary"></a>
+
+<p>Configurator is a configuration management utility
+</p>
+<hr size="6">
+<a name="Installation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Summary" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Feedback" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installation-1"></a>
+<h2 class="section">1.2 Installation</h2>
+<a name="index-installation"></a>
+
+<hr size="6">
+<a name="Feedback"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Conventions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Feedback-1"></a>
+<h2 class="section">1.3 Feedback</h2>
+<a name="index-feedback"></a>
+
+<p>Mail marianomontone at gmail dot com with feedback
+</p>
+<hr size="6">
+<a name="Conventions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Feedback" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Conventions-1"></a>
+<h2 class="section">1.4 Conventions</h2>
+<a name="index-conventions"></a>
+
+<p>Hear are some coding conventions we&rsquo;d like to follow:
+</p>
+<ul>
+<li>
+We <em>do</em> believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
+
+</li><li>
+We don&rsquo;t want functions to be shorter than the should nor longer than they should. There is no &quot;every function should have at most ten lines of code&quot; rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. 
+
+</li></ul>
+
+<hr size="6">
+<a name="Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Conventions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview-1"></a>
+<h1 class="chapter">2. Overview</h1>
+<a name="index-overview"></a>
+
+<p>Configurator is a configuration management utility. It is written in Python and provides a Tk GUI at the moment.
+</p>
+<p>The idea is to define configuration schemas and get a proper way of:
+</p>
+<ul>
+<li>
+Sharing and versioning your project&rsquo;s configuration schemas, but not your configurations. That way, you avoid overwriting configurations from different developers. Each developer has his own configurations that need to match the configuration schemas in the project. Whenever a project&rsquo;s configuration schema changes, each developer is reponsible of updating his configurations to match the new schemas.
+
+</li><li>
+Being able to define configuration schemas from the GUI, with no need for programming for most cases.
+
+</li><li>
+Provide configurations documentation and validation.
+
+</li><li>
+Edit configurations from a GUI.
+
+</li><li>
+Define your own option configurations types and provide validation for them.
+
+</li></ul>
+
+<hr size="6">
+<a name="Running"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-overview" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-1"></a>
+<h1 class="chapter">3. Running</h1>
+<a name="index-running"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Running-overview">3.1 Running overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Running-modes">3.2 Running modes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Command-line-summary">3.3 Command line summary</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+</table>
+
+<hr size="6">
+<a name="Running-overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-modes" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-overview-1"></a>
+<h2 class="section">3.1 Running overview</h2>
+<a name="index-running-1"></a>
+
+<p>Configurator is run invoking <em>configurator</em> command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
+</p>
+<p>A configurations schemas files is required. By default, Configurator looks for <em>configurator.schema</em> in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the <em>&ndash;schemas SCHEMAS</em> option.
+</p>
+<p>If the schemas file is found, then it is parsed and loaded. The schemas file is in XML format.
+</p>
+<p>Apart from that, Configurator maintains configurations in another file, which by default is <em>configurator.config</em>. It can be specified to be something else through the <em>&ndash;configs CONFIGS</em> option.
+</p>
+<hr size="6">
+<a name="Running-modes"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running-overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Command-line-summary" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-modes-1"></a>
+<h2 class="section">3.2 Running modes</h2>
+
+<p>Configurator can be run in three different modes fundamentally.
+</p>
+<ul>
+<li>
+<em>Normal mode</em>: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn&rsquo;t need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.
+
+<p>This is an example of Configurator running in normal mode:
+</p>
+<img src="images/configurator1.png" alt="images/configurator1">
+
+</li><li>
+<em>Setup mode</em>: this mode is invoked running configurator with the <em>&ndash;setup</em> option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
+
+<p>This is an example of Configurator running in setup mode:
+</p>
+<img src="images/schemas1.png" alt="images/schemas1">
+
+</li><li>
+<em>Full mode</em>: this mode is invoked running configurator with the <em>&ndash;full</em> option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
+
+<p>This is an example of Configurator running in full mode:
+</p>
+<img src="images/full.png" alt="images/full">
+
+</li></ul>
+
+<hr size="6">
+<a name="Command-line-summary"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running-modes" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Command-line-summary-1"></a>
+<h2 class="section">3.3 Command line summary</h2>
+
+<pre class="verbatim">
+$&gt; configurator -h
+
+usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+
+Configurator. Configuration management utility.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f, --full            Run the full configurator (both configurations and
+                        schemas navigation)
+  -s SCHEMAS, --schemas SCHEMAS
+                        The configuration schemas files. Default is
+                        configurator.schema
+  -c CONFIGS, --configs CONFIGS
+                        The configurations file. Default is
+                        configurator.config
+  --setup               Edit configuration schemas
+  --debug               Run in debug mode
+
+</pre>
+<hr size="6">
+<a name="Configuration-schemas"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Command-line-summary" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configuration-schemas-1"></a>
+<h1 class="chapter">4. Configuration schemas</h1>
+<a name="index-configuration-schema"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Built_002din-option-types">4.1 Built-in option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       The built-in option types
+</td></tr>
+</table>
+
+<p>Configuration schemas define the structure of a configuration.
+</p>
+<ul>
+<li>
+<em>configuration-schema-name</em> is the name of the configuration-schema and the configuration-schema is globally identified by it. See <em>find-configuration-schema</em>
+
+</li><li>
+<em>parent-configuration-schema</em> is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+
+</li><li>
+<em>configuration-schema-documentation</em> is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
+</li></ul>
+
+<p>That is a typical configuration schema needed to connect to a database.
+</p>
+<p>It has only one section <em>Database</em> where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type <em>String</em>.
+</p>
+<hr size="6">
+<a name="Built_002din-option-types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#String" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Built_002din-option-types-1"></a>
+<h2 class="section">4.1 Built-in option types</h2>
+<a name="index-option-type"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#String">4.1.1 String</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The String option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Number">4.1.2 Number</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Number option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Boolean">4.1.3 Boolean</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        The Boolean option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Email">4.1.4 Email</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          The Email option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Url">4.1.5 Url</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            The URL option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Filename">4.1.6 Filename</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       The Filename option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Choice">4.1.7 Choice</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Choice option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#List">4.1.8 List</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           The List option type
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="String"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Number" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="String-1"></a>
+<h3 class="subsection">4.1.1 String</h3>
+<a name="index-string"></a>
+
+<p>The String option type ensures that the the option value is of type string.
+</p>
+
+
+<hr size="6">
+<a name="Number"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#String" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Boolean" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Number-1"></a>
+<h3 class="subsection">4.1.2 Number</h3>
+<a name="index-number"></a>
+
+<p>The Number option type ensures that the the option value is of type Number.
+</p>
+
+
+<hr size="6">
+<a name="Boolean"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Number" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Email" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Boolean-1"></a>
+<h3 class="subsection">4.1.3 Boolean</h3>
+<a name="index-boolean"></a>
+
+<p>The boolean option type ensures that the the option value is of type boolean (True or False).
+</p>
+
+
+<hr size="6">
+<a name="Email"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Boolean" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Url" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Email-1"></a>
+<h3 class="subsection">4.1.4 Email</h3>
+<a name="index-email"></a>
+
+<p>The email option type ensures that the the option value is a valid email string.
+</p>
+
+
+<hr size="6">
+<a name="Url"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Email" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Filename" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Url-1"></a>
+<h3 class="subsection">4.1.5 Url</h3>
+<a name="index-url"></a>
+
+<p>The url option ensures that the the option value is a valid url.
+</p>
+
+
+<hr size="6">
+<a name="Filename"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Url" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Choice" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Filename-1"></a>
+<h3 class="subsection">4.1.6 Filename</h3>
+<a name="index-filename"></a>
+
+<p>The pathaname option type ensures that the the option value is a valid pathname and the file or directory exists.
+</p>
+
+
+
+<hr size="6">
+<a name="Choice"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Filename" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#List" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Choice-1"></a>
+<h3 class="subsection">4.1.7 Choice</h3>
+<a name="index-choice"></a>
+
+<p>The Choice option type ensures that the option value is one of the options listed.
+</p>
+
+
+<hr size="6">
+<a name="List"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Choice" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="List-1"></a>
+<h3 class="subsection">4.1.8 List</h3>
+<a name="index-list"></a>
+
+<p>The <em>List</em> option type ensures that the option value is a subset of the options listed. 
+</p>
+
+
+<hr size="6">
+<a name="Configurations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#List" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configurations-1"></a>
+<h1 class="chapter">5. Configurations</h1>
+
+<p>How to define configurations
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Working-with-configurations">5.1 Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+</table>
+
+<hr size="6">
+<a name="Working-with-configurations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configurations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Working-with-configurations-1"></a>
+<h2 class="section">5.1 Working with configurations</h2>
+
+<p>The API for working with configurations
+</p>
+<hr size="6">
+<a name="Configurations-serialization"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Working-with-configurations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configurations-serialization-1"></a>
+<h2 class="section">5.2 Configurations serialization</h2>
+<a name="index-serialization"></a>
+
+<p>There are two output backends: an sexp-backend and a xml-backend
+</p>
+<hr size="6">
+<a name="Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configurations-serialization" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples-1"></a>
+<h1 class="chapter">6. Examples</h1>
+<a name="index-examples"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Use-cases">6.1 Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
+</td></tr>
+</table>
+
+<p>Schemas definitions:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">&lt;schemas&gt;
+  &lt;schema name=&quot;Web&quot;&gt;
+    &lt;documentation&gt;&lt;/documentation&gt;
+    &lt;section name=&quot;Web server&quot;&gt;
+      &lt;documentation&gt;&lt;/documentation&gt;
+      &lt;option name=&quot;Host&quot;&gt;
+        &lt;documentation&gt;Server host&lt;/documentation&gt;
+        &lt;type name=&quot;String&quot;/&gt;
+        &lt;required&gt;True&lt;/required&gt;
+        &lt;default&gt;http://localhost&lt;/default&gt;
+      &lt;/option&gt;
+      &lt;option name=&quot;Port&quot;&gt;
+        &lt;documentation&gt;Port number&lt;/documentation&gt;
+        &lt;type name=&quot;Number&quot;/&gt;
+        &lt;required&gt;True&lt;/required&gt;
+        &lt;default&gt;8080&lt;/default&gt;
+      &lt;/option&gt;
+    &lt;/section&gt;
+    &lt;section name=&quot;Authentication&quot;&gt;
+      &lt;documentation&gt;&lt;/documentation&gt;
+      &lt;option name=&quot;Authentication enabled&quot;&gt;
+        &lt;documentation&gt;Enable authentication?&lt;/documentation&gt;
+        &lt;type name=&quot;Boolean&quot;/&gt;
+        &lt;required&gt;False&lt;/required&gt;
+      &lt;/option&gt;
+    &lt;/section&gt;
+    &lt;section name=&quot;General preferences&quot;&gt;
+      &lt;documentation&gt;&lt;/documentation&gt;
+      &lt;option name=&quot;Font size&quot;&gt;
+        &lt;documentation&gt;Font size&lt;/documentation&gt;
+        &lt;type name=&quot;Number&quot;/&gt;
+        &lt;required&gt;True&lt;/required&gt;
+      &lt;/option&gt;
+      &lt;section name=&quot;Colors&quot;&gt;
+        &lt;documentation&gt;&lt;/documentation&gt;
+        &lt;option name=&quot;Background color&quot;&gt;
+          &lt;documentation&gt;Background color&lt;/documentation&gt;
+          &lt;type name=&quot;Color&quot;/&gt;
+          &lt;required&gt;True&lt;/required&gt;
+        &lt;/option&gt;
+      &lt;/section&gt;
+    &lt;/section&gt;
+  &lt;/schema&gt;
+  &lt;schema name=&quot;App&quot;&gt;
+    &lt;documentation&gt;&lt;/documentation&gt;
+    &lt;parent name=&quot;Database&quot;/&gt;
+    &lt;parent name=&quot;Web&quot;/&gt;
+    &lt;parent name=&quot;Log&quot;/&gt;
+  &lt;/schema&gt;
+  &lt;schema name=&quot;Log&quot;&gt;
+    &lt;documentation&gt;&lt;/documentation&gt;
+    &lt;section name=&quot;Logging&quot;&gt;
+      &lt;documentation&gt;&lt;/documentation&gt;
+      &lt;option name=&quot;Logfile&quot;&gt;
+        &lt;documentation&gt;Where the logging happens&lt;/documentation&gt;
+        &lt;type name=&quot;Filename&quot;/&gt;
+        &lt;required&gt;True&lt;/required&gt;
+      &lt;/option&gt;
+      &lt;option name=&quot;Expire&quot;&gt;
+        &lt;documentation&gt;Expiration&lt;/documentation&gt;
+        &lt;type name=&quot;Datetime&quot;/&gt;
+        &lt;required&gt;True&lt;/required&gt;
+      &lt;/option&gt;
+    &lt;/section&gt;
+  &lt;/schema&gt;
+  &lt;schema name=&quot;Database&quot;&gt;
+    &lt;documentation&gt;&lt;/documentation&gt;
+    &lt;section name=&quot;Database server&quot;&gt;
+      &lt;documentation&gt;&lt;/documentation&gt;
+      &lt;option name=&quot;engine&quot;&gt;
+        &lt;documentation&gt;The database engine&lt;/documentation&gt;
+        &lt;type name=&quot;Choice&quot;&gt;
+          &lt;option value=&quot;Postgresql&quot;/&gt;
+          &lt;option value=&quot;Mysql&quot;/&gt;
+        &lt;/type&gt;
+        &lt;required&gt;True&lt;/required&gt;
+      &lt;/option&gt;
+    &lt;/section&gt;
+  &lt;/schema&gt;
+&lt;/schemas&gt;
+</pre></td></tr></table>
+
+<p>Configurations definitions:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">&lt;configurations&gt;
+  &lt;configuration name=&quot;Dev&quot;&gt;
+    &lt;schema name=&quot;App&quot;/&gt;
+    &lt;option path=&quot;Database.Database server.engine&quot; value=&quot;Postgresql&quot;/&gt;
+  &lt;/configuration&gt;
+  &lt;configuration name=&quot;Test&quot;&gt;
+    &lt;schema name=&quot;App&quot;/&gt;
+    &lt;parent name=&quot;Dev&quot;/&gt;
+    &lt;option path=&quot;Database.Database server.engine&quot; value=&quot;Mysql&quot;/&gt;
+  &lt;/configuration&gt;
+  &lt;configuration name=&quot;Prod&quot;&gt;
+    &lt;schema name=&quot;Web&quot;/&gt;
+    &lt;option path=&quot;Web.Authentication.Authentication enabled&quot; value=&quot;True&quot;/&gt;
+    &lt;option path=&quot;Web.General preferences.Colors.Background color&quot; value=&quot;#6ed9d9&quot;/&gt;
+  &lt;/configuration&gt;
+&lt;/configurations&gt;
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Use-cases"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Debugging" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Use-cases-1"></a>
+<h2 class="section">6.1 Use cases</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Debugging">6.1.1 Debugging</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          Example of application debugging configuration
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Logging">6.1.2 Logging</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Example of application logging configuration
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Testing">6.1.3 Testing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Example of application testing configuration
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Deployment">6.1.4 Deployment</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         Example of application deployment configuration
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Debugging"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Use-cases" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Logging" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Debugging-1"></a>
+<h3 class="subsection">6.1.1 Debugging</h3>
+<a name="index-debugging"></a>
+
+<hr size="6">
+<a name="Logging"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Debugging" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Testing" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Logging-1"></a>
+<h3 class="subsection">6.1.2 Logging</h3>
+<a name="index-logging"></a>
+
+<hr size="6">
+<a name="Testing"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Logging" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Deployment" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Testing-1"></a>
+<h3 class="subsection">6.1.3 Testing</h3>
+<a name="index-testing"></a>
+
+<hr size="6">
+<a name="Deployment"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Testing" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Deployment-1"></a>
+<h3 class="subsection">6.1.4 Deployment</h3>
+<a name="index-deployment"></a>
+
+<hr size="6">
+<a name="Frontend"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Deployment" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Frontend-1"></a>
+<h1 class="chapter">7. Frontend</h1>
+
+<p>Configurations can be edited from a Tk interface.
+</p>
+<hr size="6">
+<a name="Custom-option-types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Frontend" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#System-reference" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#System-reference" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Custom-option-types-1"></a>
+<h1 class="chapter">8. Custom option types</h1>
+
+<p>How to define custom option types
+</p>
+<hr size="6">
+<a name="System-reference"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Custom-option-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#References" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="System-reference-1"></a>
+<h1 class="chapter">9. System reference</h1>
+
+
+<hr size="6">
+<a name="References"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#System-reference" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#System-reference" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-1"></a>
+<h1 class="chapter">10. References</h1>
+<a name="index-reference"></a>
+
+<hr size="6">
+<a name="Index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#References" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#References" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Index-1"></a>
+<h1 class="chapter">11. Index</h1>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Concept-Index">11.1 Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The concept index
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Class-Index">11.2 Class Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            The classes index
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Function-Index">11.3 Function Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> The functions and macros index
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Variable-Index">11.4 Variable Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The variables index
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Concept-Index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Index" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Class-Index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Concept-Index-1"></a>
+<h2 class="section">11.1 Concept Index</h2>
+
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-B" class="summary-letter"><b>B</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-D" class="summary-letter"><b>D</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-E" class="summary-letter"><b>E</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-F" class="summary-letter"><b>F</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-L" class="summary-letter"><b>L</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-N" class="summary-letter"><b>N</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-R" class="summary-letter"><b>R</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-S" class="summary-letter"><b>S</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-T" class="summary-letter"><b>T</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-cp">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-B">B</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-boolean">boolean</a></td><td valign="top"><a href="#Boolean">4.1.3 Boolean</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-choice">choice</a></td><td valign="top"><a href="#Choice">4.1.7 Choice</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-configuration-schema">configuration schema</a></td><td valign="top"><a href="#Configuration-schemas">4. Configuration schemas</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-conventions">conventions</a></td><td valign="top"><a href="#Conventions">1.4 Conventions</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-D">D</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-debugging">debugging</a></td><td valign="top"><a href="#Debugging">6.1.1 Debugging</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-deployment">deployment</a></td><td valign="top"><a href="#Deployment">6.1.4 Deployment</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-E">E</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-email">email</a></td><td valign="top"><a href="#Email">4.1.4 Email</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">6. Examples</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-F">F</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-feedback">feedback</a></td><td valign="top"><a href="#Feedback">1.3 Feedback</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-filename">filename</a></td><td valign="top"><a href="#Filename">4.1.6 Filename</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-I">I</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-installation">installation</a></td><td valign="top"><a href="#Installation">1.2 Installation</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-introduction">introduction</a></td><td valign="top"><a href="#Introduction">1. Introduction</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-L">L</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-list">list</a></td><td valign="top"><a href="#List">4.1.8 List</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-logging">logging</a></td><td valign="top"><a href="#Logging">6.1.2 Logging</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-N">N</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-number">number</a></td><td valign="top"><a href="#Number">4.1.2 Number</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-O">O</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-option-type">option type</a></td><td valign="top"><a href="#Built_002din-option-types">4.1 Built-in option types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-overview">overview</a></td><td valign="top"><a href="#Overview">2. Overview</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-R">R</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-reference">reference</a></td><td valign="top"><a href="#References">10. References</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-running">running</a></td><td valign="top"><a href="#Running">3. Running</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-running-1">running</a></td><td valign="top"><a href="#Running-overview">3.1 Running overview</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-S">S</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-serialization">serialization</a></td><td valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-string">string</a></td><td valign="top"><a href="#String">4.1.1 String</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-summary">summary</a></td><td valign="top"><a href="#Summary">1.1 Summary</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-T">T</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-testing">testing</a></td><td valign="top"><a href="#Testing">6.1.3 Testing</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-U">U</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-url">url</a></td><td valign="top"><a href="#Url">4.1.5 Url</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-B" class="summary-letter"><b>B</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-D" class="summary-letter"><b>D</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-E" class="summary-letter"><b>E</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-F" class="summary-letter"><b>F</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-L" class="summary-letter"><b>L</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-N" class="summary-letter"><b>N</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-R" class="summary-letter"><b>R</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-S" class="summary-letter"><b>S</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-T" class="summary-letter"><b>T</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr size="6">
+<a name="Class-Index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Concept-Index" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Function-Index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Class-Index-1"></a>
+<h2 class="section">11.2 Class Index</h2>
+
+
+<hr size="6">
+<a name="Function-Index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Class-Index" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Variable-Index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Function-Index-1"></a>
+<h2 class="section">11.3 Function Index</h2>
+     
+
+<hr size="6">
+<a name="Variable-Index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Function-Index" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Variable-Index-1"></a>
+<h2 class="section">11.4 Variable Index</h2>
+     
+
+<hr size="6">
+<a name="SEC_Contents"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Table of Contents</h1>
+<div class="contents">
+
+<ul class="toc">
+  <li><a name="toc-Introduction-1" href="#Introduction">1. Introduction</a>
+  <ul class="toc">
+    <li><a name="toc-Summary-1" href="#Summary">1.1 Summary</a></li>
+    <li><a name="toc-Installation-1" href="#Installation">1.2 Installation</a></li>
+    <li><a name="toc-Feedback-1" href="#Feedback">1.3 Feedback</a></li>
+    <li><a name="toc-Conventions-1" href="#Conventions">1.4 Conventions</a></li>
+  </ul></li>
+  <li><a name="toc-Overview-1" href="#Overview">2. Overview</a></li>
+  <li><a name="toc-Running-1" href="#Running">3. Running</a>
+  <ul class="toc">
+    <li><a name="toc-Running-overview-1" href="#Running-overview">3.1 Running overview</a></li>
+    <li><a name="toc-Running-modes-1" href="#Running-modes">3.2 Running modes</a></li>
+    <li><a name="toc-Command-line-summary-1" href="#Command-line-summary">3.3 Command line summary</a></li>
+  </ul></li>
+  <li><a name="toc-Configuration-schemas-1" href="#Configuration-schemas">4. Configuration schemas</a>
+  <ul class="toc">
+    <li><a name="toc-Built_002din-option-types-1" href="#Built_002din-option-types">4.1 Built-in option types</a>
+    <ul class="toc">
+      <li><a name="toc-String-1" href="#String">4.1.1 String</a></li>
+      <li><a name="toc-Number-1" href="#Number">4.1.2 Number</a></li>
+      <li><a name="toc-Boolean-1" href="#Boolean">4.1.3 Boolean</a></li>
+      <li><a name="toc-Email-1" href="#Email">4.1.4 Email</a></li>
+      <li><a name="toc-Url-1" href="#Url">4.1.5 Url</a></li>
+      <li><a name="toc-Filename-1" href="#Filename">4.1.6 Filename</a></li>
+      <li><a name="toc-Choice-1" href="#Choice">4.1.7 Choice</a></li>
+      <li><a name="toc-List-1" href="#List">4.1.8 List</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Configurations-1" href="#Configurations">5. Configurations</a>
+  <ul class="toc">
+    <li><a name="toc-Working-with-configurations-1" href="#Working-with-configurations">5.1 Working with configurations</a></li>
+    <li><a name="toc-Configurations-serialization-1" href="#Configurations-serialization">5.2 Configurations serialization</a></li>
+  </ul></li>
+  <li><a name="toc-Examples-1" href="#Examples">6. Examples</a>
+  <ul class="toc">
+    <li><a name="toc-Use-cases-1" href="#Use-cases">6.1 Use cases</a>
+    <ul class="toc">
+      <li><a name="toc-Debugging-1" href="#Debugging">6.1.1 Debugging</a></li>
+      <li><a name="toc-Logging-1" href="#Logging">6.1.2 Logging</a></li>
+      <li><a name="toc-Testing-1" href="#Testing">6.1.3 Testing</a></li>
+      <li><a name="toc-Deployment-1" href="#Deployment">6.1.4 Deployment</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Frontend-1" href="#Frontend">7. Frontend</a></li>
+  <li><a name="toc-Custom-option-types-1" href="#Custom-option-types">8. Custom option types</a></li>
+  <li><a name="toc-System-reference-1" href="#System-reference">9. System reference</a></li>
+  <li><a name="toc-References-1" href="#References">10. References</a></li>
+  <li><a name="toc-Index-1" href="#Index">11. Index</a>
+  <ul class="toc">
+    <li><a name="toc-Concept-Index-1" href="#Concept-Index">11.1 Concept Index</a></li>
+    <li><a name="toc-Class-Index-1" href="#Class-Index">11.2 Class Index</a></li>
+    <li><a name="toc-Function-Index-1" href="#Function-Index">11.3 Function Index</a></li>
+    <li><a name="toc-Variable-Index-1" href="#Variable-Index">11.4 Variable Index</a></li>
+  </ul>
+</li>
+</ul>
+</div>
+<hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>marian</em> on <em>December 26, 2013</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>marian</em> on <em>December 26, 2013</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>
