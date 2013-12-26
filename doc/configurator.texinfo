@@ -204,6 +204,9 @@ Define your own option configurations types and provide validation for them.
 
 @end itemize
 
+@image{images/schemas1, 6in}
+@image{images/configurator1, 6in}
+
 @node Command line
 @chapter Command line
 @cindex commandline
