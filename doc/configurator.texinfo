@@ -107,6 +107,10 @@ Overview
 
 Running
 
+* Running overview::            Running overview
+* Running modes::               Running modes
+* Command line summary::        Command line summary
+
 Configuration schemas
 
 Configurations
@@ -208,7 +212,15 @@ Define your own option configurations types and provide validation for them.
 @chapter Running
 @cindex running
 
-@subsection Overview
+@menu
+* Running overview::            Running overview
+* Running modes::               Running modes
+* Command line summary::        Command line summary
+@end menu
+
+@node Running overview
+@section Running overview
+@cindex running
 
 Configurator is run invoking @emph{configurator} command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
 
@@ -218,7 +230,8 @@ If the schemas file is found, then it is parsed and loaded. The schemas file is 
 
 Apart from that, Configurator maintains configurations in another file, which by default is @emph{configurator.config}. It can be specified to be something else through the @emph{--configs CONFIGS} option.
 
-@subsection Running modes
+@node Running modes
+@section Running modes
 
 Configurator can be run in three different modes fundamentally.
 
@@ -246,7 +259,8 @@ This is an example of Configurator running in full mode:
 
 @end itemize
 
-@subsection Command line summary
+@node Command line summary
+@section Command line summary
 
 @verbatim
 
@@ -352,25 +366,26 @@ The boolean option type ensures that the the option value is of type boolean (Tr
 @subsection Email
 @cindex email
 
-The email option type is specified with @emph{:email}. It ensures that the the option value is a valid email string.
+The email option type ensures that the the option value is a valid email string.
 
-Example:
+@c Example:
 
-@example
-(:port "Email" :email :documentation "User email")
-@end example
+@c @example
+@c (:port "Email" :email :documentation "User email")
+@c @end example
 
 @node Url
 @subsection Url
 @cindex url
 
-The url option type is specified with @emph{:url}. It ensures that the the option value is a valid url. The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
+The url option ensures that the the option value is a valid url.
+@c The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
 
-Example:
+@c Example:
 
-@example
-(:host "Host" :url :documentation "The web application host")
-@end example
+@c @example
+@c (:host "Host" :url :documentation "The web application host")
+@c @end example
 
 @node Filename
 @subsection Filename
