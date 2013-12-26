@@ -83,7 +83,7 @@ This is Configurator library documentation
 @menu
 * Introduction::                        What is Configurator?
 * Overview::                            Configurator overview
-* Command line::                        Command line interface    
+* Running::                             Running    
 * Configuration schemas::               What configuration schemas are and how to define them
 * Configurations::                      What configurations are and how to define them
 * Examples::                            Some examples
@@ -105,7 +105,7 @@ Introduction
 
 Overview
 
-Command line
+Running
 
 Configuration schemas
 
@@ -204,12 +204,49 @@ Define your own option configurations types and provide validation for them.
 
 @end itemize
 
-@image{images/schemas1, 6in}
+@node Running
+@chapter Running
+@cindex running
+
+@subsection Overview
+
+Configurator is run invoking @emph{configurator} command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
+
+A configurations schemas files is required. By default, Configurator looks for @emph{configurator.schema} in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the @emph{--schemas SCHEMAS} option.
+
+If the schemas file is found, then it is parsed and loaded. The schemas file is in XML format.
+
+Apart from that, Configurator maintains configurations in another file, which by default is @emph{configurator.config}. It can be specified to be something else through the @emph{--configs CONFIGS} option.
+
+@subsection Running modes
+
+Configurator can be run in three different modes fundamentally.
+
+@itemize
+@item
+@emph{Normal mode}: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn't need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.
+
+This is an example of Configurator running in normal mode:
+
 @image{images/configurator1, 6in}
 
-@node Command line
-@chapter Command line
-@cindex commandline
+@item
+@emph{Setup mode}: this mode is invoked running configurator with the @emph{--setup} option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
+
+This is an example of Configurator running in setup mode:
+
+@image{images/schemas1, 6in}
+
+@item
+@emph{Full mode}: this mode is invoked running configurator with the @emph{--full} option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
+
+This is an example of Configurator running in full mode:
+
+@image{images/full, 6in}
+
+@end itemize
+
+@subsection Command line summary
 
 @verbatim
 
@@ -243,7 +280,6 @@ optional arguments:
 @end menu
 
 Configuration schemas define the structure of a configuration.
-
 
 @itemize @bullet
 @item
