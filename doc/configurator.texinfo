@@ -1,0 +1,583 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename configurator.info
+@settitle Configurator - An configuration management utility
+
+@set VERSION 0.1
+@set DATE January 2013
+
+@c Version and Contact Info
+@set MAINTAINERSITE @uref{https://github.com/mmontone, maintainers webpage}
+@set AUTHOR Mariano Montone
+@set MAINTAINER Mariano Montone
+@set MAINTAINEREMAIL @email{marianomontone at gmail dot com}
+@set MAINTAINERCONTACT @uref{mailto:marianomontone at gmail dot com,contact the maintainer}
+@c %**end of header
+
+@ifinfo
+@format
+START-INFO-DIR-ENTRY
+* Configurator: (configurator.info). A configuration management utility.
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+
+@c Subheadings inside a table.
+@macro tsubheading{text}
+@ifinfo
+@subsubheading \text\
+@end ifinfo
+@ifnotinfo
+@item @b{\text\}
+@end ifnotinfo
+@end macro
+
+@copying
+
+This manual is for Configurator version @value{VERSION}.
+
+Copyright @copyright{} 2013 Mariano Montone
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU Manual,''
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled ``GNU Free Documentation License.''
+
+(a) The FSF's Back-Cover Text is: ``You have the freedom to copy and
+modify this GNU manual.  Buying copies from the FSF supports it in
+developing GNU and promoting software freedom.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end quotation
+@end copying
+
+@titlepage
+@title Configurator
+@subtitle A configuration management utility
+@subtitle Release @value{VERSION}
+@author by Mariano Montone
+
+@c Output the table of contents at the beginning.
+@contents
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@ifnottex
+@node Top
+@top Configurator - A configuration management utility
+
+This is Configurator library documentation
+
+@end ifnottex
+
+@menu
+* Introduction::                        What is Configurator?
+* Overview::                            Configurator overview
+* Command line::                        Command line interface    
+* Configuration schemas::               What configuration schemas are and how to define them
+* Configurations::                      What configurations are and how to define them
+* Examples::                            Some examples
+* Frontend::                            Configurator frontend
+* Custom option types::                 How to define custom option types
+* System reference::                    The system reference
+* References::                          Related work
+* Index::                               Complete index.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Introduction
+
+* Summary::                     A brief summary of what Configurator is
+* Installation::                How to install Configurator
+* Feedback::                    Bug reports, ideas, patches etc.
+* Conventions::                 Type-setting conventions in the manual
+
+Overview
+
+Command line
+
+Configuration schemas
+
+Configurations
+
+* Working with configurations::         The API to work with configurations
+* Configurations serialization::        Configurations serialization
+
+Examples
+
+* Use cases::                           Typical use cases
+
+Frontend
+
+Custom option types
+
+System References
+
+References
+
+Index
+
+@end detailmenu
+@end menu
+
+@node Introduction
+@chapter Introduction
+@cindex introduction
+
+Configurator is a configuration management utility.
+
+You can get a copy and this manual at @url{http://mmontone.github.io/configurator}
+
+@menu
+* Summary::                     A brief summary of what Configurator is
+* Installation::                How to install Configurator
+* Feedback::                    Bug reports, ideas, patches etc.
+* Conventions::                 Type-setting conventions in the manual
+@end menu
+
+@node Summary
+@section Summary
+@cindex summary
+
+Configurator is a configuration management utility
+
+@node Installation
+@section Installation
+@cindex installation
+
+@node Feedback
+@section Feedback
+@cindex feedback
+
+Mail marianomontone at gmail dot com with feedback
+
+@node Conventions
+@section Conventions
+@cindex conventions
+
+Hear are some coding conventions we'd like to follow:
+
+@itemize @bullet
+
+@item
+We @emph{do} believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
+
+@item
+We don't want functions to be shorter than the should nor longer than they should. There is no "every function should have at most ten lines of code" rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. 
+
+@end itemize
+
+@node Overview
+@chapter Overview
+@cindex overview 
+
+Configurator is a configuration management utility. It is written in Python and provides a Tk GUI at the moment.
+
+The idea is to define configuration schemas and get a proper way of:
+
+@itemize @bullet
+@item
+Sharing and versioning your project's configuration schemas, but not your configurations. That way, you avoid overwriting configurations from different developers. Each developer has his own configurations that need to match the configuration schemas in the project. Whenever a project's configuration schema changes, each developer is reponsible of updating his configurations to match the new schemas.
+
+@item
+Being able to define configuration schemas from the GUI, with no need for programming for most cases.
+
+@item
+Provide configurations documentation and validation.
+
+@item
+Edit configurations from a GUI.
+
+@item
+Define your own option configurations types and provide validation for them.
+
+@end itemize
+
+@node Command line
+@chapter Command line
+@cindex commandline
+
+$> configurator -h
+
+usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+
+Configurator. Configuration management utility.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f, --full            Run the full configurator (both configurations and
+                        schemas navigation)
+  -s SCHEMAS, --schemas SCHEMAS
+                        The configuration schemas files. Default is
+                        configurator.schema
+  -c CONFIGS, --configs CONFIGS
+                        The configurations file. Default is
+                        configurator.config
+  --setup               Edit configuration schemas
+  --debug               Run in debug mode
+
+@node Configuration schemas
+@chapter Configuration schemas
+@cindex configuration schema
+
+@menu
+* Built-in option types::       The built-in option types
+@end menu
+
+Configuration schemas define the structure of a configuration.
+
+
+@itemize @bullet
+@item
+@emph{configuration-schema-name} is the name of the configuration-schema and the configuration-schema is globally identified by it. See @emph{find-configuration-schema}
+
+@item
+@emph{parent-configuration-schema} is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+
+@item
+@emph{configuration-schema-documentation} is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
+@end itemize
+
+That is a typical configuration schema needed to connect to a database.
+
+It has only one section @emph{Database} where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type @emph{String}.
+
+@node Built-in option types
+@section Built-in option types
+@cindex option type
+
+@menu
+* String::                         The String option type
+* Number::                         The Number option type
+* Boolean::                        The Boolean option type
+* Email::                          The Email option type
+* Url::                            The URL option type
+* Filename::                       The Filename option type
+* Choice::                         The Choice option type
+* List::                           The List option type
+@end menu
+
+@node String
+@subsection String
+@cindex string
+
+The String option type ensures that the the option value is of type string.
+
+@c Example:
+
+@c @example
+@c (:username "Username" :text :documentation "The database engine username")
+@c (:password "Password" :text :documentation "The database engine password")
+@c @end example
+
+@node Number
+@subsection Number
+@cindex number
+
+The Number option type ensures that the the option value is of type Number.
+
+@c Example:
+
+@c @example
+@c (:port "Port" :integer :documentation "Web application port")
+@c @end example
+
+@node Boolean
+@subsection Boolean
+@cindex boolean
+
+The boolean option type ensures that the the option value is of type boolean (True or False).
+
+@c Example:
+
+@c @example
+@c (:catch-errors-p "Catch errors?" :boolean :documentation "Whether to handle application errors")
+@c @end example
+
+@node Email
+@subsection Email
+@cindex email
+
+The email option type is specified with @emph{:email}. It ensures that the the option value is a valid email string.
+
+Example:
+
+@example
+(:port "Email" :email :documentation "User email")
+@end example
+
+@node Url
+@subsection Url
+@cindex url
+
+The url option type is specified with @emph{:url}. It ensures that the the option value is a valid url. The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
+
+Example:
+
+@example
+(:host "Host" :url :documentation "The web application host")
+@end example
+
+@node Filename
+@subsection Filename
+@cindex filename
+
+The pathaname option type ensures that the the option value is a valid pathname and the file or directory exists.
+
+@c The option value is converted to a pathname if it is a string, or left unmodified if already a pathname.
+
+@c Example:
+
+@c @example
+@c (:stylesheet "Stylesheet" :pathname :documentation "The stylesheet file")
+@c @end example
+
+@node Choice
+@subsection Choice
+@cindex choice
+
+The Choice option type ensures that the option value is one of the options listed.
+
+@c Example:
+
+@c @example
+@c (:connection-type "Connection type"
+@c       (:one-of (:socket "Socket")
+@c 	       (:tcp "TCP")))
+@c @end example
+
+@node List
+@subsection List
+@cindex list
+
+The @emph{List} option type ensures that the option value is a subset of the options listed. 
+
+@c Example:
+
+@c @example
+@c (:debugging-levels "Debugging levels" (:list (:info "Info")
+@c 					     (:warning "Warning")
+@c 					     (:profile "Profile")))
+@c @end example
+
+@node Configurations
+@chapter Configurations
+
+How to define configurations
+
+@menu
+* Working with configurations::         The API to work with configurations
+* Configurations serialization::        Configurations serialization
+@end menu
+
+@node Working with configurations
+@section Working with configurations
+
+The API for working with configurations
+
+@node Configurations serialization
+@section Configurations serialization
+@cindex serialization
+
+There are two output backends: an sexp-backend and a xml-backend
+
+@node Examples
+@chapter Examples
+@cindex examples
+
+@menu
+* Use cases::                           Typical use cases
+@end menu
+
+Schemas definitions:
+
+@example
+<schemas>
+  <schema name="Web">
+    <documentation></documentation>
+    <section name="Web server">
+      <documentation></documentation>
+      <option name="Host">
+        <documentation>Server host</documentation>
+        <type name="String"/>
+        <required>True</required>
+        <default>http://localhost</default>
+      </option>
+      <option name="Port">
+        <documentation>Port number</documentation>
+        <type name="Number"/>
+        <required>True</required>
+        <default>8080</default>
+      </option>
+    </section>
+    <section name="Authentication">
+      <documentation></documentation>
+      <option name="Authentication enabled">
+        <documentation>Enable authentication?</documentation>
+        <type name="Boolean"/>
+        <required>False</required>
+      </option>
+    </section>
+    <section name="General preferences">
+      <documentation></documentation>
+      <option name="Font size">
+        <documentation>Font size</documentation>
+        <type name="Number"/>
+        <required>True</required>
+      </option>
+      <section name="Colors">
+        <documentation></documentation>
+        <option name="Background color">
+          <documentation>Background color</documentation>
+          <type name="Color"/>
+          <required>True</required>
+        </option>
+      </section>
+    </section>
+  </schema>
+  <schema name="App">
+    <documentation></documentation>
+    <parent name="Database"/>
+    <parent name="Web"/>
+    <parent name="Log"/>
+  </schema>
+  <schema name="Log">
+    <documentation></documentation>
+    <section name="Logging">
+      <documentation></documentation>
+      <option name="Logfile">
+        <documentation>Where the logging happens</documentation>
+        <type name="Filename"/>
+        <required>True</required>
+      </option>
+      <option name="Expire">
+        <documentation>Expiration</documentation>
+        <type name="Datetime"/>
+        <required>True</required>
+      </option>
+    </section>
+  </schema>
+  <schema name="Database">
+    <documentation></documentation>
+    <section name="Database server">
+      <documentation></documentation>
+      <option name="engine">
+        <documentation>The database engine</documentation>
+        <type name="Choice">
+          <option value="Postgresql"/>
+          <option value="Mysql"/>
+        </type>
+        <required>True</required>
+      </option>
+    </section>
+  </schema>
+</schemas>
+@end example
+
+Configurations definitions:
+
+@example
+<configurations>
+  <configuration name="Dev">
+    <schema name="App"/>
+    <option path="Database.Database server.engine" value="Postgresql"/>
+  </configuration>
+  <configuration name="Test">
+    <schema name="App"/>
+    <parent name="Dev"/>
+    <option path="Database.Database server.engine" value="Mysql"/>
+  </configuration>
+  <configuration name="Prod">
+    <schema name="Web"/>
+    <option path="Web.Authentication.Authentication enabled" value="True"/>
+    <option path="Web.General preferences.Colors.Background color" value="#6ed9d9"/>
+  </configuration>
+</configurations>
+@end example
+
+@node Use cases
+@section Use cases
+
+@menu
+* Debugging::          Example of application debugging configuration
+* Logging::            Example of application logging configuration
+* Testing::            Example of application testing configuration
+* Deployment::         Example of application deployment configuration
+@end menu
+
+@node Debugging
+@subsection Debugging
+@cindex debugging
+
+@node Logging
+@subsection Logging
+@cindex logging
+
+@node Testing
+@subsection Testing
+@cindex testing
+
+@node Deployment
+@subsection Deployment
+@cindex deployment
+
+@node Frontend
+@chapter Frontend
+
+Configurations can be edited from a Tk interface.
+
+@node Custom option types
+@chapter Custom option types
+
+How to define custom option types
+
+@node System reference
+@chapter System reference
+
+@c @include references.texinfo
+
+@node References
+@chapter References
+@cindex reference
+
+@node Index
+@chapter Index
+@menu
+* Concept Index::          The concept index
+* Class Index::            The classes index
+* Function Index:: The functions and macros index
+* Variable Index::         The variables index
+@end menu
+
+@node Concept Index
+@section Concept Index
+
+@printindex cp
+
+@node Class Index
+@section Class Index
+
+@printindex tp
+
+@node Function Index
+@section Function Index
+     
+@printindex fn
+
+@node Variable Index
+@section Variable Index
+     
+@printindex vr
+
+@bye
