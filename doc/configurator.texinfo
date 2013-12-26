@@ -211,6 +211,8 @@ Define your own option configurations types and provide validation for them.
 @chapter Command line
 @cindex commandline
 
+@verbatim
+
 $> configurator -h
 
 usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
@@ -229,6 +231,8 @@ optional arguments:
                         configurator.config
   --setup               Edit configuration schemas
   --debug               Run in debug mode
+
+@end verbatim
 
 @node Configuration schemas
 @chapter Configuration schemas
