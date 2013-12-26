@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Configurator by mmontone</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Configurator</h1>
+        <h2>Configuration management utility</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/mmontone/configurator/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/mmontone/configurator/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/mmontone/configurator" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="configurator" class="anchor" href="#configurator"><span class="octicon octicon-link"></span></a>Configurator</h1>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p><strong>Configurator</strong> is a configuration management utility. It is written in Python and provides a Tk GUI at the moment.</p>
+
+<p>The idea is to define configuration schemas and get a proper way of:</p>
+
+<ul>
+<li>Sharing and versioning your project’s configuration schemas, but not your configurations. That way, you avoid overwriting configurations from different developers. Each developer has his own configurations that need to match the configuration schemas in the project. Whenever a project’s configuration schema changes, each developer is reponsible of updating his configurations to match the new schemas.</li>
+<li>Being able to define configuration schemas from the GUI, with no need for programming for most cases.</li>
+<li>Provide configurations documentation and validation.</li>
+<li>Edit configurations from a GUI.</li>
+<li>Define your own option configurations types and provide validation for them. </li>
+</ul><h2>
+<a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>Running</h2>
+
+<p>Configurator is run invoking configurator command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.</p>
+
+<p>A configurations schemas files is required. By default, Configurator looks for configurator.schema in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the –schemas SCHEMAS option.</p>
+
+<p>If the schemas file is found, then it is parsed and loaded. The schemas file is in XML format.</p>
+
+<p>Apart from that, Configurator maintains configurations in another file, which by default is configurator.config. It can be specified to be something else through the –configs CONFIGS option. </p>
+
+<p>Configurator can be run in three different modes fundamentally.</p>
+
+<ul>
+<li>
+<p><strong>Normal mode</strong>: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn’t need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.</p>
+
+<p>This is an example of Configurator running in normal mode: </p>
+</li>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png" alt="configs"></p>
+
+<ul>
+<li>
+<p><strong>Setup mode</strong>: this mode is invoked running configurator with the –setup option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.</p>
+
+<p>This is an example of Configurator running in setup mode: </p>
+</li>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schemas1.png" alt="schemas"></p>
+
+<ul>
+<li>
+<p><strong>Full mode:</strong> this mode is invoked running configurator with the –full option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.</p>
+
+<p>This is an example of Configurator running in full mode: </p>
+</li>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/full.png" alt="full"></p>
+
+<h3>
+<a name="command-line-summary" class="anchor" href="#command-line-summary"><span class="octicon octicon-link"></span></a>Command line summary:</h3>
+
+<pre><code>$&gt; configurator -h
+
+usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+
+Configurator. Configuration management utility.
+
+optional arguments:
+   -h, --help            show this help message and exit
+   -f, --full            Run the full configurator (both configurations and
+                         schemas navigation)
+   -s SCHEMAS, --schemas SCHEMAS
+                         The configuration schemas files. Default is
+                         configurator.schema
+   -c CONFIGS, --configs CONFIGS
+                         The configurations file. Default is
+                         configurator.config
+   --setup               Edit configuration schemas
+   --debug               Run in debug mode
+</code></pre>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
