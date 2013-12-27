@@ -93,6 +93,16 @@ The type of option determines the possible values that can be assigned to it in 
 
 Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. Last but not least, they have a documentation string. This is very important for the end user to know the option meaning.
 
+## Configurations ##
 
+Configurations are instances of Configuration schemas, much like objects are instances of classes in object oriented programming languages. That is, configurations structure is determined by the configuration schema they belong to. In particular, their sections are that of their configuration schemas; and their options values depend on the option schemas defined in the configruration schemas.
 
+Configurations belong to one and only one configuration schema, and that's compulsory, as it can be expected. Besides, configurations can inherit from each other: a configuration can inherit from another configuration and overwrite its parent options values. A configuration can have one and only one parent, o no parent; this is different from configuration schemas, that can have several parents. An understandable restriction is that the configuration parent schema has to be the same that the configuration schema.
 
+Configurations can be added and removed from the list appering on the left of the configurations navigator.
+
+![configs](https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png)
+
+Configurations can be loaded and saved. They are serialized in XML format. The default filename is ``configurator.config``, but it can be changed if desired.
+
+Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with ``required`` enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be ``set`` and ``unset``. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
