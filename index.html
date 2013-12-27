@@ -113,6 +113,40 @@ optional arguments:
    --setup               Edit configuration schemas
    --debug               Run in debug mode
 </code></pre>
+
+<h2>
+<a name="configuration-schemas" class="anchor" href="#configuration-schemas"><span class="octicon octicon-link"></span></a>Configuration schemas</h2>
+
+<h3>
+<a name="schemas" class="anchor" href="#schemas"><span class="octicon octicon-link"></span></a>Schemas</h3>
+
+<p>Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.</p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/newschema.png" alt="newschema"></p>
+
+<p>Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.</p>
+
+<p>Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.</p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schemas_navigation.png" alt="schemas_navigation"></p>
+
+<h3>
+<a name="sections" class="anchor" href="#sections"><span class="octicon octicon-link"></span></a>Sections</h3>
+
+<p>Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections' options can all be added and removed from the tree widget on the left of the schemas navigator.</p>
+
+<h3>
+<a name="configuration-options-in-schemas" class="anchor" href="#configuration-options-in-schemas"><span class="octicon octicon-link"></span></a>Configuration options in schemas</h3>
+
+<p>Options have a name and a type. </p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schema_option.png" alt="schema_option"></p>
+
+<p>The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.</p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/option_editing.png" alt="option_editing"></p>
+
+<p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. Last but not least, they have a documentation string. This is very important for the end user to know the option meaning.</p>
       </section>
 
     </div>
