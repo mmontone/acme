@@ -12,6 +12,9 @@ import pycountry # for countries and languages
 import tkCalendar
 import test
 import argparse
+
+configs_file = None
+schemas_file = None
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -322,6 +325,8 @@ class SaveSchemasDialog(tk.Toplevel):
     def __init__(self, master, schemas, **options):
         tk.Toplevel.__init__(self, master)
         
+        global schemas_file
+        
         self._schemas = schemas
         self._onsave = options.get('onsave') or None
         
@@ -329,10 +334,8 @@ class SaveSchemasDialog(tk.Toplevel):
         
         tk.Label(self, text='Save to: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_schema_filename = os.getcwd()  + '/configurator.schema'
-        
         self._filename = tk.StringVar()
-        self._filename.set(default_schema_filename)
+        self._filename.set(schemas_file)
         tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
         tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
         
@@ -374,10 +377,8 @@ class LoadSchemasDialog(tk.Toplevel):
         
         tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_schema_filename = os.getcwd()  + '/configurator.schema'
-        
         self._filename = tk.StringVar()
-        self._filename.set(default_schema_filename)
+        self._filename.set(schemas_file)
         tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
         tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
         
@@ -1500,10 +1501,8 @@ class LoadConfigurationsDialog(tk.Toplevel):
         
         tk.Label(self, text='Load from: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_config_filename = os.getcwd()  + '/configurator.config'
-        
         self._filename = tk.StringVar()
-        self._filename.set(default_config_filename)
+        self._filename.set(configs_file)
         tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
         tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
         
@@ -1540,6 +1539,7 @@ class LoadConfigurationsDialog(tk.Toplevel):
 class SaveConfigurationsDialog(tk.Toplevel):
     
     def __init__(self, master, configs, **options):
+         
         tk.Toplevel.__init__(self, master)
         
         self._configs = configs
@@ -1549,10 +1549,8 @@ class SaveConfigurationsDialog(tk.Toplevel):
         
         tk.Label(self, text='Save to: ').grid(row=0, column=0, sticky=tk.NW)
         
-        default_config_filename = os.getcwd()  + '/configurator.config'
-        
         self._filename = tk.StringVar()
-        self._filename.set(default_config_filename)
+        self._filename.set(configs_file)
         tk.Entry(self, textvariable=self._filename).grid(row=0, column=1, sticky=tk.NW)
         tk.Button(self, text="Select file", command=self.get_filename).grid(row=0, column=3, sticky=tk.NW)       
         
@@ -2253,8 +2251,9 @@ def set_status_message(widget, message):
     
 def image(filename):
     return os.path.dirname(os.path.realpath(__file__)) + "/images/" + filename
-        
+
 if __name__ == '__main__':
+    
     parser = argparse.ArgumentParser(description='Configurator. Configuration management utility.')
     parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
@@ -2274,14 +2273,13 @@ if __name__ == '__main__':
             sys.exit('Schema file ' + args.schemas + ' does not exist')
         
     if schemas_file is None:
-        if not os.path.exists(os.getcwd() + '/configurator.schema'):
-            sys.exit('Configuration schemas file not found')
-        else:
-            schemas_file = os.getcwd() + '/configurator.schema'
+        schemas_file = os.getcwd() + '/configurator.schema'
     
     # Try to load the schemas
-    unserializer = conf.ConfigurationSchemasXMLUnserializer()
-    schemas = unserializer.read(schemas_file)
+    schemas = []
+    if  os.path.exists(schemas_file):
+        unserializer = conf.ConfigurationSchemasXMLUnserializer()
+        schemas = unserializer.read(schemas_file)
     
     configs_file = None
     if args.configs is not None:
@@ -2293,16 +2291,14 @@ if __name__ == '__main__':
             sys.exit('Configuration file ' + args.configs + ' does not exist')     
     
     if configs_file is None:
-        if os.path.exists(os.getcwd() + '/configurator.config'):
-            configs_file = os.getcwd() + '/configurator.config'
+        configs_file = os.getcwd() + '/configurator.config'
             
     # Try loading the configurations
     configs = []
     
-    if configs_file is not None:
+    if os.path.exists(configs_file):
         unserializer = conf.ConfigurationsXMLUnserializer()
-        configs = unserializer.read(configs_file)
-        
+        configs = unserializer.read(configs_file)        
         
     root = tk.Tk()
     
