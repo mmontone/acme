@@ -21,24 +21,8 @@
       <option name="Authentication enabled">
         <documentation>Enable authentication?</documentation>
         <type name="Boolean"/>
-        <required>False</required>
-      </option>
-    </section>
-    <section name="General preferences">
-      <documentation></documentation>
-      <option name="Font size">
-        <documentation>Font size</documentation>
-        <type name="Number"/>
         <required>True</required>
       </option>
-      <section name="Colors">
-        <documentation></documentation>
-        <option name="Background color">
-          <documentation>Background color</documentation>
-          <type name="Color"/>
-          <required>True</required>
-        </option>
-      </section>
     </section>
   </schema>
   <schema name="App">
@@ -46,6 +30,21 @@
     <parent name="Database"/>
     <parent name="Web"/>
     <parent name="Log"/>
+    <section name="Debugging">
+      <documentation>Debugging configuration
+</documentation>
+      <option name="Debugging level">
+        <documentation>Debugging level
+
+</documentation>
+        <type name="Choice">
+          <option value="Info"/>
+          <option value="Warning"/>
+          <option value="Profile"/>
+        </type>
+        <required>False</required>
+      </option>
+    </section>
   </schema>
   <schema name="Log">
     <documentation></documentation>
@@ -61,14 +60,26 @@
         <type name="Datetime"/>
         <required>True</required>
       </option>
+      <option name="Logging level">
+        <documentation>Logging level
+
+</documentation>
+        <type name="Choice">
+          <option value="Info"/>
+          <option value="Warning"/>
+          <option value="Error"/>
+        </type>
+        <required>False</required>
+      </option>
     </section>
   </schema>
   <schema name="Database">
     <documentation></documentation>
     <section name="Database server">
       <documentation></documentation>
-      <option name="engine">
-        <documentation>The database engine</documentation>
+      <option name="Engine">
+        <documentation>The database engine
+</documentation>
         <type name="Choice">
           <option value="Postgresql"/>
           <option value="Mysql"/>
