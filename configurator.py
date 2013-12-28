@@ -1754,32 +1754,27 @@ class ChoiceOptionEditor(OptionEditor):
         OptionEditor.__init__(self, master, **options)
         
         self._initial_value = None
-        self._lb = tk.Listbox(self)
-        self._choices = self._option_type.options()
-        index = 0
-        for option in self._choices:
-            self._lb.insert(index, option)
-            index = index + 1
-            
+        
+        if self._option_schema and self._option_schema.default_value is not None:
+            self._initial_value = self._option_schema.default_value        
+        
+        self._var = tk.StringVar()
+        
+        if self._initial_value is not None:
+            self._var.set(self._initial_value)
+        
+        self._lb = tk.OptionMenu(self, self._var, *self._option_type.options())
         self._lb.pack()
         
     def disable(self):
         self._lb.configure(state=tk.DISABLED)
         
     def value(self):
-        index = self._lb.curselection()
-        if not index:
-            return None
-        else:
-            return self._choices[int(index[0])]
-    
+        return self._var.get()
+        
     def set_value(self, value):
-        for index, choice in enumerate(self._choices):
-            if choice == value:
-                self._lb.selection_set(index)
-                self._initial_value = choice
-                return
-        raise Exception('Option ' + value + ' not found')
+        self._var.set(value)
+        self._initial_value = value
     
     def value_changed(self):
         return self._initial_value <> self.value() 
