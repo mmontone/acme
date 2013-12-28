@@ -110,6 +110,7 @@ class ConfigurationSchemaSection:
         self._options = []
         self._documentation = args.get('documentation') or ''
         self._parent = args.get('parent') or None
+        self._dependency_expression = None
         
     @property
     def name(self):
@@ -163,11 +164,25 @@ class ConfigurationSchemaSection:
         self._parent = value
         return self
     
+    @property
+    def dependency_expression(self):
+        return self._dependency_expression
+    
+    @dependency_expression.setter
+    def dependency_expression(self, value):
+        self._dependency_expression = value
+    
     def remove(self):
         self.parent.remove_section(self)
         
     def path(self):
         return self.parent.path() + (self.name,)
+    
+    def schema(self):
+        if isinstance(self.parent, ConfigurationSchema):
+            return self.parent
+        else:
+            return self.parent.schema()
     
     def option_in_path(self, path):
         assert(path[0] == self.name)
@@ -209,6 +224,7 @@ class ConfigurationSchemaOption:
         self._section = None
         self._is_required = args.get('required') or True
         self._default_value = args.get('default_value') or None
+        self._dependency_expression = None
     
     @property
     def name(self):
@@ -267,11 +283,22 @@ class ConfigurationSchemaOption:
         self._default_value = value
         return self
     
+    @property
+    def dependency_expression(self):
+        return self._dependency_expression
+    
+    @dependency_expression.setter
+    def dependency_expression(self, value):
+        self._dependency_expression = value
+    
     def path(self):
         return self.section.path() + (self.name,)
     
     def path_string(self):
         return '.'.join(self.path())
+    
+    def schema(self):
+        return self.section.schema()
     
 class OptionType(object):
     _name = None
