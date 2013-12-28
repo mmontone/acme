@@ -91,7 +91,9 @@ class ListEditor(tk.Frame):
            
     def add_item(self):
         if self.new_item.get():
-            items = list(eval(self.list_var.get()))
+            items = []
+            if self.list_var.get() <> '':
+                items = list(eval(self.list_var.get()))
             items.append(self.new_item.get())
             self.list_var.set(' '.join(items))
     
