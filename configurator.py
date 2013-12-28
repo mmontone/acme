@@ -845,6 +845,13 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         
         self.f.pack(fill=tk.BOTH, expand=True)
         
+        # Dependencies
+        dependencies = tk.LabelFrame(self, text='Dependencies')
+        
+        dependency_editor = DependencyExpressionEditor(dependencies, schema=self.option.schema())
+        dependency_editor.pack()
+        dependencies.pack(fill=tk.X, expand=True)
+                
         buttons = tk.Frame(self)
     
         save = tk.Button(buttons, text="Save", command=self.save_option)
@@ -2028,6 +2035,80 @@ class DatetimeOptionEditor(OptionEditor):
     def value_changed(self):
         return self._calendar.dt <> self._date
     
+class DependencyExpressionEditor(tk.Frame):
+    def __init__(self, parent, expression=None, schema=None):
+        tk.Frame.__init__(self, parent)
+        
+        self._expression = expression
+        self._schema = schema
+        
+        # UI
+        
+        self._expression_var = tk.StringVar()
+        self._expression_var.set('Enter dependency expression')
+        
+        if self._expression is not None:
+            self._expression_var.set(str(self._expression))
+            
+        self._expression_entry = tk.Entry(self, textvariable=self._expression_var)
+        self._expression_entry.pack()
+        
+        self._expression_editor = DependencyExpressionGraphicalEditor(self, expression, self._schema)
+        self._expression_editor.pack()
+        
+class DependencyExpressionGraphicalEditor(tk.Frame):
+    def __init__(self, parent, expression=None, schema=None):
+        tk.Frame.__init__(self, parent)
+        
+        self._expression = expression
+        self._schema = schema
+        
+        self._path_selector = PathSelector(self, schema=schema)
+        self._path_selector.pack(side=tk.LEFT, padx=3)
+        
+        self._comparator = tk.StringVar()
+        self._comparator_selector = tk.OptionMenu(self, self._comparator, '=', '<>', '>','<')
+        self._comparator_selector.pack(side=tk.LEFT, padx=3)
+        
+        self._value = tk.StringVar()
+        
+        # Wrong. Make this option type dependent. (ie. Checkbox for booleans, Combobox for choices, etc)
+        self._value_editor = tk.Entry(self, textvariable=self._value)
+        self._value_editor.pack(side=tk.LEFT, padx=3)
+        
+        self._logical_connector = tk.StringVar()
+        self._logical_connector_selector = tk.OptionMenu(self, self._logical_connector, 'AND', 'OR', 'XOR')
+        self._logical_connector_selector.pack(side=tk.LEFT, padx=3)
+               
+class PathSelector(tk.Frame):
+    def __init__(self, parent, path=None, schema=None):
+        tk.Frame.__init__(self, parent)
+        
+        self._schema = schema
+                
+        self._section_var = tk.StringVar()
+        
+        self._select_section = tk.OptionMenu(self, self._section_var, *map(lambda s: s.name, self._schema.sections()), command=self.select_section)
+        self._select_section.pack(side=tk.LEFT, padx=3)
+        
+    def select_section(self, ev):
+        if self._section_var.get() <> '':
+            section = self._schema.get_section(self._section_var.get())
+            
+            #Redraw
+            for child in self.winfo_children():
+                child.forget()
+            
+            self._section_var = tk.StringVar()
+            self._section_var.set(section.name)
+        
+            self._select_section = tk.OptionMenu(self, self._section_var, *map(lambda s: s.name, self._schema.sections()), command=self.select_section)
+            self._select_section.pack(side=tk.LEFT, padx=3)
+                        
+            self._option_var = tk.StringVar()
+            self._select_option = tk.OptionMenu(self, self._option_var, *map(lambda o: o.name, section.options()))           
+            self._select_option.pack(side=tk.LEFT, padx=3)
+            
 class FullConfigurator(tk.Frame):
     def __init__(self, parent, configs=[], schemas=None):
         
