@@ -50,7 +50,7 @@ class ConfigurationSchema():
         return sections        
     
     def get_section(self, name):
-        return next((s for s in self._sections if s.name == name), None)
+        return next((s for s in self._direct_sections if s.name == name), None)
         
     def remove_section(self, section):
         self._direct_sections.remove(section)
