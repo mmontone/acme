@@ -1,0 +1,27 @@
+(*  To compile: grako -w '' dependencies.peg > dependencies.py *)
+
+number = ?/[0-9]+/? .
+identifier = ident_start {ident_cont}* .
+
+ident_start = ?/[a-zA-Z_\ ]/? .
+ident_cont = ident_start | ?/[0-9]/? .
+
+spacing = {space}* .
+space = ' ' | '\t' | $ . 
+eol = '\r\n' | '\n' | '\r' .
+
+option_path = @identifier '.' @option_path | identifier .
+
+boolexp = @boolterm spacing @logical_connector spacing @boolexp | 
+          boolterm.
+
+boolterm = bool_literal | 
+           path:option_path spacing operation:operation spacing value:value |
+           '(' spacing @boolexp spacing ')'.
+           
+bool_literal = 'True' | 'False'.
+
+value = number:number | string:literal_string | boolean:bool_literal | path:option_path.
+operation = 'IS' | '=' | '<>' | '>' | '<' .
+literal_string = "'" @{?/[\w\ ]/?}* "'" .
+logical_connector = 'AND' | 'OR' | 'XOR' .
