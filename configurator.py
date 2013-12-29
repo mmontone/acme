@@ -1057,8 +1057,7 @@ class ConfigurationNavigator(tk.Frame):
         section_editor = ConfigurationSectionViewer(self._right_panel,
                                                     config=self._config,
                                                     section=section,
-                                                    errors=errors,
-                                                    onsave=lambda section: self.save_section(section))
+                                                    errors=errors)
         section_editor.pack(expand=True, fill=tk.BOTH)        
         
     def select_config(self, ev=None):
@@ -1429,10 +1428,7 @@ class ConfigurationSectionViewer(tk.Frame):
         self._onsave = options.get('onsave')
         self._config = config
         self._section = section
-        
-        self._unset_options = {}
-        self._set_options = {}
-        
+              
         self.redraw()
     
     def redraw(self, errors=[]):
@@ -1488,6 +1484,7 @@ class ConfigurationSectionViewer(tk.Frame):
             # Option value
             value_display = tk.Label(options, text=str(option_value))
             value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
+            set_status_message(value_display, 'Double click to edit')
             
             value_display.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
             
@@ -1503,34 +1500,27 @@ class ConfigurationSectionViewer(tk.Frame):
                 
             row = row + 1
             
-        options.pack(fill=tk.BOTH, expand=tk.Y)
-            
-        buttons = tk.Frame(self)
-        
-        restore = tk.Button(buttons, text="Restore", command=lambda:self.restore_section(section))
-        restore.pack(side=tk.RIGHT, padx=2)
-        
-        save = tk.Button(buttons, text="Save", command=lambda: self.save_section(self._section))
-        save.pack(side=tk.RIGHT, padx=2)
-        
-        buttons.pack(fill=tk.X)
+        options.pack(fill=tk.BOTH, expand=tk.Y)       
         
     def edit_option(self, ev, option):
-        self.wait_window(OptionEditorDialog(self, option, self._config))
+        self.wait_window(OptionEditorDialog(self, option, self._config, onsave=self.save_option))
   
     def set_option(self, option):
         print "Set option " + str(option)
-        self._set_options[option.name] = option
-        if self._unset_options.get(option.name):
-            del self._unset_options[option.name]
-        self._option_editors[option].disable()
+        editor = self._option_editors.get(option)
+        self._config.set_option_value(option, editor.value())
+        self.redraw()
             
     def unset_option(self, option):
         print "Unset option " + str(option.name)
-        self._unset_options[option.name] = option
-        if self._set_options.get(option.name):
-            del self._set_options[option.name]
-        self._option_editors[option].disable()
+        self._config.unset_option(option)
+        self.redraw()
+        
+    def save_option(self, option, editor):
+        if editor.value_changed():
+            print "Setting option " + str(option.path()) + " value to " + str(editor.value())
+            self._config.set_option_value(option, editor.value())
+            self.redraw()
             
     def restore_option(self, option):
         print "Restore option " + str(option)
@@ -1552,37 +1542,7 @@ class ConfigurationSectionViewer(tk.Frame):
             popup.tk_popup(ev.x_root, ev.y_root, 0)
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
-            popup.grab_release()
-            
-    def save_section(self, section):
-        print 'Saving section ' + section.name
-        for option, editor in self._option_editors.iteritems():
-            if editor.value_changed():
-                print "Setting option " + str(option.path()) + " value to " + str(editor.value())
-                self._config.set_option_value(option, editor.value())
-                
-        for option in self._unset_options.values():
-            self._config.unset_option(option)
-            
-        for option in self._set_options.values():
-            editor = self._option_editors.get(option)
-            self._config.set_option_value(option, editor.value())
-        
-        self._unset_options={}
-        self._set_options={}
-                
-        errors = section.validate(self._config)
-        if errors:
-            self.redraw(errors)
-            configurator.status.set('There are errors')
-        else:
-            configurator.status.set('Section saved')
-                
-            # We do this to clear possible past errors
-            self.redraw()
-            
-        if self._onsave is not None:
-            self._onsave(section)
+            popup.grab_release()                 
             
 class OptionEditorDialog(tk.Toplevel):
     def __init__(self, master, option, config, **options):
@@ -1594,14 +1554,15 @@ class OptionEditorDialog(tk.Toplevel):
         
         option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
                         
-        option_editor = option_editor_class(self, option_schema=option)
+        self._option_editor = option_editor_class(self, option_schema=option)
         
         option_value, origin = self._config.option_value(option)
             
         if option_value:
             option_editor.set_value(option_value)
         
-        option_editor.pack()
+        self._option_editor.pack()
+        
         buttons = tk.Frame(self)
         save = tk.Button(buttons, text='Save', command=self.save_option)
         save.pack(side=tk.LEFT)
@@ -1610,12 +1571,12 @@ class OptionEditorDialog(tk.Toplevel):
         cancel.pack(side=tk.LEFT)
         buttons.pack()
     
-    def save_option(self, ev):
-        value = self._option, self._option_editor.value()
-        self._config.set_option_value(value)
+    def save_option(self):
+        value = self._option_editor.value()
+        self._config.set_option_value(self._option, value)
         self.destroy()
         if self._onsave is not None:
-            self._onsave(option, value)          
+            self._onsave(self._option, self._option_editor)          
         
 class ConfigurationEditor(tk.Toplevel):
     
