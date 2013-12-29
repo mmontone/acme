@@ -1049,8 +1049,13 @@ class ConfigurationNavigator(tk.Frame):
         self.pack()
         
     def insert_section_editor(self, section, errors=None):
-        section_editor = ConfigurationSectionEditor(self._right_panel, 
-                                                    config=self._config, 
+        #section_editor = ConfigurationSectionEditor(self._right_panel, 
+        #                                            config=self._config, 
+        #                                            section=section,
+        #                                            errors=errors,
+        #                                            onsave=lambda section: self.save_section(section))
+        section_editor = ConfigurationSectionViewer(self._right_panel,
+                                                    config=self._config,
                                                     section=section,
                                                     errors=errors,
                                                     onsave=lambda section: self.save_section(section))
@@ -1414,8 +1419,203 @@ class ConfigurationSectionEditor(tk.Frame):
             self.redraw()
             
         if self._onsave is not None:
-            self._onsave(section)                
-           
+            self._onsave(section)
+            
+class ConfigurationSectionViewer(tk.Frame):
+    def __init__(self, parent, config, section, errors=[], **options):
+        
+        tk.Frame.__init__(self, parent)
+        
+        self._onsave = options.get('onsave')
+        self._config = config
+        self._section = section
+        
+        self._unset_options = {}
+        self._set_options = {}
+        
+        self.redraw()
+    
+    def redraw(self, errors=[]):
+        for child in self.winfo_children():
+            child.forget()
+            
+        tk.Label(self, text=self._config.name + ' configuration', font=('Verdana', 10, 'bold')).pack()
+        if self._config.documentation is not None and self._config.documentation <> '':
+            tk.Label(self, text=self._config.documentation, font=('Verdana', 8, 'italic')).pack()
+        
+        config_props = tk.Frame(self)
+        tk.Label(config_props, text='Schema: ' + self._config.schema.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
+        
+        if self._config.parent is not None:
+            tk.Label(config_props, text='Parent: ' + self._config.parent.name, font=('Verdana', 8,'normal')).pack(side=tk.LEFT, padx=5)
+        config_props.pack()        
+        
+        self._errors_panel = None
+        
+        if errors:
+            print "Errors!!!"
+            self._errors_panel = tk.LabelFrame(self, text='Errors', font=('Arial',10, 'bold'), padx=10, pady=10)
+            for error in errors.values():
+                tk.Label(self._errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
+            self._errors_panel.pack(fill=tk.X, expand=True)
+        
+        options = tk.LabelFrame(self, text=self._section.name, font=('Arial',10, 'bold'), padx=10, pady=10)
+        row = 0
+        if self._section.documentation is not None and self._section.documentation <> '':
+            tk.Label(options, text=self._section.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=0, columnspan=3)
+            row = row + 1       
+        
+        for option in self._section.options():
+            option_value, origin = self._config.option_value(option)
+            
+            label_text = option.name
+            if option.is_required and not option.default_value:
+                label_text = label_text + ' (required)'
+                
+            label_text=label_text + ':'
+            
+            label_color = 'Black'
+            if errors and errors.get(option.name):
+                label_color = 'Red'
+                
+            label = tk.Label(options, text=label_text, foreground=label_color)
+            
+            # Option label popup
+            label.bind('<ButtonRelease-3>', lambda ev, option=option: self.option_popup(ev, option))
+            
+            label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
+            
+            # Option value
+            value_display = tk.Label(options, text=str(option_value))
+            value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
+            
+            value_display.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
+            
+            documentation = option.documentation
+            if origin and origin <> self._config:
+                documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
+                
+            if not option_value and option.default_value:
+                documentation = documentation + '\n\n This option is set to its default value'
+                
+            doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
+            doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
+                
+            row = row + 1
+            
+        options.pack(fill=tk.BOTH, expand=tk.Y)
+            
+        buttons = tk.Frame(self)
+        
+        restore = tk.Button(buttons, text="Restore", command=lambda:self.restore_section(section))
+        restore.pack(side=tk.RIGHT, padx=2)
+        
+        save = tk.Button(buttons, text="Save", command=lambda: self.save_section(self._section))
+        save.pack(side=tk.RIGHT, padx=2)
+        
+        buttons.pack(fill=tk.X)
+        
+    def edit_option(self, ev, option):
+        self.wait_window(OptionEditorDialog(self, option, self._config))
+  
+    def set_option(self, option):
+        print "Set option " + str(option)
+        self._set_options[option.name] = option
+        if self._unset_options.get(option.name):
+            del self._unset_options[option.name]
+        self._option_editors[option].disable()
+            
+    def unset_option(self, option):
+        print "Unset option " + str(option.name)
+        self._unset_options[option.name] = option
+        if self._set_options.get(option.name):
+            del self._set_options[option.name]
+        self._option_editors[option].disable()
+            
+    def restore_option(self, option):
+        print "Restore option " + str(option)
+        
+    def option_popup(self, ev, option):
+        print "Option " + option.name + " popup"
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        
+        popup.add_command(label="Set", command=lambda:self.set_option(option))
+        popup.add_command(label="Unset", command=lambda:self.unset_option(option))
+        popup.add_command(label="Restore", command=lambda:self.restore_option(option))
+            
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
+        
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
+            
+    def save_section(self, section):
+        print 'Saving section ' + section.name
+        for option, editor in self._option_editors.iteritems():
+            if editor.value_changed():
+                print "Setting option " + str(option.path()) + " value to " + str(editor.value())
+                self._config.set_option_value(option, editor.value())
+                
+        for option in self._unset_options.values():
+            self._config.unset_option(option)
+            
+        for option in self._set_options.values():
+            editor = self._option_editors.get(option)
+            self._config.set_option_value(option, editor.value())
+        
+        self._unset_options={}
+        self._set_options={}
+                
+        errors = section.validate(self._config)
+        if errors:
+            self.redraw(errors)
+            configurator.status.set('There are errors')
+        else:
+            configurator.status.set('Section saved')
+                
+            # We do this to clear possible past errors
+            self.redraw()
+            
+        if self._onsave is not None:
+            self._onsave(section)
+            
+class OptionEditorDialog(tk.Toplevel):
+    def __init__(self, master, option, config, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        self._config = config
+        self._option = option
+        self._onsave = options.get('onsave')
+        
+        option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
+                        
+        option_editor = option_editor_class(self, option_schema=option)
+        
+        option_value, origin = self._config.option_value(option)
+            
+        if option_value:
+            option_editor.set_value(option_value)
+        
+        option_editor.pack()
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text='Save', command=self.save_option)
+        save.pack(side=tk.LEFT)
+        
+        cancel = tk.Button(buttons, text='Cancel', command=self.destroy)
+        cancel.pack(side=tk.LEFT)
+        buttons.pack()
+    
+    def save_option(self, ev):
+        value = self._option, self._option_editor.value()
+        self._config.set_option_value(value)
+        self.destroy()
+        if self._onsave is not None:
+            self._onsave(option, value)          
         
 class ConfigurationEditor(tk.Toplevel):
     
