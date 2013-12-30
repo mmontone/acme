@@ -2224,21 +2224,18 @@ class DependencyExpressionEditor(tk.Frame):
         
         self._schema = option.schema()
         
-        # UI
-        
-        self._expression_var = tk.StringVar()
+        # UI    
             
+        self._expression_entry = tk.Text(self, width=60, height=10)
         if option.dependency_expression is not None:
-            self._expression_var.set(str(option.dependency_expression))
-            
-        self._expression_entry = tk.Entry(self, textvariable=self._expression_var)
+            self._expression_entry.insert(tk.END, str(option.dependency_expression))
         self._expression_entry.pack()
         
         self._expression_editor = DependencyExpressionGraphicalEditor(self, option.dependency_expression, self._schema)
         self._expression_editor.pack()
     
     def value(self):
-        expression = self._expression_var.get()
+        expression = self._expression_entry.get(1.0, tk.END)
         if expression <> '':
             # Parse the expression
             try:
