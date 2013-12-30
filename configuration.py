@@ -862,13 +862,16 @@ class BooleanConnector(DependencyExpression):
         
 
 class DEAnd(BooleanConnector):
-    pass
+    def __str__(self):
+        return str(self.arg1) + ' AND ' + str(self.arg2)
 
 class DEOr(BooleanConnector):
-    pass
+    def __str__(self):
+        return str(self.arg1) + ' OR ' + str(self.arg2)
 
 class DEXor(BooleanConnector):
-    pass
+    def __str__(self):
+        return str(self.arg1) + ' XOR ' + str(self.arg2)    
 
 class BooleanOperation(DependencyExpression):
     def __init__(self, arg1, arg2):
@@ -886,17 +889,34 @@ class BooleanOperation(DependencyExpression):
         
 
 class DEEqual(BooleanOperation):
-    pass
+    def __str__(self):
+        return str(self.arg1) + ' = ' + str(self.arg2)    
+
 
 class DEGreaterThan(BooleanOperation):
-    pass
+    def __str__(self):
+        return str(self.arg1) + ' > ' + str(self.arg2)    
 
 class DELowerThan(BooleanOperation):
-    pass
-
+    def __str__(self):
+        return str(self.arg1) + ' < ' + str(self.arg2)
+    
 class DEDifferentFrom(BooleanOperation):
-    pass
-
+    def __str__(self):
+        return str(self.arg1) + ' <> ' + str(self.arg2)
+    
+class DEOptionPath(DependencyExpression):
+    def __init__(self, path):
+        DependencyExpression.__init__(self)
+        self._path = path
+        
+    @property
+    def path(self):
+        return self._path
+    
+    def __str__(self):
+        return '.'.join(self.path)      
+    
 class DependencyExpressionParser():
     @classmethod
     def parse_expression(cls, expression):
@@ -918,10 +938,10 @@ class DependencyExpressionParser():
         print "Option path " + str(ast)
         if isinstance(ast, list):
             path = [ast[0]]
-            path.extend(ast[1])
-            return [path]
+            path.extend(ast[1].path)
+            return DEOptionPath(path)
         else:
-            return [ast]
+            return DEOptionPath([ast])
         
     def identifier(self, ast):
         name = ast[0]
@@ -973,3 +993,9 @@ class DependencyExpressionParser():
                 return DEDifferentFrom(option_path, value)
         else:
             return ast
+        
+    def number(self, ast):
+        str = ''
+        for x in ast:
+            str = string + x
+        return int(str)

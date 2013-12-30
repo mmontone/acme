@@ -21,7 +21,7 @@ boolterm = bool_literal |
            
 bool_literal = 'True' | 'False'.
 
-value = number:number | string:literal_string | boolean:bool_literal | path:option_path.
+value = number | literal_string | bool_literal | path:option_path.
 operation = 'IS' | '=' | '<>' | '>' | '<' .
 literal_string = "'" @{?/[\w\ ]/?}* "'" .
 boolean_connector = 'AND' | 'OR' | 'XOR' .

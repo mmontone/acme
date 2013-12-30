@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.364.00.05.12'
+__version__ = '13.364.01.51.12'
 
 class dependenciesParser(Parser):
     def __init__(self, whitespace='', nameguard=True, **kwargs):
@@ -137,13 +137,10 @@ class dependenciesParser(Parser):
         with self._choice():
             with self._option():
                 self._number_()
-                self.ast['number'] = self.last_node
             with self._option():
                 self._literal_string_()
-                self.ast['string'] = self.last_node
             with self._option():
                 self._bool_literal_()
-                self.ast['boolean'] = self.last_node
             with self._option():
                 self._option_path_()
                 self.ast['path'] = self.last_node
