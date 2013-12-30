@@ -172,9 +172,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         # create a menu
         popup = tk.Menu(self, tearoff=0)
-        popup.add_command(label="Remove", command=lambda:self.remove_section(section, item))
         popup.add_command(label="Add subsection", command=lambda:self.add_subsection(section, item))
         popup.add_command(label="Add option", command=lambda:self.add_option(section, item))
+        popup.add_separator()
+        popup.add_command(label="Move up", command=lambda:self.move_up_section(section))
+        popup.add_command(label="Move down", command=lambda:self.move_down_section(section))
+        popup.add_command(label="Remove", command=lambda:self.remove_section(section, item))
         popup.add_separator()
         popup.add_command(label="Dismiss")
         
@@ -184,6 +187,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
+            
+    def move_up_section(self, section):
+        print "Move up section " + str(section)
+        
+    def move_down_section(self, section):
+        print "Move down section " + str(section)
             
     def section_status(self, ev):
         item_id = str(self.tree.focus())
@@ -248,6 +257,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
                  
         # create a menu
         popup = tk.Menu(self, tearoff=0)
+        popup.add_command(label="Move up", command=lambda:self.move_up_option(option))
+        popup.add_command(label="Move down", command=lambda:self.move_down_option(option))
         popup.add_command(label="Remove", command=lambda:self.remove_option(item, option)) # , command=next) etc...
         popup.add_separator()
         popup.add_command(label="Dismiss")
@@ -258,6 +269,12 @@ class ConfigurationSchemaNavigator(tk.Frame):
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
             popup.grab_release()
+            
+    def move_up_option(self, option):
+        print "Move up option " + str(option)
+        
+    def move_down_option(self, option):
+        print "Move down option " + str(option)
             
     def option_status(self, ev):
         item_id = str(self.tree.focus())
