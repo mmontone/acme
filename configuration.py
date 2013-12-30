@@ -407,6 +407,7 @@ class ChoiceOptionType(OptionType):
         return self._options
     
     def add_option(self, option):
+        print "Adding option " + option + " to " + str(self)
         self._options.append(option)
     
     def accept(self, visitor):
@@ -547,6 +548,13 @@ class Configuration(object):
                 return self.parent.option_value(schema_option)
             else:
                 return None, None
+            
+    def option_is_enabled(self, schema_option):
+        if schema_option.dependency_expression is None:
+            return True
+        else:
+            print "Option enabled " + schema_option.path_string() + ": " + str(schema_option.dependency_expression.evaluate(self)) 
+            return schema_option.dependency_expression.evaluate(self)
         
     def sections(self):
         return self.schema.sections()
@@ -854,6 +862,9 @@ class YAMLSerializer(Serializer):
 class DependencyExpression(object):
     def __init__(self, **args):
         pass
+    
+    def evaluate(self, config):
+        pass
 
 class BooleanConnector(DependencyExpression):
     def __init__(self, arg1, arg2):
@@ -873,14 +884,23 @@ class BooleanConnector(DependencyExpression):
 class DEAnd(BooleanConnector):
     def __str__(self):
         return str(self.arg1) + ' AND ' + str(self.arg2)
-
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) and self.arg2.evaluate(config)
+              
 class DEOr(BooleanConnector):
     def __str__(self):
         return str(self.arg1) + ' OR ' + str(self.arg2)
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) or self.arg2.evaluate(config)
 
 class DEXor(BooleanConnector):
     def __str__(self):
-        return str(self.arg1) + ' XOR ' + str(self.arg2)    
+        return str(self.arg1) + ' XOR ' + str(self.arg2)
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) != self.arg2.evaluate(config)    
 
 class BooleanOperation(DependencyExpression):
     def __init__(self, arg1, arg2):
@@ -899,20 +919,32 @@ class BooleanOperation(DependencyExpression):
 
 class DEEqual(BooleanOperation):
     def __str__(self):
-        return str(self.arg1) + ' = ' + str(self.arg2)    
+        return str(self.arg1) + ' = ' + str(self.arg2)
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) == self.arg2.evaluate(config)    
 
 
 class DEGreaterThan(BooleanOperation):
     def __str__(self):
-        return str(self.arg1) + ' > ' + str(self.arg2)    
+        return str(self.arg1) + ' > ' + str(self.arg2)
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) > self.arg2.evaluate(config)    
 
 class DELowerThan(BooleanOperation):
     def __str__(self):
         return str(self.arg1) + ' < ' + str(self.arg2)
     
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) < self.arg2.evaluate(config)
+    
 class DEDifferentFrom(BooleanOperation):
     def __str__(self):
         return str(self.arg1) + ' <> ' + str(self.arg2)
+    
+    def evaluate(self, config):
+        return self.arg1.evaluate(config) <> self.arg2.evaluate(config)
     
 class DEOptionPath(DependencyExpression):
     def __init__(self, path):
@@ -924,7 +956,45 @@ class DEOptionPath(DependencyExpression):
         return self._path
     
     def __str__(self):
-        return '.'.join(self.path)      
+        return '.'.join(self.path)  
+    
+    def evaluate(self, config):
+        option = config.schema.option_in_path(self.path)
+        value, origin = config.option_value(option)
+        return value
+    
+class DEString(DependencyExpression):
+    def __init__(self, value):
+        DependencyExpression.__init__(self)
+        self._value = value
+        
+    def __str__(self):
+        return str(self._value)
+    
+    def evaluate(self, config):
+        return self._value
+    
+class DEBoolean(DependencyExpression):
+    def __init__(self, value):
+        DependencyExpression.__init__(self)
+        self._value = value
+        
+    def __str__(self):
+        return str(self._value)
+    
+    def evaluate(self, config):
+        return self._value
+    
+class DENumber(DependencyExpression):
+    def __init__(self, value):
+        DependencyExpression.__init__(self)
+        self._value = value
+        
+    def __str__(self):
+        return str(self._value)
+    
+    def evaluate(self, config):
+        return self._value              
     
 class DependencyExpressionParser():
     @classmethod
@@ -937,9 +1007,9 @@ class DependencyExpressionParser():
     
     def bool_literal(self, ast):
         if ast == 'True':
-            return True
+            return DEBoolean(True)
         elif ast == 'False':
-            return False
+            return DEBoolean(False)
         else:
             raise Exception('Error parsing literal boolean ' + str(ast))
         
@@ -965,7 +1035,7 @@ class DependencyExpressionParser():
         string = ''
         for x in ast:
             string = string + x
-        return string
+        return DEString(string)
     
     def boolexp(self, ast):
         print "Boolexp: " + str(ast)
@@ -1007,4 +1077,4 @@ class DependencyExpressionParser():
         str = ''
         for x in ast:
             str = string + x
-        return int(str)
+        return DENumber(int(str))

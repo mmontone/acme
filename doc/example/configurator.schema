@@ -27,13 +27,14 @@
         <required>True</required>
       </option>
       <option name="Authentication type">
-        <documentation>Type of authentication. Depends on authentication being enabled</documentation>
+        <documentation>Type of authentication. Depends on authentication being enabled
+</documentation>
         <type name="Choice">
           <option value="HTTPS"/>
           <option value="Password"/>
         </type>
         <required>True</required>
-        <dependency>Authentication.Authentication enabled = True</dependency>
+        <dependency>Web.Authentication.Authentication enabled = True</dependency>
       </option>
     </section>
   </schema>

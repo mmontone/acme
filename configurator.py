@@ -975,6 +975,9 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     def __init__(self, parent, option_type):
         OptionTypeEditor.__init__(self, parent, option_type)
         
+        print "Option type: " + str(option_type)
+        print "Options: " + str(option_type.options())
+        
         self.options_var = tk.StringVar()
         self.options_var.set(' '.join(option_type.options()))
         
@@ -1466,43 +1469,44 @@ class ConfigurationSectionViewer(tk.Frame):
             row = row + 1       
         
         for option in self._section.options():
-            option_value, origin = self._config.option_value(option)
-            
-            label_text = option.name
-            if option.is_required and not option.default_value:
-                label_text = label_text + ' (required)'
+            if self._config.option_is_enabled(option):
+                option_value, origin = self._config.option_value(option)
                 
-            label_text=label_text + ':'
-            
-            label_color = 'Black'
-            if errors and errors.get(option.name):
-                label_color = 'Red'
+                label_text = option.name
+                if option.is_required and not option.default_value:
+                    label_text = label_text + ' (required)'
+                    
+                label_text=label_text + ':'
                 
-            label = tk.Label(options, text=label_text, foreground=label_color)
-            
-            # Option label popup
-            label.bind('<ButtonRelease-3>', lambda ev, option=option: self.option_popup(ev, option))
-            
-            label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
-            
-            # Option value
-            value_display = tk.Label(options, text=str(option_value))
-            value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
-            set_status_message(value_display, 'Double click to edit')
-            
-            value_display.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
-            
-            documentation = option.documentation
-            if origin and origin <> self._config:
-                documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
+                label_color = 'Black'
+                if errors and errors.get(option.name):
+                    label_color = 'Red'
+                    
+                label = tk.Label(options, text=label_text, foreground=label_color)
                 
-            if not option_value and option.default_value:
-                documentation = documentation + '\n\n This option is set to its default value'
+                # Option label popup
+                label.bind('<ButtonRelease-3>', lambda ev, option=option: self.option_popup(ev, option))
                 
-            doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
-            doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
+                label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
                 
-            row = row + 1
+                # Option value
+                value_display = tk.Label(options, text=str(option_value))
+                value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
+                set_status_message(value_display, 'Double click to edit')
+                
+                value_display.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
+                
+                documentation = option.documentation
+                if origin and origin <> self._config:
+                    documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
+                    
+                if not option_value and option.default_value:
+                    documentation = documentation + '\n\n This option is set to its default value'
+                    
+                doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
+                doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
+                    
+                row = row + 1
             
         options.pack(fill=tk.BOTH, expand=tk.Y)       
         
@@ -1563,7 +1567,7 @@ class OptionEditorDialog(tk.Toplevel):
         option_value, origin = self._config.option_value(option)
             
         if option_value:
-            option_editor.set_value(option_value)
+            self._option_editor.set_value(option_value)
         
         self._option_editor.pack()
         
@@ -2572,12 +2576,12 @@ if __name__ == '__main__':
         
     root = tk.Tk()
     
-    #if args.full:
-    #    configurator = FullConfigurator(root, configs=configs)
-    #elif args.setup:
-    configurator = SchemasConfigurator(root)
-    #else:
-    #    configurator = Configurator(root, configs=configs)
+    if args.full:
+        configurator = FullConfigurator(root, configs=configs)
+    elif args.setup:
+        configurator = SchemasConfigurator(root)
+    else:
+        configurator = Configurator(root, configs=configs)
     
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
