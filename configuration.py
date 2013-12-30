@@ -712,9 +712,12 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         self.serialize_option_type(option.option_type, option_type)
         required = et.SubElement(option_elem, 'required')
         required.text = 'True' if option.is_required else 'False'
-        if option.default_value:
+        if option.default_value is not None:
             default_value = et.SubElement(option_elem, 'default')
             default_value.text = option.option_type.unparse_value(option.default_value)
+        if option.dependency_expression is not None:
+            dependency_expression = et.SubElement(option_elem, 'dependency')
+            dependency_expression.text = str(option.dependency_expression)
     
     def serialize_option_type(self, option_type, element):
         element.attrib['name'] = option_type.name
@@ -798,12 +801,18 @@ class ConfigurationSchemasXMLUnserializer():
         default_value = option_elem.findtext('default')
         option_type_elem = option_elem.find('type')
         option_type = self.unserialize_option_type(option_type_elem)
+        dependency_expression = option_elem.findtext('dependency')
         
         print name + ":" + str(option_type)
         
         option = ConfigurationSchemaOption(name, option_type, documentation=doc)
-        if default_value:
+        
+        if default_value is not None:
             option.default_value = option_type.parse_value(default_value)
+            
+        if dependency_expression is not None:
+            option.dependency_expression = DependencyExpressionParser.parse_expression(dependency_expression)
+            
         return option
         
     def unserialize_option_type(self, option_type_elem):

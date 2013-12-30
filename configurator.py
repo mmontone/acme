@@ -934,7 +934,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
                 self.option.default_value = None
                 
             expression, ast = self._dependency_editor.value()
-            self.option.dependency_expression = expression
+            self.option.dependency_expression = ast
                 
             configurator.status.set(self.option.name + " option has been updated")
             
@@ -2229,7 +2229,7 @@ class DependencyExpressionEditor(tk.Frame):
         self._expression_var = tk.StringVar()
             
         if option.dependency_expression is not None:
-            self._expression_var.set(option.dependency_expression)
+            self._expression_var.set(str(option.dependency_expression))
             
         self._expression_entry = tk.Entry(self, textvariable=self._expression_var)
         self._expression_entry.pack()
