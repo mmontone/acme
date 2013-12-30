@@ -27,47 +27,13 @@
         <required>True</required>
       </option>
       <option name="Authentication type">
-        <documentation>Type of authentication. Depends on authentication being enabled
-
-
-
-</documentation>
+        <documentation>Type of authentication. Depends on authentication being enabled</documentation>
         <type name="Choice">
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
+          <option value="HTTPS"/>
+          <option value="Password"/>
         </type>
         <required>True</required>
-        <dependency>Web.Authentication enabled = True</dependency>
+        <dependency>Authentication.Authentication enabled = True</dependency>
       </option>
     </section>
   </schema>
@@ -80,42 +46,11 @@
       <documentation>Debugging configuration
 </documentation>
       <option name="Debugging level">
-        <documentation>Debugging level
-
-</documentation>
+        <documentation>Debugging level</documentation>
         <type name="Choice">
           <option value="Info"/>
           <option value="Warning"/>
           <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
         </type>
         <required>True</required>
       </option>
@@ -136,42 +71,11 @@
         <required>True</required>
       </option>
       <option name="Logging level">
-        <documentation>Logging level
-
-</documentation>
+        <documentation>Logging level</documentation>
         <type name="Choice">
           <option value="Info"/>
           <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
           <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
         </type>
         <required>True</required>
       </option>
@@ -182,41 +86,11 @@
     <section name="Database server">
       <documentation></documentation>
       <option name="Engine">
-        <documentation>The database engine
-</documentation>
+        <documentation>The database engine</documentation>
         <type name="Choice">
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
           <option value="Postgresql"/>
           <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Profile"/>
-          <option value="Info"/>
-          <option value="Warning"/>
-          <option value="Error"/>
-          <option value="Postgresql"/>
-          <option value="Mysql"/>
+	  <option value="SQLite"/>
         </type>
         <required>True</required>
       </option>
