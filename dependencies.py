@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.363.20.50.10'
+__version__ = '13.364.00.05.12'
 
 class dependenciesParser(Parser):
     def __init__(self, whitespace='', nameguard=True, **kwargs):
@@ -91,7 +91,7 @@ class dependenciesParser(Parser):
                 self._boolterm_()
                 self.ast['@'] = self.last_node
                 self._spacing_()
-                self._logical_connector_()
+                self._boolean_connector_()
                 self.ast['@'] = self.last_node
                 self._spacing_()
                 self._boolexp_()
@@ -107,13 +107,13 @@ class dependenciesParser(Parser):
                 self._bool_literal_()
             with self._option():
                 self._option_path_()
-                self.ast['path'] = self.last_node
+                self.ast['@'] = self.last_node
                 self._spacing_()
                 self._operation_()
-                self.ast['operation'] = self.last_node
+                self.ast['@'] = self.last_node
                 self._spacing_()
                 self._value_()
-                self.ast['value'] = self.last_node
+                self.ast['@'] = self.last_node
             with self._option():
                 self._token('(')
                 self._spacing_()
@@ -174,7 +174,7 @@ class dependenciesParser(Parser):
         self._token("'")
 
     @rule_def
-    def _logical_connector_(self):
+    def _boolean_connector_(self):
         with self._choice():
             with self._option():
                 self._token('AND')
@@ -233,7 +233,7 @@ class dependenciesSemantics(object):
     def literal_string(self, ast):
         return ast
 
-    def logical_connector(self, ast):
+    def boolean_connector(self, ast):
         return ast
 
 def main(filename, startrule, trace=False):

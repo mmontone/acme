@@ -12,6 +12,7 @@ import pycountry # for countries and languages
 import tkCalendar
 import test
 import argparse
+import grako
 
 configs_file = None
 schemas_file = None
@@ -848,8 +849,8 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         # Dependencies
         dependencies = tk.LabelFrame(self, text='Dependencies')
         
-        dependency_editor = DependencyExpressionEditor(dependencies, schema=self.option.schema())
-        dependency_editor.pack()
+        self._dependency_editor = DependencyExpressionEditor(dependencies, schema=self.option.schema())
+        self._dependency_editor.pack()
         dependencies.pack(fill=tk.X, expand=True)
                 
         buttons = tk.Frame(self)
@@ -931,6 +932,9 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
                 self.option.default_value = self._default_value_editor.value()
             else:
                 self.option.default_value = None
+                
+            expression, ast = self._dependency_editor.value()
+            self.option.dependency_expression = expression
                 
             configurator.status.set(self.option.name + " option has been updated")
             
@@ -2234,6 +2238,22 @@ class DependencyExpressionEditor(tk.Frame):
         
         self._expression_editor = DependencyExpressionGraphicalEditor(self, expression, self._schema)
         self._expression_editor.pack()
+    
+    def value(self):
+        expression = self._expression_var.get()
+        if expression <> '':
+            # Parse the expression
+            try:
+                ast = conf.DependencyExpressionParser.parse_expression(expression)
+            except grako.FailedParse as e:
+                tkMessageBox.showerror('Parse error', e.message)
+                
+            tkMessageBox.showinfo('Success', str(ast))
+            
+            return expression, ast
+            
+        else:
+            return None, None
         
 class DependencyExpressionGraphicalEditor(tk.Frame):
     def __init__(self, parent, expression=None, schema=None):
@@ -2557,12 +2577,12 @@ if __name__ == '__main__':
         
     root = tk.Tk()
     
-    if args.full:
-        configurator = FullConfigurator(root, configs=configs)
-    elif args.setup:
-        configurator = SchemasConfigurator(root)
-    else:
-        configurator = Configurator(root, configs=configs)
+    #if args.full:
+    #    configurator = FullConfigurator(root, configs=configs)
+    #elif args.setup:
+    configurator = SchemasConfigurator(root)
+    #else:
+    #    configurator = Configurator(root, configs=configs)
     
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()

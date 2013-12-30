@@ -1,6 +1,7 @@
 #import xml.etree.ElementTree as et
 from lxml import etree as et
 import datetime
+import dependencies
 
 class ConfigurationSchema():
     _configuration_schemas = {}
@@ -839,3 +840,118 @@ class ConfigurationSchemasXMLUnserializer():
     
 class YAMLSerializer(Serializer):
     pass
+
+# Dependency expressions
+class DependencyExpression:
+    pass
+
+class BooleanConnector(DependencyExpression):
+    def __init__(self, arg1, arg2):
+        DependencyExpression.__init__(self)
+        self._arg1 = arg1
+        self._arg2 = arg2
+        
+    @property
+    def arg1(self):
+        return self._arg1
+    
+    @property
+    def arg2(self):
+        return self._arg2
+        
+
+class DEAnd(BooleanConnector):
+    pass
+
+class DEOr(BooleanConnector):
+    pass
+
+class DEXor(BooleanConnector):
+    pass
+
+class BooleanOperation(DependencyExpression):
+    def __init__(self, arg1, arg2):
+        DependencyExpression.__init__(self)
+        self._arg1 = arg1
+        self._arg2 = arg2
+        
+    @property
+    def arg1(self):
+        return self._arg1
+    
+    @property
+    def arg2(self):
+        return self._arg2
+        
+
+class DEEqual(BooleanOperation):
+    pass
+
+class DEGreaterThan(BooleanOperation):
+    pass
+
+class DELowerThan(BooleanOperation):
+    pass
+
+class DEDifferentFrom(BooleanOperation):
+    pass
+
+class DependencyExpressionParser():
+    @classmethod
+    def parse_expression(cls, expression):
+        parser = dependencies.dependenciesParser(parseinfo=False)
+        ast = parser.parse(expression, whitespace='', 
+                           rule_name='boolexp', 
+                           semantics=DependencyExpressionParser())
+        return ast
+    
+    def bool_literal(self, ast):
+        if ast == 'True':
+            return True
+        elif ast == 'False':
+            return False
+        else:
+            raise Exception('Error parsing literal boolean ' + str(ast))
+        
+    def identifier(self, ast):
+        name = ast[0]
+        if len(ast) > 1:
+            for x in ast[1]:
+                name = name + x
+                
+        print "Identifier:" + name
+        return name.strip()
+    
+    def boolexp(self, ast):
+        if isinstance(ast, list):
+            term = ast[0]
+            connector = ast[1]
+            exp = ast[2]
+            
+            if connector == 'AND':
+                return DEAnd(term, exp)
+            elif connector == 'OR':
+                return DEOr(term, exp)
+            elif connector == 'XOR':
+                return DEXor(term, exp)
+            else:
+                raise Exception('Error parsing boolean expression ' + str(ast))
+        else:
+            return ast
+        
+    def boolterm(self, ast):
+        if isinstance(ast, list):
+            option_path = ast[0]
+            operation = ast[1]
+            value = ast[2]
+            
+            if operation == '=':
+                return DEEqual(option_path, value)
+            elif operation == '>':
+                return DEGreaterThan(option_path, value)
+            elif operation == '<':
+                return DELowerThan(option_path, value)
+            elif operation == '<>':
+                return DEDifferentFrom(option_path, value)
+        else:
+            return ast
