@@ -842,8 +842,9 @@ class YAMLSerializer(Serializer):
     pass
 
 # Dependency expressions
-class DependencyExpression:
-    pass
+class DependencyExpression(object):
+    def __init__(self, **args):
+        pass
 
 class BooleanConnector(DependencyExpression):
     def __init__(self, arg1, arg2):
@@ -913,6 +914,15 @@ class DependencyExpressionParser():
         else:
             raise Exception('Error parsing literal boolean ' + str(ast))
         
+    def option_path(self, ast):
+        print "Option path " + str(ast)
+        if isinstance(ast, list):
+            path = [ast[0]]
+            path.extend(ast[1])
+            return [path]
+        else:
+            return [ast]
+        
     def identifier(self, ast):
         name = ast[0]
         if len(ast) > 1:
@@ -922,7 +932,14 @@ class DependencyExpressionParser():
         print "Identifier:" + name
         return name.strip()
     
+    def literal_string(self, ast):
+        string = ''
+        for x in ast:
+            string = string + x
+        return string
+    
     def boolexp(self, ast):
+        print "Boolexp: " + str(ast)
         if isinstance(ast, list):
             term = ast[0]
             connector = ast[1]
@@ -940,6 +957,7 @@ class DependencyExpressionParser():
             return ast
         
     def boolterm(self, ast):
+        print "Boolterm: " + str(ast)
         if isinstance(ast, list):
             option_path = ast[0]
             operation = ast[1]
