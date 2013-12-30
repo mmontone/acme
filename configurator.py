@@ -849,7 +849,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         # Dependencies
         dependencies = tk.LabelFrame(self, text='Dependencies')
         
-        self._dependency_editor = DependencyExpressionEditor(dependencies, schema=self.option.schema())
+        self._dependency_editor = DependencyExpressionEditor(dependencies, option=self.option)
         self._dependency_editor.pack()
         dependencies.pack(fill=tk.X, expand=True)
                 
@@ -2219,24 +2219,22 @@ class DatetimeOptionEditor(OptionEditor):
         return self._calendar.dt <> self._date
     
 class DependencyExpressionEditor(tk.Frame):
-    def __init__(self, parent, expression=None, schema=None):
+    def __init__(self, parent, option):
         tk.Frame.__init__(self, parent)
         
-        self._expression = expression
-        self._schema = schema
+        self._schema = option.schema()
         
         # UI
         
         self._expression_var = tk.StringVar()
-        self._expression_var.set('Enter dependency expression')
-        
-        if self._expression is not None:
-            self._expression_var.set(str(self._expression))
+            
+        if option.dependency_expression is not None:
+            self._expression_var.set(option.dependency_expression)
             
         self._expression_entry = tk.Entry(self, textvariable=self._expression_var)
         self._expression_entry.pack()
         
-        self._expression_editor = DependencyExpressionGraphicalEditor(self, expression, self._schema)
+        self._expression_editor = DependencyExpressionGraphicalEditor(self, option.dependency_expression, self._schema)
         self._expression_editor.pack()
     
     def value(self):
