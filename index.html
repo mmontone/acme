@@ -136,9 +136,9 @@ optional arguments:
 <p>Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections' options can all be added and removed from the tree widget on the left of the schemas navigator.</p>
 
 <h3>
-<a name="configuration-options-in-schemas" class="anchor" href="#configuration-options-in-schemas"><span class="octicon octicon-link"></span></a>Configuration options in schemas</h3>
+<a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h3>
 
-<p>Options have a name and a type. </p>
+<p>Options in schemas have a name and a type. </p>
 
 <p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schema_option.png" alt="schema_option"></p>
 
@@ -146,7 +146,37 @@ optional arguments:
 
 <p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/option_editing.png" alt="option_editing"></p>
 
-<p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. Last but not least, they have a documentation string. This is very important for the end user to know the option meaning.</p>
+<p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. </p>
+
+<p>They also have a documentation string. This is very important for the end user to know the option meaning.</p>
+
+<h4>
+<a name="options-dependencies" class="anchor" href="#options-dependencies"><span class="octicon octicon-link"></span></a>Options dependencies</h4>
+
+<p>It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.</p>
+
+<p>Configurator has support for that by attaching a <code>dependencies expression</code> to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. </p>
+
+<p>Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: <code>Database.Engine = 'MySQL'</code>. This way the <code>Storage engine</code> option will only be editable when the Database.Engine is set to 'MySQL'.</p>
+
+<p>Dependency expressions can be added in the schema option editing screen:</p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/dependencies.png" alt="dependencies"></p>
+
+<h2>
+<a name="configurations" class="anchor" href="#configurations"><span class="octicon octicon-link"></span></a>Configurations</h2>
+
+<p>Configurations are instances of Configuration schemas, much like objects are instances of classes in object oriented programming languages. That is, configurations structure is determined by the configuration schema they belong to. In particular, their sections are that of their configuration schemas; and their options values depend on the option schemas defined in the configruration schemas.</p>
+
+<p>Configurations belong to one and only one configuration schema, and that's compulsory, as it can be expected. Besides, configurations can inherit from each other: a configuration can inherit from another configuration and overwrite its parent options values. A configuration can have one and only one parent, o no parent; this is different from configuration schemas, that can have several parents. An understandable restriction is that the configuration parent schema has to be the same that the configuration schema.</p>
+
+<p>Configurations can be added and removed from the list appering on the left of the configurations navigator.</p>
+
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png" alt="configs"></p>
+
+<p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <code>configurator.config</code>, but it can be changed if desired.</p>
+
+<p>Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with <code>required</code> enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be <code>set</code> and <code>unset</code>. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.</p>
       </section>
 
     </div>
