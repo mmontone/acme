@@ -8,3 +8,6 @@
 * Configurator configuration using Configurator (bootstrap)
 * Configurations editing layout configuration (for instance, whether to display subsections as tab or not, etc). This should be serialized as a <settings> in the configurator.config file.
 * Make configuration schemas and configuration transactional objects for better manipulation and editing??
+* Font chooser
+* Manual
+* tk manual viewer??
