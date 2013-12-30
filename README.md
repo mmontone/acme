@@ -81,9 +81,9 @@ Configuration schemas have sections, each containing other sections and schema o
 
 Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections' options can all be added and removed from the tree widget on the left of the schemas navigator.
 
-### Configuration options in schemas ###
+### Options ###
 
-Options have a name and a type. 
+Options in schemas have a name and a type. 
 
 ![schema_option](https://raw.github.com/mmontone/configurator/master/doc/images/schema_option.png)
 
@@ -91,7 +91,21 @@ The type of option determines the possible values that can be assigned to it in 
 
 ![option_editing](https://raw.github.com/mmontone/configurator/master/doc/images/option_editing.png)
 
-Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. Last but not least, they have a documentation string. This is very important for the end user to know the option meaning.
+Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. 
+
+They also have a documentation string. This is very important for the end user to know the option meaning.
+
+#### Options dependencies ####
+
+It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.
+
+Configurator has support for that by attaching a ``dependencies expression`` to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
+
+Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: ``Database.Engine = 'MySQL'``. This way the ``Storage engine`` option will only be editable when the Database.Engine is set to 'MySQL'.
+
+Dependency expressions can be added in the schema option editing screen:
+
+![dependencies](https://raw.github.com/mmontone/configurator/master/doc/images/dependencies.png)
 
 ## Configurations ##
 
