@@ -98,12 +98,13 @@ class ListEditor(tk.Frame):
             self.list_var.set(' '.join(items))
     
     def remove_item(self):
-        items = list(eval(self.list_var.get()))
-        new_items = list(items)
-        for i in map(int, self.list.curselection()):
-            new_items.remove(items[i])
+        if self.list_var.get() <> '':
+            items = list(eval(self.list_var.get()))
+            new_items = list(items)
+            for i in map(int, self.list.curselection()):
+                new_items.remove(items[i])
             
-        self.list_var.set(' '.join(new_items))
+            self.list_var.set(' '.join(new_items))
         
 class StatusBar(tk.Frame):
 
