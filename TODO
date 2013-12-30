@@ -1,0 +1,9 @@
+* Move up and down sections and options
+* Option groups. Group of options that are placed inside the same tk.LabelFrame
+* Graphical dependencies editor
+* Sections dependencies (a section activation depending on an option value)
+* Option type displaying a radio buttons group (instead of a combo box)
+* Option type displaying a checkbuttons group for multiple selection (List option type)
+* Idea: a section subsections could be displayed with a tk.Notebook widget, in different tags in the section editing screen.
+* Configurator configuration using Configurator (bootstrap)
+* Configurations editing layout configuration (for instance, whether to display subsections as tab or not, etc). This should be serialized as a <settings> in the configurator.config file.
