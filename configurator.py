@@ -2410,6 +2410,7 @@ class Configurator(tk.Frame):
         configs_menu.add_command(label="New", command=self.create_config)
         configs_menu.add_command(label="Save", command=self.save_configs)
         configs_menu.add_command(label="Load", command=self.load_configs)
+        configs_menu.add_command(label="Validate", command=self.validate_configs)
         self.menu_bar.add_cascade(label='Configurations', menu=configs_menu)
         
         help_menu = tk.Menu(self.menu_bar)
@@ -2445,7 +2446,10 @@ class Configurator(tk.Frame):
         self._configs_nav.save_configs()
         
     def load_configs(self):
-        self._configs_nav.load_configs()                     
+        self._configs_nav.load_configs()
+        
+    def validate_configs(self):
+        self._configs_nav.validate_configs()                     
        
     def help_about(self):
         d = AboutDialog(self)
