@@ -885,6 +885,13 @@ class ConfigurationSchemasXMLUnserializer():
             option_type.add_option(option.attrib['value'])
         return option_type
     
+    def visit_ManyOptionType(self, option_type):
+        many_type_elem = self._option_type_elem.find('type')
+        
+        many_type = self.unserialize_option_type(many_type_elem)
+        option_type.option_type = many_type
+        return option_type
+    
     def visit_DatetimeOptionType(self, option_type):
         return option_type
     
