@@ -480,7 +480,39 @@ class ManyOptionType(OptionType):
     
     def parse_value(self, str):
         return eval(str)
-   
+    
+class CustomOptionType(OptionType):
+    
+    def __init__(self, name, attributes=None):
+        OptionType.__init__(self)
+        
+        if attributes is not None:
+            self._attributes = attributes
+        else:
+            self._attributes = None
+            
+    @property
+    def attributes(self):
+        return self._attributes 
+    
+    @attributes.setter
+    def attributes(self, value):
+        self._attributes = value
+        return self
+    
+    @property
+    def name(self):
+        return self._name 
+    
+    @name.setter
+    def name(self, value):
+        self._name = value
+        return self
+    
+    def accept(self, visitor):
+        return visitor.visit_CustomOptionType(self)
+    
+      
 class Configuration(object):
     
     _configurations = {}

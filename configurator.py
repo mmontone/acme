@@ -16,6 +16,181 @@ import grako
 
 configs_file = None
 schemas_file = None
+
+class CustomOptionTypesNavigator(tk.Toplevel):
+    def __init__(self, master, option_types=None):
+        
+        tk.Toplevel.__init__(self, master)
+        
+        self.title('Custom option types')
+        
+        if option_types is not None:
+            self._option_types = option_types
+        else:
+            self._option_types = []
+            
+        # ui
+        
+        self._option_types_list = tk.Listbox(self)
+        
+        for option_type in self._option_types:
+            self._option_types_list.insert(tk.END, option_type.name)
+            
+        if len(self._option_types) > 0:
+            self._option_types_list.select_set(0)
+            
+        self._option_types_list.bind('<ButtonRelease-3>', self.popup_list)
+            
+        self._option_types_list.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        if len(self._option_types) > 0:
+            self._editor = CustomOptionTypeEditor(self, self._option_types[0])
+        else:
+            self._editor = tk.Frame(self)
+            
+        self._editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    
+    def popup_list(self, ev):
+        print "Custom option types popup"
+        
+        def create_options_menu():
+            popup.add_command(label="Add custom option type", command=self.create_custom_option_type)
+           
+        index = self._option_types_list.nearest(ev.y)
+        
+        # create a menu
+        popup = tk.Menu(self, tearoff=0)
+        
+        if index >= 0:
+            _, yoffset, _, height = self._option_types_list.bbox(index)
+        
+            if ev.y > height + yoffset + 5: # XXX 5 is a niceness factor :)
+                # Outside of widget.
+                create_options_menu()
+            else:
+                option_type_name = self._option_types_list.get(index)
+                option_type = next((ot for ot in self._option_types if ot.name == option_type_name), None)
+                print "Option type: " + str(option_type)
+                    
+                popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))                
+        else:
+            create_options_menu()            
+            
+        popup.add_separator()
+        popup.add_command(label="Dismiss")
+        
+        # display the popup menu
+        try:
+            popup.tk_popup(ev.x_root, ev.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            popup.grab_release()
+            
+    def create_custom_option_type(self):
+        def save_custom_option_type(option_type):
+            self._option_types.add(option_type)
+            self._option_types_list.insert(tk.END, option_type.name)
+            
+        creator = CustomOptionTypeCreator(self, onsave=save_custom_option_type)
+        self.wait_window(creator)
+        
+class CustomOptionTypeCreator(tk.Toplevel):
+    def __init__(self, master, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        self.title('New custom option type')
+        
+        self._onsave = options.get('onsave')
+        
+        self._edit = tk.Frame(self)
+        
+        
+        # Name
+        tk.Label(self._edit, text="Name: ").grid(row=0, column=0, sticky=tk.NW)
+        
+        self._option_type_name = tk.StringVar()
+                
+        tk.Entry(self._edit, textvariable=self._option_type_name).grid(row=0, column=1, sticky=tk.NW)
+        
+        # Documentation
+        tk.Label(self._edit, text="Documentation: ").grid(row=1, column=0, sticky=tk.NW)
+        
+        self._option_type_doc = tk.Text(self._edit, width=60, height=10)
+        self._option_type_doc.grid(row=1, column=1, sticky=tk.NW)
+        
+        # Attributes
+        tk.Label(self._edit, text="Attributes: ").grid(row=2, column=0, sticky=tk.NW)
+        
+        self._attributes_panel = tk.Frame(self._edit)
+        
+        #for name, type in option_type.attributes:
+            
+            
+        
+        self._edit.pack(expand=True, fill=tk.BOTH)
+        
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Save", command=self.save_option_type)
+        #set_status_message(save, "Save changes to custom option type")
+        save.pack(side=tk.RIGHT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.RIGHT, padx=2)       
+        
+        buttons.pack()
+        
+    def save_option_type(self):
+        option_type = conf.CustomOptionType(self._option_type_name.get())
+        
+        option_type.documentation = self._option_type_doc.get(1.0, tk.END).strip()
+        
+        if self._onsave is not None:
+            self._onsave(option_type)
+            
+        self.destroy()        
+            
+class CustomOptionTypeEditor(tk.Frame):
+    def __init__(self, master, option_type):
+        tk.Frame.__init__(self, master)
+        
+        self._edit = tk.Frame(self)
+        
+        # Name
+        tk.Label(self._edit, text="Name: ").grid(row=0, column=0, sticky=tk.NW)
+        
+        self._option_type_name = tk.StringVar()
+        self._option_type_name.set(option_type.name)
+        
+        tk.Entry(self._edit, textvariable=self._option_type_name).grid(row=0, column=1, sticky=tk.NW)
+        
+        # Documentation
+        tk.Label(self._edit, text="Documentation: ").grid(row=1, column=0, sticky=tk.NW)
+        
+        self._option_type_doc = tk.Text(self._edit, width=60, height=10)
+        self._option_type_doc.insert(tk.END, option_type.documentation)
+        self._option_type_doc.grid(row=1, column=1, sticky=tk.NW)
+        
+        # Attributes
+        tk.Label(self._edit, text="Attributes: ").grid(row=2, column=0, sticky=tk.NW)
+        
+        self._attributes_panel = tk.Frame(self._edit)
+        
+        #for name, type in option_type.attributes:
+            
+            
+        
+        self._edit.pack(expand=True, fill=tk.BOTH)
+        
+        buttons = tk.Frame(self)
+        save = tk.Button(buttons, text="Save", command=self.save_option_type)
+        #set_status_message(save, "Save changes to custom option type")
+        save.pack(side=tk.RIGHT, padx=2)
+               
+        remove = tk.Button(buttons, text="Remove", command=lambda: self.remove_option_type(option_type))
+        #set_status_message(remove, "Remove the custom option type")
+        remove.pack(side=tk.RIGHT, padx=2)
+        
+        buttons.pack()                                                                                    
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -90,6 +265,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
         popup.add_command(label="New configuration schema", command=self.create_schema)
         popup.add_command(label="Save schemas", command=self.save_schemas)
         popup.add_command(label="Load schemas", command=self.load_schemas)
+        popup.add_separator()
+        popup.add_command(label="Custom option types", command=self.custom_option_types)
         popup.add_separator()
         popup.add_command(label="Dismiss")
             
@@ -337,6 +514,10 @@ class ConfigurationSchemaNavigator(tk.Frame):
                 
         dialog = LoadSchemasDialog(self, onload=load_schemas)
         self.wait_window(dialog)
+        
+    def custom_option_types(self):
+        navigator = CustomOptionTypesNavigator(self)
+        self.wait_window(navigator)
         
 class SaveSchemasDialog(tk.Toplevel):
     
@@ -2469,6 +2650,7 @@ class FullConfigurator(tk.Frame):
         schemas_menu.add_command(label="New", command=self.create_schema)
         schemas_menu.add_command(label="Save", command=self.save_schemas)
         schemas_menu.add_command(label="Load", command=self.load_schemas)
+        schemas_menu.add_command(label="Custom option types", command=self.custom_option_types)
         self.menu_bar.add_cascade(label='Schemas', menu=schemas_menu)
         
         # Help menu
@@ -2523,6 +2705,9 @@ class FullConfigurator(tk.Frame):
         
     def load_schemas(self):
         self._schemas_nav.load_schemas()
+        
+    def custom_option_types(self):
+        self._schemas_nav.custom_option_types()
         
     def help_about(self):
         d = AboutDialog(self)
@@ -2614,6 +2799,9 @@ class SchemasConfigurator(tk.Frame):
         schemas_menu.add_command(label="New", command=self.create_schema)
         schemas_menu.add_command(label="Save", command=self.save_schemas)
         schemas_menu.add_command(label="Load", command=self.load_schemas)
+        schemas_menu.add_separator()
+        schemas_menu.add_command(label="Custom option types", command=self.custom_option_types)
+        
         self.menu_bar.add_cascade(label='Schemas', menu=schemas_menu)
         
         help_menu = tk.Menu(self.menu_bar)
@@ -2650,6 +2838,9 @@ class SchemasConfigurator(tk.Frame):
         
     def load_schemas(self):
         self._schemas_nav.load_schemas()
+        
+    def custom_option_types(self):
+        self._schemas_nav.custom_option_types()
         
     def help_about(self):
         d = AboutDialog(self)
