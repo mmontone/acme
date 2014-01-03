@@ -1006,7 +1006,7 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     
     def option_type_instance(self):
         # Return an instance of the edited option type
-        return conf.ChoiceOptionType(self.options())   
+        return conf.ChoiceOptionType(self.options())
     
 class ManyOptionTypeEditor(OptionTypeEditor):
     option_type = conf.ManyOptionType
@@ -2053,7 +2053,67 @@ class ChoiceOptionEditor(OptionEditor):
         self._initial_value = value
     
     def value_changed(self):
-        return self._initial_value <> self.value() 
+        return self._initial_value <> self.value()
+    
+class ManyOptionEditor(OptionEditor):
+    option_type = conf.ManyOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._initial_value = None
+        
+        self._editors = tk.Frame(self)
+        self._editors.pack()
+        
+        add_btn = tk.Button(self, text='+', command=self.add_editor)
+        add_btn.pack()
+         
+        #if self._option_schema and self._option_schema.default_value is not None:
+        #    self._initial_value = self._option_schema.default_value        
+        
+        #self._var = tk.StringVar()
+        
+        #if self._initial_value is not None:
+        #    self._var.set(self._initial_value)
+        
+        #self._lb = tk.OptionMenu(self, self._var, *self._option_type.options())
+        #self._lb.pack()
+        
+    def disable(self):
+        self._lb.configure(state=tk.DISABLED)
+        
+    def value(self):
+        return map(lambda editor: editor.value(), self._many_type_editors)
+        
+    def set_value(self, value):
+        self._initial_value = value
+        self._editors.forget()
+        for v in value:
+            self._editors = tk.Frame(self)
+   
+    def value_changed(self):
+        return self._initial_value <> self.value()
+    
+    def add_editor(self, value=None):
+        
+        editor_container = tk.Frame(self._editors)
+        
+        many_option_type = self._option_type.option_type
+        print "Many option type: " + str(many_option_type)
+        editor_class = OptionEditor.for_option_type(many_option_type.__class__)
+        editor = editor_class(editor_container, option_type=many_option_type)
+        if value is not None:
+            editor.set_value(value)
+            
+        #self._editors_list.append(editor)
+        
+        editor.pack(side=tk.LEFT)
+        
+        remove_btn = tk.Button(editor_container, text='-', command=lambda: editor_container.forget())
+        remove_btn.pack()
+        
+        editor_container.pack()       
     
 class TimezoneOptionEditor(OptionEditor):
     option_type = conf.TimezoneOptionType
