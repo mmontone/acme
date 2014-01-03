@@ -474,6 +474,9 @@ class ManyOptionType(OptionType):
     def option_type(self, value):
         self._option_type = value
         return self
+    
+    def accept(self, visitor):
+        return visitor.visit_ManyOptionType(self)
    
 class Configuration(object):
     
@@ -781,7 +784,13 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
     def visit_ChoiceOptionType(self, option_type):
         for option in option_type.options():
             opt = et.SubElement(self._option_elem, 'option')
-            opt.attrib['value'] = option     
+            opt.attrib['value'] = option
+            
+    def visit_ManyOptionType(self, option_type):
+        many_type = option_type.option_type
+        many_type_elem = et.SubElement(self._option_elem, 'type')
+        many_type_elem.attrib['name'] = many_type.name
+        self.serialize_option_type(option_type.option_type, many_type_elem) 
             
     def write(self, recipient):
         tree = et.ElementTree(self._root)

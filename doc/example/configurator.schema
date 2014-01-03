@@ -37,6 +37,19 @@
         <dependency>Web.Authentication.Authentication enabled = True</dependency>
       </option>
     </section>
+    <section name="Assets">
+      <documentation>Assets
+</documentation>
+      <option name="Assets">
+        <documentation>Assets
+
+</documentation>
+        <type name="Many">
+          <type name="Filename"/>
+        </type>
+        <required>False</required>
+      </option>
+    </section>
   </schema>
   <schema name="App">
     <documentation></documentation>
@@ -91,7 +104,7 @@
         <type name="Choice">
           <option value="Postgresql"/>
           <option value="Mysql"/>
-	  <option value="SQLite"/>
+          <option value="SQLite"/>
         </type>
         <required>True</required>
       </option>
