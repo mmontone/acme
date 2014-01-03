@@ -1006,8 +1006,73 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     
     def option_type_instance(self):
         # Return an instance of the edited option type
-        return conf.ChoiceOptionType(self.options())
+        return conf.ChoiceOptionType(self.options())   
+    
+class ManyOptionTypeEditor(OptionTypeEditor):
+    option_type = conf.ManyOptionType
+    
+    def __init__(self, parent, option_type):
+        OptionTypeEditor.__init__(self, parent, option_type)
         
+        #ui
+        
+        # Choose the option type
+        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        
+        # Maybe we can remove this??
+        option_types.remove('Many')
+        option_types.remove('One of')
+        option_types.remove('Maybe')
+        
+        self._option_type_var = tk.StringVar()
+        
+        if option_type.option_type is not None:
+            value = self._option_type_var.set(option_type.option_type.name)
+        else:
+            value = option_types[0]
+        
+        
+        self._option_type_selector = tk.OptionMenu(self, 
+                                                   self._option_type_var, 
+                                                   option_types[0], 
+                                                   *option_types, 
+                                                   command=self.select_option_type)
+        self._option_type_selector.pack()
+        
+        if option_type.option_type is not None:
+            editor = OptionTypeEditor.for_option_type(option_type)
+                    
+            if editor:
+                self._option_type_editor = editor(self, option_type.option_type)
+            else:
+                self._option_type_editor = tk.Frame()
+        else:
+            self._option_type_editor = tk.Frame()
+            
+        self._option_type_editor.pack()
+        
+    def select_option_type(self, ev):
+        option_type = conf.OptionType.get_named(self._option_type_var.get())
+        
+        editor = OptionTypeEditor.for_option_type(option_type)
+                    
+        self._option_type_editor.forget()     
+        
+        if editor:
+            self._option_type_editor = editor(self, option_type())
+        
+        self._option_type_editor.pack()
+        
+    def option_type_instance(self):
+        # Return an instance of the edited option type
+               
+        if isinstance(self._option_type_editor, OptionTypeEditor):
+            option_type = self._option_type_editor.option_type_instance()
+        else:
+            option_type_class = conf.OptionType.get_named(self._option_type_var.get())
+            option_type = option_type_class()
+        
+        return conf.ManyOptionType(option_type)       
         
 class ConfigurationNavigator(tk.Frame):
     def __init__(self, master, configs):
@@ -2256,8 +2321,9 @@ class DependencyExpressionEditor(tk.Frame):
         self._expression_editor.pack()
     
     def value(self):
-        expression = self._expression_entry.get(1.0, tk.END)
+        expression = self._expression_entry.get(1.0, tk.END).strip()
         if expression <> '':
+            print "Parsing expression: " + expression
             # Parse the expression
             try:
                 ast = conf.DependencyExpressionParser.parse_expression(expression)
