@@ -400,8 +400,12 @@ class DatetimeOptionType(OptionType):
 class ChoiceOptionType(OptionType):
     _name = "Choice"
     
-    def __init__(self, options=[]):
-        self._options = options
+    def __init__(self, options=None):
+        
+        if options is None:
+            self._options=[]
+        else:
+            self._options = options
         
     def options(self):
         return self._options
