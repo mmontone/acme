@@ -11,3 +11,7 @@
 * Font chooser
 * Manual
 * tk manual viewer??
+* 'Maybe' option type. The 'maybe' option type is a composite type. It can contain another option type or nothing.
+  It can be seen as the equivalent of Haskell's Maybe type.
+* 'Many' option type. The 'many' option type is a composite type. Options of this type contain several instances of other options.
+  It can be seen as the equivalent of Haskell's 'List a' type.
