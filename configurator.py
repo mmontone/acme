@@ -2062,23 +2062,13 @@ class ManyOptionEditor(OptionEditor):
         OptionEditor.__init__(self, master, **options)
         
         self._initial_value = None
+        self._many_type_editors = []
         
         self._editors = tk.Frame(self)
         self._editors.pack()
         
         add_btn = tk.Button(self, text='+', command=self.add_editor)
-        add_btn.pack()
-         
-        #if self._option_schema and self._option_schema.default_value is not None:
-        #    self._initial_value = self._option_schema.default_value        
-        
-        #self._var = tk.StringVar()
-        
-        #if self._initial_value is not None:
-        #    self._var.set(self._initial_value)
-        
-        #self._lb = tk.OptionMenu(self, self._var, *self._option_type.options())
-        #self._lb.pack()
+        add_btn.pack()       
         
     def disable(self):
         self._lb.configure(state=tk.DISABLED)
@@ -2089,8 +2079,11 @@ class ManyOptionEditor(OptionEditor):
     def set_value(self, value):
         self._initial_value = value
         self._editors.forget()
+        self._editors = tk.Frame(self)
+        self._editors.pack()
+        
         for v in value:
-            self._editors = tk.Frame(self)
+            self.add_editor(v)
    
     def value_changed(self):
         return self._initial_value <> self.value()
@@ -2106,11 +2099,12 @@ class ManyOptionEditor(OptionEditor):
         if value is not None:
             editor.set_value(value)
             
-        #self._editors_list.append(editor)
+        self._many_type_editors.append(editor)
         
         editor.pack(side=tk.LEFT)
         
-        remove_btn = tk.Button(editor_container, text='-', command=lambda: editor_container.forget())
+        remove_btn = tk.Button(editor_container, text='-', command=lambda: (editor_container.forget(),
+                                                                            self._many_type_editors.remove(editor)))
         remove_btn.pack()
         
         editor_container.pack()       
