@@ -477,6 +477,9 @@ class ManyOptionType(OptionType):
     
     def accept(self, visitor):
         return visitor.visit_ManyOptionType(self)
+    
+    def parse_value(self, str):
+        return eval(str)
    
 class Configuration(object):
     
