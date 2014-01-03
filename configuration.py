@@ -421,11 +421,30 @@ class ListOptionType(OptionType):
         
     def options():
         return self._options
-    
-class CompoundOptionType():
-    def __init__(self, *option_types):
-        self._option_types = option_types
         
+class MaybeOptionType(OptionType):
+    _name = "Maybe"
+    
+    def __init__(self, option_type=None):
+        OptionType.__init__(self)
+        
+        self._option_type = option_type
+        
+    @property
+    def option_type(self):
+        return self._option_type 
+    
+    @option_type.setter
+    def option_type(self, value):
+        self._option_type = value
+        return self
+        
+class OneOfOptionType(OptionType):
+    _name = "One of"
+    
+    def __init__(self):
+        OptionType.__init__(self)
+               
     @property
     def option_types(self):
         return self._option_types 
@@ -433,21 +452,25 @@ class CompoundOptionType():
     @option_types.setter
     def option_types(self, value):
         self._option_types = value
-        return self
-        
-class OneOfOptionType(OptionType, CompoundOptionType):
-    _name = "One of"
+        return self       
     
-    def __init__(self, *option_types):
-        OptionType.__init__(self, *option_types)
-       
-    
-class ManyOptionType(OptionType, CompoundOptionType):
+class ManyOptionType(OptionType):
     _name = "Many"   
     
-    def __init__(self, *option_types):
-        OptionType.__init__(self, *option_types)
+    def __init__(self, option_type=None):
+        OptionType.__init__(self)
+        
+        self._option_type = option_type
+        
+    @property
+    def option_type(self):
+        return self._option_type 
     
+    @option_type.setter
+    def option_type(self, value):
+        self._option_type = value
+        return self
+   
 class Configuration(object):
     
     _configurations = {}
