@@ -1753,7 +1753,10 @@ class ConfigurationSectionViewer(tk.Frame):
                 label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
                 
                 # Option value
-                value_display = tk.Label(options, text=str(option_value))
+                opt_val = option_value
+                if not option_value and option.default_value:
+                    opt_val= option.default_value
+                value_display = tk.Label(options, text=str(opt_val))
                 value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
                 set_status_message(value_display, 'Double click to edit')
                 
