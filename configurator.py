@@ -486,6 +486,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         popup.add_command(label="Add subsection", command=lambda:self.add_subsection(section, item))
+        popup.add_command(label="Add options group", command=lambda:self.add_options_group(section, item))
         popup.add_command(label="Add option", command=lambda:self.add_option(section, item))
         popup.add_separator()
         popup.add_command(label="Move up", command=lambda:self.move_up_section(section))
@@ -529,7 +530,6 @@ class ConfigurationSchemaNavigator(tk.Frame):
         section = self.find_section(item_id)
         set_status_message(self, "Edit " + section.name + " section")
         
-           
     def find_section(self, id):
         return self.items[id]
     
@@ -568,7 +568,17 @@ class ConfigurationSchemaNavigator(tk.Frame):
             configurator.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
             
         creator = ConfigurationSchemaOptionCreator(self, onsave=save_option)
-        self.wait_window(creator)        
+        self.wait_window(creator)      
+        
+    def add_options_group(self, section, item_id):
+        def save_options_group(options_group):
+            section.add_option(options_group)
+            id = self.tree.insert(item_id, 'end', text=option.name, tags='options_group')
+            self.items[id] = options_group
+            configurator.status.set('Options group ' + options_group.name + ' created in ' + section.name + ' section')
+            
+        creator = ConfigurationSchemaOptionsGroupCreator(self, onsave=save_options_group)
+        self.wait_window(creator)  
     
     def select_option(self, ev):
         item_id = str(self.tree.focus())
@@ -1321,6 +1331,97 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
             
             if self._onremove:
                 self._onremove()
+                
+class ConfigurationSchemaOptionsGroupCreator(tk.Toplevel):
+    def __init__(self, master, **options):
+        tk.Toplevel.__init__(self, master)
+        
+        # configuration
+        self.transient(master)
+        self._onsave = options.get('onsave') or None
+               
+        # ui 
+        self.title('New option group')
+        
+        self.f = tk.Frame(self)
+                
+        # Name
+        tk.Label(self.f, text="Name: ").grid(row=0, column=0, sticky=tk.W)
+        self.option_name = tk.StringVar()
+        tk.Entry(self.f, textvariable=self.option_name).grid(row=0, column=1, sticky=tk.W)
+        
+        # Documentation
+        tk.Label(self.f, text="Documentation:").grid(row=4, column=0, sticky=tk.W)
+        self.option_documentation = tk.Text(self.f, width=60, height=10)
+        self.option_documentation.grid(row=4, column=1, sticky=tk.W)
+                
+        # Option type
+        tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
+        self.option_type = tk.StringVar()
+        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
+        set_status_message(options, "Select the type of option")
+        options.grid(row=1, column=1, sticky=tk.W) 
+        
+        self.option_type_editor = tk.Frame(self.f)
+        self.option_type_editor.grid(row=2, column=1, sticky=tk.W)
+               
+        buttons = tk.Frame(self.f)
+    
+        save = tk.Button(buttons, text="Create", command=self.save_option)
+        set_status_message(save, "Create the new option")
+        save.pack(side=tk.LEFT, padx=2)
+        
+        cancel = tk.Button(buttons, text="Cancel", command=self.destroy)
+        cancel.pack(side=tk.LEFT, padx=2)
+               
+        buttons.grid(row=5, column=1, sticky=tk.SE)
+        
+        self.f.pack()
+        
+    def edit_option_type(self, ev):
+        print "Edit option type" + self.option_type.get() 
+        option_type = conf.OptionType.get_named(self.option_type.get())
+        
+        editor = OptionTypeEditor.for_option_type(option_type)
+        print "Editor " + str(editor)
+            
+        self.option_type_editor.grid_forget()     
+        
+        if editor:
+            self.option_type_editor = editor(self.f, option_type())
+            self.option_type_editor.grid(row=2, column=1)
+    
+    def save_option(self):
+        # Validation
+        errors = []
+        if self.option_name.get() == '':
+            errors.append('Enter the option name')
+        
+        if self.option_type.get() == '':
+            errors.append('Select the option type')
+            
+        if len(errors) > 0:
+            message = ''
+            for error in errors:
+                message = message + error + '\n'
+                
+            tkMessageBox.showerror('Error', message)
+        else:
+            option_name = self.option_name.get()
+            
+            option_type = conf.OptionType.get_named(self.option_type.get())
+            
+            option = conf.ConfigurationSchemaOption(option_name, option_type())
+            option.is_required=self.option_required.get() == 1
+            option.documentation = self.option_documentation.get(1.0, tk.END)
+                   
+            configurator.status.set(option.name + " option has been created")
+            
+            if self._onsave:
+                self._onsave(option)
+                
+            self.destroy()               
         
 class OptionTypeEditor(object, tk.Frame):
     option_type = None

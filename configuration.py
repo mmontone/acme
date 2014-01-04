@@ -253,7 +253,62 @@ class ConfigurationSchemaSection:
         if len(errors.values()) > 0:
             return errors
         else:
-            return None               
+            return None
+        
+class ConfigurationSchemaOptionsGroup:
+    def __init__(self, name, **args):
+        self._name = name
+        self._documentation = args.get('documentation') or ''
+        self._section = None
+        self._options = None
+        self._dependency_expression = None
+    
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, value):
+        self._name = value
+        return self
+        
+    @property
+    def documentation(self):
+        return self._documentation
+    
+    @documentation.setter
+    def documentation(self, value):
+        self._documentation = value
+        return self
+    
+    @property
+    def section(self):
+        return self._section
+    
+    @section.setter
+    def section(self, value):
+        self._section = value
+        return self
+    
+    def remove(self):
+        self.section.remove_option(self)
+        
+    @property
+    def dependency_expression(self):
+        return self._dependency_expression
+    
+    @dependency_expression.setter
+    def dependency_expression(self, value):
+        self._dependency_expression = value
+    
+    #def path(self):
+    #    return self.section.path() + (self.name,)
+    
+    #def path_string(self):
+    #    return '.'.join(self.path())
+    
+    def schema(self):
+        return self.section.schema()                       
 
 class ConfigurationSchemaOption:
     def __init__(self, name, option_type, **args):
