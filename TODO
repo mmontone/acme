@@ -16,4 +16,6 @@
 * 'Many' option type. The 'many' option type is a composite type. Options of this type contain several instances of other options.
   It can be seen as the equivalent of Haskell's 'List a' type.
 * Custom option types. The user can create his own option types from the "setup" interface. Custom option types are created from a combination of other existing option types. The custom option types are serialized to the schema file. For instance, a new "Asset" custom option type could be formed form a title (string) and file location (filename).
+* Tests. Unit tests.
+* Bug fixing
   
