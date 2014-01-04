@@ -220,4 +220,5 @@ class WidgetsListEditor(tk.Frame):
         widget_container.pack()
         
     def create_widget(self):
+        # Abstract method
         raise NotImplementedError("Implement this method")
