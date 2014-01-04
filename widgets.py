@@ -190,3 +190,34 @@ class Dialog(tk.Toplevel):
         # This seems to draw the window frame immediately, so only call deiconify()
         # after setting correct window position
         self.deiconify()
+
+class WidgetsListEditor(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        
+        self._widgets_list = []
+        
+        self._widgets = tk.Frame(self)
+        self._widgets.pack()
+        
+        add_btn = tk.Button(self, text='+', command=self.add_widget)
+        add_btn.pack()       
+       
+    def add_widget(self):
+        
+        widget_container = tk.Frame(self._widgets)
+        
+        widget = self.create_widget()
+        
+        self._widgets.append(widget)
+        
+        widget.pack(side=tk.LEFT)
+        
+        remove_btn = tk.Button(widget_container, text='-', command=lambda: (widget_container.forget(),
+                                                                            self._widgets_list.remove(widget)))
+        remove_btn.pack()
+        
+        widget_container.pack()
+        
+    def create_widget(self):
+        raise NotImplementedError("Implement this method")
