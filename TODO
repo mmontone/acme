@@ -4,7 +4,7 @@
 * Sections dependencies (a section activation depending on an option value)
 * Option type displaying a radio buttons group (instead of a combo box)
 * Option type displaying a checkbuttons group for multiple selection (List option type)
-* Idea: a section subsections could be displayed with a tk.Notebook widget, in different tags in the section editing screen.
+* Idea: a section subsections could be displayed with a tk.Notebook widget, in different tabs in the section editing screen.
 * Configurator configuration using Configurator (bootstrap)
 * Configurations editing layout configuration (for instance, whether to display subsections as tab or not, etc). This should be serialized as a <settings> in the configurator.config file.
 * Make configuration schemas and configuration transactional objects for better manipulation and editing??
