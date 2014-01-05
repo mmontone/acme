@@ -98,6 +98,7 @@ class CustomOptionTypesNavigator(tk.Toplevel):
     def remove_custom_option_type(self, option_type, index):
         self._option_types_list.delete(index)
         self._option_types.remove(option_type)
+        conf.CustomOptionType.unregister_custom_option_type(option_type)
         
 class CustomOptionTypeCreator(tk.Toplevel):
     def __init__(self, master, **options):
@@ -571,7 +572,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         self.wait_window(dialog)
         
     def custom_option_types(self):
-        navigator = CustomOptionTypesNavigator(self)
+        navigator = CustomOptionTypesNavigator(self, conf.CustomOptionType.custom_option_types())
         self.wait_window(navigator)
         
 class SaveSchemasDialog(tk.Toplevel):

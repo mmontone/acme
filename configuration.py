@@ -482,7 +482,30 @@ class ManyOptionType(OptionType):
         return eval(str)
     
 class CustomOptionType(OptionType):
+    
+    _custom_option_types = {}
+    
+    @classmethod
+    def get_named(cls, name):
+        option_type = cls._custom_option_types.get(name)
+        if option_type is None:
+            raise Exception(name + ' custom option type not found')
+        else:
+            return option_type
+    
+    @classmethod
+    def register_custom_option_type(cls, option_type):
+        print "Registering custom option type " + option_type.name
+        cls._custom_option_types[option_type.name] = option_type
         
+    @classmethod
+    def unregister_custom_option_type(cls, option_type):
+        del cls._custom_option_types[option_type.name]
+        
+    @classmethod
+    def custom_option_types(cls):
+        return cls._custom_option_types.values()  
+          
     def __init__(self, name, attributes=None):
         OptionType.__init__(self)
         
@@ -492,6 +515,8 @@ class CustomOptionType(OptionType):
             self._attributes = attributes
         else:
             self._attributes = []
+            
+        CustomOptionType.register_custom_option_type(self)
             
     @property
     def attributes(self):
