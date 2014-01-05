@@ -159,7 +159,7 @@ class CustomOptionTypeCreator(tk.Toplevel):
         # Attribute type
         tk.Label(attribute_frame, text="Type: ").grid(row=1, column=0, sticky=tk.NW)
         attribute_type = tk.StringVar()
-        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        option_types = map(lambda ot: ot.name, conf.OptionType.option_types())
         types = tk.OptionMenu(attribute_frame, attribute_type, *option_types)
         types.grid(row=1, column=1, sticky=tk.W)
         
@@ -944,7 +944,7 @@ class ConfigurationSchemaOptionCreator(tk.Toplevel):
         # Option type
         tk.Label(self.f, text="Type: ").grid(row=1, column=0, sticky=tk.W)
         self.option_type = tk.StringVar()
-        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        option_types = map(lambda o: o.option_name(), conf.OptionType.option_types())
         options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 

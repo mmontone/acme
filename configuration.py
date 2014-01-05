@@ -315,6 +315,10 @@ class OptionType(object):
             raise Exception('No option type named ' + name)
         return option_type
     
+    @classmethod
+    def option_types(cls):
+        return conf.OptionType.__subclasses__()
+    
     @property
     def name(self):
         return self.__class__.option_name()
