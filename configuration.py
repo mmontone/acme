@@ -482,14 +482,16 @@ class ManyOptionType(OptionType):
         return eval(str)
     
 class CustomOptionType(OptionType):
-    
+        
     def __init__(self, name, attributes=None):
         OptionType.__init__(self)
+        
+        self._name = name
         
         if attributes is not None:
             self._attributes = attributes
         else:
-            self._attributes = None
+            self._attributes = []
             
     @property
     def attributes(self):
@@ -499,6 +501,9 @@ class CustomOptionType(OptionType):
     def attributes(self, value):
         self._attributes = value
         return self
+    
+    def add_attribute(self, name, type):
+        self._attributes.append((name, type))
     
     @property
     def name(self):

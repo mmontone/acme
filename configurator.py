@@ -72,7 +72,7 @@ class CustomOptionTypesNavigator(tk.Toplevel):
                 option_type = next((ot for ot in self._option_types if ot.name == option_type_name), None)
                 print "Option type: " + str(option_type)
                     
-                popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))                
+                popup.add_command(label="Remove", command=lambda:self.remove_custom_option_type(option_type, index))                
         else:
             create_options_menu()            
             
@@ -87,12 +87,17 @@ class CustomOptionTypesNavigator(tk.Toplevel):
             popup.grab_release()
             
     def create_custom_option_type(self):
-        def save_custom_option_type(option_type):
-            self._option_types.add(option_type)
+        def create_custom_option_type(option_type):
+            print "Creating custom option type " + option_type.name
+            self._option_types.append(option_type)
             self._option_types_list.insert(tk.END, option_type.name)
             
-        creator = CustomOptionTypeCreator(self, onsave=save_custom_option_type)
+        creator = CustomOptionTypeCreator(self, onsave=create_custom_option_type)
         self.wait_window(creator)
+        
+    def remove_custom_option_type(self, option_type, index):
+        self._option_types_list.delete(index)
+        self._option_types.remove(option_type)
         
 class CustomOptionTypeCreator(tk.Toplevel):
     def __init__(self, master, **options):
@@ -173,9 +178,26 @@ class CustomOptionTypeCreator(tk.Toplevel):
         del self._option_type_attributes[id]
         
     def create_option_type(self):
-        option_type = conf.CustomOptionType(self._option_type_name.get())
+        
+        name = self._option_type_name.get().strip()
+        if name == '':
+           tkMessageBox.showerror('Error', 'Enter the name')
+           return
+        
+        option_type = conf.CustomOptionType(name)
         
         option_type.documentation = self._option_type_doc.get(1.0, tk.END).strip()
+        
+        print str(self._option_type_attributes)
+        
+        for attribute in self._option_type_attributes.values():
+            attr_name = attribute[0].get().strip()
+            attr_type = attribute[1].get()
+            
+            if attr_name <> '' and attr_type is not None:
+                option_type.add_attribute(attr_name, attr_type)    
+                
+        print str(option_type.name)            
         
         if self._onsave is not None:
             self._onsave(option_type)
