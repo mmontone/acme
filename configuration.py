@@ -317,7 +317,7 @@ class OptionType(object):
     
     @classmethod
     def option_types(cls):
-        return conf.OptionType.__subclasses__()
+        return OptionType.__subclasses__()
     
     @property
     def name(self):

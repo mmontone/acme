@@ -32,7 +32,8 @@ class CustomOptionTypesNavigator(tk.Toplevel):
         # ui
         
         self._option_types_list = tk.Listbox(self)
-        
+        self._option_types_list.bind('<ButtonRelease-1>', self.select_custom_option_type)
+               
         for option_type in self._option_types:
             self._option_types_list.insert(tk.END, option_type.name)
             
@@ -48,6 +49,17 @@ class CustomOptionTypesNavigator(tk.Toplevel):
         else:
             self._editor = tk.Frame(self)
             
+        self._editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+    def select_custom_option_type(self, ev):
+        # Grab the selected configuration
+        selection = self._option_types_list.curselection()
+        option_type = self._option_types[int(selection[0])]
+        
+        print "Option type " + option_type.name + " selected"
+        
+        self._editor.forget()
+        self._editor = CustomOptionTypeEditor(self, option_type)
         self._editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     
     def popup_list(self, ev):
@@ -159,7 +171,7 @@ class CustomOptionTypeCreator(tk.Toplevel):
         # Attribute type
         tk.Label(attribute_frame, text="Type: ").grid(row=1, column=0, sticky=tk.NW)
         attribute_type = tk.StringVar()
-        option_types = map(lambda ot: ot.name, conf.OptionType.option_types())
+        option_types = map(lambda ot: ot.option_name(), conf.OptionType.option_types())
         types = tk.OptionMenu(attribute_frame, attribute_type, *option_types)
         types.grid(row=1, column=1, sticky=tk.W)
         
@@ -206,17 +218,19 @@ class CustomOptionTypeCreator(tk.Toplevel):
         self.destroy()        
             
 class CustomOptionTypeEditor(tk.Frame):
-    def __init__(self, master, option_type):
+    def __init__(self, master, option_type, **options):
         tk.Frame.__init__(self, master)
         
-        self._edit = tk.Frame(self)
+        self._onsave = options.get('onsave')
+        
+        self._edit = tk.Frame(self)        
         
         # Name
         tk.Label(self._edit, text="Name: ").grid(row=0, column=0, sticky=tk.NW)
         
         self._option_type_name = tk.StringVar()
         self._option_type_name.set(option_type.name)
-        
+                
         tk.Entry(self._edit, textvariable=self._option_type_name).grid(row=0, column=1, sticky=tk.NW)
         
         # Documentation
@@ -227,26 +241,92 @@ class CustomOptionTypeEditor(tk.Frame):
         self._option_type_doc.grid(row=1, column=1, sticky=tk.NW)
         
         # Attributes
+        self._attribute_id = 1
+        self._option_type_attributes = {}
+        
         tk.Label(self._edit, text="Attributes: ").grid(row=2, column=0, sticky=tk.NW)
         
         self._attributes_panel = tk.Frame(self._edit)
+        self._attributes_panel.grid(row=2, column=1, sticky=tk.NW)
         
-        #for name, type in option_type.attributes:
-            
-            
+        for attribute in option_type.attributes:
+            self.add_attribute(attribute)
         
+        self._attributes_panel = tk.Frame(self._edit)
+        self._attributes_panel.grid(row=2, column=1, sticky=tk.NW)
+               
         self._edit.pack(expand=True, fill=tk.BOTH)
+        
+        add_btn = tk.Button(self, text='+', command=self.add_attribute)
+        add_btn.pack()
         
         buttons = tk.Frame(self)
         save = tk.Button(buttons, text="Save", command=self.save_option_type)
         #set_status_message(save, "Save changes to custom option type")
-        save.pack(side=tk.RIGHT, padx=2)
-               
-        remove = tk.Button(buttons, text="Remove", command=lambda: self.remove_option_type(option_type))
-        #set_status_message(remove, "Remove the custom option type")
-        remove.pack(side=tk.RIGHT, padx=2)
+        save.pack(side=tk.LEFT, padx=2)
         
-        buttons.pack()                                                                                    
+        buttons.pack()
+        
+    def add_attribute(self, attribute=None):
+        
+        attribute_frame = tk.Frame(self._attributes_panel)
+        
+        # Attribute name
+        tk.Label(attribute_frame, text='Name: ').grid(column=0, row=0, sticky=tk.NW)
+        attribute_name = tk.StringVar()
+        if attribute is not None:
+            attribute_name.set(attribute[0])
+             
+        tk.Entry(attribute_frame, textvariable=attribute_name).grid(column=1, row=0, sticky=tk.NW)
+        
+        # Attribute type
+        tk.Label(attribute_frame, text="Type: ").grid(row=1, column=0, sticky=tk.NW)
+        attribute_type = tk.StringVar()
+        if attribute is not None:
+            attribute_type.set(attribute[1])
+        option_types = map(lambda ot: ot.option_name(), conf.OptionType.option_types())
+        types = tk.OptionMenu(attribute_frame, attribute_type, *option_types)
+        types.grid(row=1, column=1, sticky=tk.W)
+        
+        # Add the attribute
+        self._option_type_attributes[self._attribute_id] = (attribute_name, attribute_type)
+               
+        # Remove button
+        remove_btn = tk.Button(attribute_frame, text="-", 
+                               command=lambda attr_id=self._attribute_id: self.remove_attribute(attribute_frame, attr_id))
+        remove_btn.grid(row=2, column=0)
+        attribute_frame.pack()
+        
+        self._attribute_id = self._attribute_id + 1
+        
+    def remove_attribute(self, frame, id):
+        frame.forget()
+        del self._option_type_attributes[id]
+        
+    def save_option_type(self):
+        
+        name = self._option_type_name.get().strip()
+        if name == '':
+           tkMessageBox.showerror('Error', 'Enter the name')
+           return
+        
+        option_type = conf.CustomOptionType(name)
+        
+        option_type.documentation = self._option_type_doc.get(1.0, tk.END).strip()
+        
+        print str(self._option_type_attributes)
+        
+        for attribute in self._option_type_attributes.values():
+            attr_name = attribute[0].get().strip()
+            attr_type = attribute[1].get()
+            
+            if attr_name <> '' and attr_type is not None:
+                option_type.add_attribute(attr_name, attr_type)    
+                
+        print str(option_type.name)            
+        
+        if self._onsave is not None:
+            self._onsave(option_type)                                                                               
     
 class ConfigurationSchemaNavigator(tk.Frame):
     def __init__(self, master, schemas):
@@ -1254,7 +1334,7 @@ class ManyOptionTypeEditor(OptionTypeEditor):
         #ui
         
         # Choose the option type
-        option_types = map(lambda o: o.option_name(), conf.OptionType.__subclasses__())
+        option_types = map(lambda o: o.option_name(), conf.OptionType.option_types())
         
         # Maybe we can remove this??
         option_types.remove('Many')
