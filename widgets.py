@@ -75,6 +75,33 @@ class DoubleListSelector(tk.Frame):
         self.update_listboxes()
         self.remove_btn.configure(state=tk.DISABLED)
         
+    def get_selection(self):
+        selected_items = []
+        
+        for i in self.selected_list.curselection():
+            item = self.selected[int(i)]
+            selected_items.append(item)
+            
+        return selected_items
+    
+    def set_selection(self, items):
+        self.selected_list_var.set('')
+        self.source_list_var.set('')
+        self.selected = items
+        
+        for item in self.source:
+            if not item in self.selected:
+                self.source_list.insert(tk.END, str(item))
+                
+        for item in self.selected:
+            self.selected_list.insert(tk.END, str(item))
+            
+    def disable(self):
+        self.source_list.configure(state=tk.DISABLED)
+        self.selected_list.configure(state=tk.DISABLED)
+        self.add_btn.configure(state=tk.DISABLED)
+        self.remove_btn.configure(state=tk.DISABLED)            
+        
 class ListEditor(tk.Frame):
     def __init__(self, parent, **options):
         tk.Frame.__init__(self, parent)

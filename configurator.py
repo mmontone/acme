@@ -802,7 +802,8 @@ class ConfigurationSchemaEditor(tk.Frame):
         else:
             self.schema.name = self.schema_name.get()
             self.schema.documentation = self.schema_doc.get(1.0, tk.END)
-            #self.schema.set_parents(self.parents.get_selection())
+            self.schema.set_parents(self.parents.get_selection())
+                        
             configurator.status.set(self.schema.name + " configuration schema has been updated")
             if self._onsave:
                 self._onsave()
@@ -869,7 +870,7 @@ class ConfigurationSchemaCreator(tk.Toplevel):
             schema = conf.ConfigurationSchema(self.schema_name.get())
              
             schema.documentation = self.schema_doc.get(1.0, tk.END)
-            #schema.set_parents(self.parents.get_selection())
+            schema.set_parents(self.parents.get_selection())
             
             configurator.status.set(schema.name + " configuration schema has been updated")
             
@@ -2393,6 +2394,39 @@ class ChoiceOptionEditor(OptionEditor):
     def set_value(self, value):
         self._var.set(value)
         self._initial_value = value
+    
+    def value_changed(self):
+        return self._initial_value <> self.value()
+    
+class ListOptionEditor(OptionEditor):
+    option_type = conf.ListOptionType
+    
+    def __init__(self, master, **options):
+        OptionEditor.__init__(self, master, **options)
+        
+        self._initial_value = None
+        
+        if self._option_schema and self._option_schema.default_value is not None:
+            self._initial_value = self._option_schema.default_value        
+        
+        self._var = tk.StringVar()
+        
+        if self._initial_value is not None:
+            self._var.set(self._initial_value)
+        
+        self._options_list = w.DoubleListSelector(self, selected=[], source=self._option_type.options())
+                   
+        self._options_list.pack()
+        
+    def disable(self):
+        self._options_list.disable()
+        
+    def value(self):
+        return self._options_list.get_selection()
+        
+    def set_value(self, value):
+        self._initial_value = value
+        self._options_list.set_selection(value)
     
     def value_changed(self):
         return self._initial_value <> self.value()
