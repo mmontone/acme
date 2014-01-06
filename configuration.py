@@ -433,6 +433,9 @@ class ListOptionType(OptionType):
     def options(self):
         return self._options
     
+    def add_option(self, option):
+        self._options.append(option)
+    
     def accept(self, visitor):
         return visitor.visit_ListOptionType(self)
         
@@ -961,6 +964,11 @@ class ConfigurationSchemasXMLUnserializer():
         return option_type
     
     def visit_ChoiceOptionType(self, option_type):
+        for option in self._option_type_elem.iterchildren(tag='option'):
+            option_type.add_option(option.attrib['value'])
+        return option_type
+    
+    def visit_ListOptionType(self, option_type):
         for option in self._option_type_elem.iterchildren(tag='option'):
             option_type.add_option(option.attrib['value'])
         return option_type
