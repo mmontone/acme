@@ -424,11 +424,17 @@ class ChoiceOptionType(OptionType):
 class ListOptionType(OptionType):
     _name = "List"
     
-    def __init__(self, options=[]):
-        self._options = options
+    def __init__(self, options=None):
+        if options is None:
+            self._options = []
+        else:
+            self._options = options
         
-    def options():
+    def options(self):
         return self._options
+    
+    def accept(self, visitor):
+        return visitor.visit_ListOptionType(self)
         
 class MaybeOptionType(OptionType):
     _name = "Maybe"
@@ -851,6 +857,11 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         pass
     
     def visit_ChoiceOptionType(self, option_type):
+        for option in option_type.options():
+            opt = et.SubElement(self._option_elem, 'option')
+            opt.attrib['value'] = option
+            
+    def visit_ListOptionType(self, option_type):
         for option in option_type.options():
             opt = et.SubElement(self._option_elem, 'option')
             opt.attrib['value'] = option

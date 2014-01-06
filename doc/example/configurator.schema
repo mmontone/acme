@@ -47,7 +47,16 @@
         <type name="Many">
           <type name="Filename"/>
         </type>
-        <required>False</required>
+        <required>True</required>
+      </option>
+      <option name="Colors">
+        <documentation>Colors list
+
+</documentation>
+        <type name="Many">
+          <type name="Color"/>
+        </type>
+        <required>True</required>
       </option>
     </section>
   </schema>
@@ -67,6 +76,20 @@
           <option value="Profile"/>
         </type>
         <required>True</required>
+      </option>
+    </section>
+    <section name="Plugins">
+      <documentation>Plugins
+</documentation>
+      <option name="Plugins">
+        <documentation>Plugins
+
+</documentation>
+        <type name="List">
+          <option value="Plugin1"/>
+          <option value="Plugin2"/>
+        </type>
+        <required>False</required>
       </option>
     </section>
   </schema>

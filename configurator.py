@@ -1325,6 +1325,28 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
         # Return an instance of the edited option type
         return conf.ChoiceOptionType(self.options())
     
+class ListOptionTypeEditor(OptionTypeEditor, w.ListEditor):
+    option_type = conf.ListOptionType
+    
+    def __init__(self, parent, option_type):
+        OptionTypeEditor.__init__(self, parent, option_type)
+        
+        print "Option type: " + str(option_type)
+        print "Options: " + str(option_type.options())
+        
+        self.options_var = tk.StringVar()
+        self.options_var.set(' '.join(option_type.options()))
+        
+        w.ListEditor.__init__(self, parent, listvar=self.options_var)
+        set_status_message(self, "The possible option choices")
+        
+    def options(self):
+        return list(eval(self.options_var.get()))
+    
+    def option_type_instance(self):
+        # Return an instance of the edited option type
+        return conf.ListOptionType(self.options())
+    
 class ManyOptionTypeEditor(OptionTypeEditor):
     option_type = conf.ManyOptionType
     
