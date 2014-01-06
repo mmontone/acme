@@ -82,6 +82,8 @@ class DoubleListSelector(tk.Frame):
             item = self.selected[int(i)]
             selected_items.append(item)
             
+        print "Selected items: " + str(selected_items)
+            
         return selected_items
     
     def set_selection(self, items):

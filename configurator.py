@@ -1862,7 +1862,8 @@ class ConfigurationSectionViewer(tk.Frame):
     
     def redraw(self, errors=[]):
         for child in self.winfo_children():
-            child.forget()
+            if hasattr(child,'forget'):
+                child.forget()
             
         tk.Label(self, text=self._config.name + ' configuration', font=('Verdana', 10, 'bold')).pack()
         if self._config.documentation is not None and self._config.documentation <> '':
@@ -2007,9 +2008,9 @@ class OptionEditorDialog(tk.Toplevel):
     def save_option(self):
         value = self._option_editor.value()
         self._config.set_option_value(self._option, value)
-        self.destroy()
         if self._onsave is not None:
-            self._onsave(self._option, self._option_editor)          
+            self._onsave(self._option, self._option_editor)
+        self.destroy()          
         
 class ConfigurationEditor(tk.Toplevel):
     
