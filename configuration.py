@@ -438,6 +438,9 @@ class ListOptionType(OptionType):
     
     def accept(self, visitor):
         return visitor.visit_ListOptionType(self)
+    
+    def parse_value(self, value):
+        return eval(value)
         
 class MaybeOptionType(OptionType):
     _name = "Maybe"
