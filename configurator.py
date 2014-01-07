@@ -2426,7 +2426,7 @@ class ListOptionEditor(OptionEditor):
         return self._options_list.get_selection()
         
     def set_value(self, value):
-        self._initial_value = value
+        self._initial_value = value[:]
         self._options_list.set_selection(value)
     
     def value_changed(self):
