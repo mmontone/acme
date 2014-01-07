@@ -76,15 +76,7 @@ class DoubleListSelector(tk.Frame):
         self.remove_btn.configure(state=tk.DISABLED)
         
     def get_selection(self):
-        selected_items = []
-        
-        for i in self.selected_list.curselection():
-            item = self.selected[int(i)]
-            selected_items.append(item)
-            
-        print "Selected items: " + str(selected_items)
-            
-        return selected_items
+        return self.selected
     
     def set_selection(self, items):
         self.selected_list_var.set('')
