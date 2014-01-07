@@ -141,3 +141,47 @@ class StatusBar(tk.Frame):
     def clear(self):
         self.label.config(text="")
         self.label.update_idletasks()
+        
+class Dialog(object):
+    def __init__(self, parent):
+        # transient is used to associate this window with a parent window
+        self.transient(parent)
+        
+        self.grab_set()
+        
+        #if not self.initial_focus:
+        #    self.initial_focus = self
+
+        self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
+                                  parent.winfo_rooty()+50))
+
+        self.focus_set()
+
+        #self.center2()
+        
+    def center(self):
+        w = self.winfo_screenwidth()
+        h = self.winfo_screenheight()
+        size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
+        x = w/2 - size[0]/2
+        y = h/2 - size[1]/2
+        print "Screen width: " + str(w)
+        print "Screen height: " + str(h)
+        print "Size: " + str(size)
+        print "X: " + str(x)
+        print "Y: " + str(y)
+        print "X2: " + str(self.winfo_width())
+        #self.geometry("%dx%d+%d+%d" % (size + (x, y)))
+        self.geometry("+%d+%d" % (size + (x, y)))
+        
+    def center2(self):
+        self.withdraw()
+        self.update_idletasks()  # Update "requested size" from geometry manager
+
+        x = (self.winfo_screenwidth() - self.winfo_reqwidth()) / 2
+        y = (self.winfo_screenheight() - self.winfo_reqheight()) / 2
+        self.geometry("+%d+%d" % (x, y))
+
+        # This seems to draw the window frame immediately, so only call deiconify()
+        # after setting correct window position
+        self.deiconify()
