@@ -17,10 +17,11 @@ import grako
 configs_file = None
 schemas_file = None
 
-class CustomOptionTypesNavigator(tk.Toplevel):
+class CustomOptionTypesNavigator(tk.Toplevel, w.Dialog):
     def __init__(self, master, option_types=None):
         
         tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         self.title('Custom option types')
         
@@ -1937,7 +1938,11 @@ class ConfigurationSectionViewer(tk.Frame):
         options.pack(fill=tk.BOTH, expand=tk.Y)       
         
     def edit_option(self, ev, option):
-        self.wait_window(OptionEditorDialog(self, option, self._config, onsave=self.save_option))
+        editor = OptionEditorDialog(self, option, self._config, onsave=self.save_option)
+        position = "+%d+%d" % (ev.x_root, ev.y_root)
+        print "Position: " + position
+        editor.geometry(position)
+        self.wait_window()
   
     def set_option(self, option):
         print "Set option " + str(option)
