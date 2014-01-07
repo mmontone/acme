@@ -142,12 +142,12 @@ class StatusBar(tk.Frame):
         self.label.config(text="")
         self.label.update_idletasks()
         
-class Dialog(object):
+class Dialog(tk.Toplevel):
     def __init__(self, parent):
+        tk.Toplevel.__init__(self, parent)
+        
         # transient is used to associate this window with a parent window
         self.transient(parent)
-        
-        self.grab_set()
         
         #if not self.initial_focus:
         #    self.initial_focus = self
@@ -156,8 +156,13 @@ class Dialog(object):
                                   parent.winfo_rooty()+50))
 
         self.focus_set()
+        self.grab_set()
 
         #self.center2()
+        
+    def wait_window(self):
+        super(Dialog, self).wait_window(self)
+        self.grab_set()
         
     def center(self):
         w = self.winfo_screenwidth()

@@ -17,10 +17,9 @@ import grako
 configs_file = None
 schemas_file = None
 
-class CustomOptionTypesNavigator(tk.Toplevel, w.Dialog):
+class CustomOptionTypesNavigator(w.Dialog):
     def __init__(self, master, option_types=None):
         
-        tk.Toplevel.__init__(self, master)
         w.Dialog.__init__(self, master)
         
         self.title('Custom option types')
@@ -113,9 +112,9 @@ class CustomOptionTypesNavigator(tk.Toplevel, w.Dialog):
         self._option_types.remove(option_type)
         conf.CustomOptionType.unregister_custom_option_type(option_type)
         
-class CustomOptionTypeCreator(tk.Toplevel):
+class CustomOptionTypeCreator(w.Dialog):
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         self.title('New custom option type')
         
@@ -656,10 +655,10 @@ class ConfigurationSchemaNavigator(tk.Frame):
         navigator = CustomOptionTypesNavigator(self, conf.CustomOptionType.custom_option_types())
         self.wait_window(navigator)
         
-class SaveSchemasDialog(tk.Toplevel):
+class SaveSchemasDialog(w.Dialog):
     
     def __init__(self, master, schemas, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         global schemas_file
         
@@ -701,10 +700,10 @@ class SaveSchemasDialog(tk.Toplevel):
         filename = tkFileDialog.askopenfilename()
         self._filename.set(filename)
         
-class LoadSchemasDialog(tk.Toplevel):
+class LoadSchemasDialog(w.Dialog):
     
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         self._schemas = []
         self._onload= options.get('onload') or None
@@ -822,9 +821,9 @@ class ConfigurationSchemaEditor(tk.Frame):
             if self._onremove:
                 self._onremove()
                 
-class ConfigurationSchemaCreator(tk.Toplevel):
+class ConfigurationSchemaCreator(w.Dialog):
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
                 
         # configuration
         self._onsave = options.get('onsave') or None
@@ -951,9 +950,9 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
             if self._onremove:
                 self._onremove()    
                 
-class ConfigurationSchemaSectionCreator(tk.Toplevel):
+class ConfigurationSchemaSectionCreator(w.Dialog):
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         # configuration
         self.section = conf.ConfigurationSchemaSection()
@@ -1004,9 +1003,9 @@ class ConfigurationSchemaSectionCreator(tk.Toplevel):
                 self._onsave(self.section)
             self.destroy()
             
-class ConfigurationSchemaOptionCreator(tk.Toplevel):
+class ConfigurationSchemaOptionCreator(w.Dialog):
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         # configuration
         self.transient(master)
@@ -1942,8 +1941,9 @@ class ConfigurationSectionViewer(tk.Frame):
         position = "+%d+%d" % (ev.x_root, ev.y_root)
         print "Position: " + position
         editor.geometry(position)
-        self.wait_window()
-  
+        
+        self.wait_window(editor)
+          
     def set_option(self, option):
         print "Set option " + str(option)
         editor = self._option_editors.get(option)
@@ -2008,7 +2008,7 @@ class OptionEditorDialog(tk.Toplevel):
         
         cancel = tk.Button(buttons, text='Cancel', command=self.destroy)
         cancel.pack(side=tk.LEFT)
-        buttons.pack()
+        buttons.pack()       
     
     def save_option(self):
         value = self._option_editor.value()
@@ -2017,10 +2017,10 @@ class OptionEditorDialog(tk.Toplevel):
             self._onsave(self._option, self._option_editor)
         self.destroy()          
         
-class ConfigurationEditor(tk.Toplevel):
+class ConfigurationEditor(w.Dialog):
     
     def __init__(self, parent, config, configs, **options):
-        tk.Toplevel.__init__(self, parent)
+        w.Dialog.__init__(self, parent)
         
         self._config = config
         self._configs = configs
@@ -2114,10 +2114,10 @@ class ConfigurationEditor(tk.Toplevel):
                 
             self.destroy()
         
-class LoadConfigurationsDialog(tk.Toplevel):
+class LoadConfigurationsDialog(w.Dialog):
     
     def __init__(self, master, **options):
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         self._configs = []
         self._onload= options.get('onload') or None
@@ -2161,11 +2161,11 @@ class LoadConfigurationsDialog(tk.Toplevel):
         filename = tkFileDialog.askopenfilename()
         self._filename.set(filename)
         
-class SaveConfigurationsDialog(tk.Toplevel):
+class SaveConfigurationsDialog(w.Dialog):
     
     def __init__(self, master, configs, **options):
          
-        tk.Toplevel.__init__(self, master)
+        w.Dialog.__init__(self, master)
         
         self._configs = configs
         self._onsave = options.get('onsave') or None
@@ -2205,17 +2205,14 @@ class SaveConfigurationsDialog(tk.Toplevel):
         filename = tkFileDialog.askopenfilename()
         self._filename.set(filename)              
                 
-class AboutDialog(tk.Toplevel):
+class AboutDialog(w.Dialog):
 
     def __init__(self, parent):
         
-        tk.Toplevel.__init__(self, parent)
+        w.Dialog.__init__(self, parent)
 
         self.transient(parent)
-        self.title("About configurator")
-        
-        self.geometry("+%d+%d" % (parent.winfo_rootx()+50,
-                                  parent.winfo_rooty()+50))
+        self.title("About configurator")        
         
         logo = tk.PhotoImage(file=image('system-settings-2.gif'))
         
