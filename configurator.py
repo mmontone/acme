@@ -2660,6 +2660,7 @@ class FilenameOptionEditor(OptionEditor):
     
     def set_value(self, value):
         self._var.set(value)
+        self._initial_value = value
         
     def value_changed(self):
         return self.value() <> self._initial_value
@@ -2670,14 +2671,29 @@ class DirectoryOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
+        self._initial_value = ''
+        if self._option_schema and self._option_schema.default_value:
+            self._initial_value = self._option_schema.default_value
+        
         self._var = tk.StringVar()
+        self._var.set(self._initial_value)
         
         tk.Entry(self, textvariable=self._var).pack()
         tk.Button(self, text='Select directory', command=self.getDirectory).pack()
 
     def getDirectory(self):
         directory = tkFileDialog.askdirectory()
-        self._var.set(directory)
+        return self._var.set(directory)
+        
+    def value(self):
+        return self._var.get()
+    
+    def set_value(self, value):
+        self._var.set(value)
+        self._initial_value = value
+    
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class URIOptionEditor(StringOptionEditor):
     option_type = conf.URIOptionType
