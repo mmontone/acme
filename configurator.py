@@ -1903,8 +1903,43 @@ class ConfigurationSectionViewer(tk.Frame):
             for error in errors.values():
                 tk.Label(self._errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
             self._errors_panel.pack(fill=tk.X, expand=True)
+            
+        # Hassle to implement scrolling begins here
+            
+        scrollbar = tk.Scrollbar(self, orient=tk.VERTICAL)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand=False)
         
-        options = tk.LabelFrame(self, text=self._section.name, font=('Arial',10, 'bold'), padx=10, pady=10)
+        canvas = tk.Canvas(self, bd=0, highlightthickness=0,
+                        yscrollcommand=scrollbar.set)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=canvas.yview)
+        
+        # reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+        
+        options = tk.LabelFrame(canvas, text=self._section.name, font=('Arial',10, 'bold'), padx=10, pady=10)
+        
+        options_id = canvas.create_window(0, 0, window=options,
+                                           anchor=tk.NW)
+        
+        # track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar
+        def _configure_options(event):
+            # update the scrollbars to match the size of the inner frame
+            size = (options.winfo_reqwidth(), options.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if options.winfo_reqwidth() != canvas.winfo_width():
+                # update the canvas's width to fit the inner frame
+                canvas.config(width=options.winfo_reqwidth())
+        options.bind('<Configure>', _configure_options)
+
+        def _configure_canvas(event):
+            if options.winfo_reqwidth() != canvas.winfo_width():
+                # update the inner frame's width to fill the canvas
+                canvas.itemconfigure(options_id, width=canvas.winfo_width())
+        canvas.bind('<Configure>', _configure_canvas)
+        
         row = 0
         if self._section.documentation is not None and self._section.documentation <> '':
             tk.Label(options, text=self._section.documentation, font=('Verdana', 8, 'italic')).grid(row=row, column=0, columnspan=3)
@@ -1952,8 +1987,9 @@ class ConfigurationSectionViewer(tk.Frame):
                 doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
                     
                 row = row + 1
-            
-        options.pack(fill=tk.BOTH, expand=tk.Y)       
+                         
+        #options.pack(fill=tk.BOTH, expand=tk.Y)
+        #canvas.pack()       
         
     def edit_option(self, ev, option):
         editor = OptionEditorDialog(self, option, self._config, onsave=self.save_option)
