@@ -48,7 +48,23 @@ class ConfigurationSchema():
         
         for parent in self.parents():
             sections.extend(parent.sections())
-        return sections        
+        return sections
+    
+    def move_section_backwards(self, section):
+        index = self._direct_sections.index(section)
+        
+        if index > 0:
+            prev_section = self._direct_sections[index - 1]
+            self._direct_sections[index - 1] = section
+            self._direct_sections[index] = prev_section 
+            
+    def move_section_forward(self, section):
+        index = self._direct_sections.index(section)
+        
+        if index < len(self._direct_sections) - 1:
+            next_section = self._direct_sections[index - 1]
+            self._direct_sections[index + 1] = section
+            self._direct_sections[index] = next_section 
     
     def get_section(self, name):
         return next((s for s in self._direct_sections if s.name == name), None)
@@ -184,6 +200,12 @@ class ConfigurationSchemaSection:
             return self.parent
         else:
             return self.parent.schema()
+        
+    def move_backwards(self):
+        self.schema().move_section_backwards(self)
+        
+    def move_forward(self):
+        self.schema().move_section_forward(self)
     
     def option_in_path(self, path):
         assert(path[0] == self.name)

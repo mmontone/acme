@@ -504,9 +504,30 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def move_up_section(self, section):
         print "Move up section " + str(section)
         
+        # ui
+        item = str(self.tree.focus())
+        index = self.tree.index(item)
+        parent = self.tree.parent(item)
+        prev_item = self.tree.prev(item)
+        if prev_item <> '':
+            self.tree.move(item, parent, index - 1)
+            
+        section.move_backwards()          
+        
     def move_down_section(self, section):
         print "Move down section " + str(section)
-            
+        
+        # ui 
+        item = str(self.tree.focus())
+        index = self.tree.index(item)
+        parent = self.tree.parent(item)
+        next_item = self.tree.next(item)
+        if next_item <> '':
+            self.tree.move(item, parent, index + 1)
+        
+        section.move_forward()
+        
+                
     def section_status(self, ev):
         item_id = str(self.tree.focus())
         section = self.find_section(item_id)
