@@ -14,6 +14,7 @@ import tkCalendar
 import test
 import argparse
 import grako
+import logging
 
 configs_file = None
 schemas_file = None
@@ -57,14 +58,14 @@ class CustomOptionTypesNavigator(w.Dialog):
         selection = self._option_types_list.curselection()
         option_type = self._option_types[int(selection[0])]
         
-        print "Option type " + option_type.name + " selected"
+        logging.info("Option type " + option_type.name + " selected")
         
         self._editor.forget()
         self._editor = CustomOptionTypeEditor(self, option_type)
         self._editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     
     def popup_list(self, ev):
-        print "Custom option types popup"
+        logging.debug("Custom option types popup")
         
         def create_options_menu():
             popup.add_command(label="Add custom option type", command=self.create_custom_option_type)
@@ -83,7 +84,7 @@ class CustomOptionTypesNavigator(w.Dialog):
             else:
                 option_type_name = self._option_types_list.get(index)
                 option_type = next((ot for ot in self._option_types if ot.name == option_type_name), None)
-                print "Option type: " + str(option_type)
+                logging.debug("Option type clicked: " + str(option_type))
                     
                 popup.add_command(label="Remove", command=lambda:self.remove_custom_option_type(option_type, index))                
         else:
@@ -101,7 +102,7 @@ class CustomOptionTypesNavigator(w.Dialog):
             
     def create_custom_option_type(self):
         def create_custom_option_type(option_type):
-            print "Creating custom option type " + option_type.name
+            logging.info("Creating custom option type " + option_type.name)
             self._option_types.append(option_type)
             self._option_types_list.insert(tk.END, option_type.name)
             
@@ -202,17 +203,13 @@ class CustomOptionTypeCreator(w.Dialog):
         
         option_type.documentation = self._option_type_doc.get(1.0, tk.END).strip()
         
-        print str(self._option_type_attributes)
-        
         for attribute in self._option_type_attributes.values():
             attr_name = attribute[0].get().strip()
             attr_type = attribute[1].get()
             
             if attr_name <> '' and attr_type is not None:
                 option_type.add_attribute(attr_name, attr_type)    
-                
-        print str(option_type.name)            
-        
+               
         if self._onsave is not None:
             self._onsave(option_type)
             
@@ -315,8 +312,6 @@ class CustomOptionTypeEditor(tk.Frame):
         
         option_type.documentation = self._option_type_doc.get(1.0, tk.END).strip()
         
-        print str(self._option_type_attributes)
-        
         for attribute in self._option_type_attributes.values():
             attr_name = attribute[0].get().strip()
             attr_type = attribute[1].get()
@@ -324,8 +319,6 @@ class CustomOptionTypeEditor(tk.Frame):
             if attr_name <> '' and attr_type is not None:
                 option_type.add_attribute(attr_name, attr_type)    
                 
-        print str(option_type.name)            
-        
         if self._onsave is not None:
             self._onsave(option_type)                                                                               
     
@@ -417,8 +410,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def select_schema(self, ev):
         item_id = str(self.tree.focus())
         schema = self.find_schema(item_id)
-        print 'Selected schema was %s' % item_id
-        print schema
+        logging.debug('Selected schema: ' +  str(schema))
+        
         self.editor.forget()
         self.editor = ConfigurationSchemaEditor(self, schema, 
                                                 onsave=lambda: self.tree.item(item_id, text=schema.name),
@@ -470,9 +463,10 @@ class ConfigurationSchemaNavigator(tk.Frame):
             
     def select_section(self, ev):
         item_id = str(self.tree.focus())
-        print 'Selected section was %s' % item_id
         section = self.find_section(item_id)
-        print section
+        
+        logging.debug('Selected section: ' + section)
+               
         self.editor.forget()
         self.editor = ConfigurationSchemaSectionEditor(self, section,
                                                        onsave=lambda:self.tree.item(item_id, text=section.name), 
@@ -503,7 +497,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             popup.grab_release()
             
     def move_up_section(self, section):
-        print "Move up section " + str(section)
+        logging.info("Move up section " + str(section))
         
         item = str(self.tree.focus())
         index = self.tree.index(item)
@@ -514,7 +508,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             section.move_backwards()          
         
     def move_down_section(self, section):
-        print "Move down section " + str(section)
+        logging.info("Move down section " + str(section))
         
         item = str(self.tree.focus())
         index = self.tree.index(item)
@@ -573,9 +567,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
     
     def select_option(self, ev):
         item_id = str(self.tree.focus())
-        print 'Selected option was %s' % item_id
         option = self.find_option(item_id)
-        print self.find_option(item_id)
+        logging.debug('Selected option: ' + str(option))
         self.editor.forget()
         self.editor = ConfigurationSchemaOptionEditor(self, option, 
                                                       onsave=lambda:self.tree.item(item_id, text=option.name), 
@@ -602,7 +595,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             popup.grab_release()
             
     def move_up_option(self, option):
-        print "Move up option " + str(option)
+        logging.info("Move up option " + str(option))
         
         item = str(self.tree.focus())
         index = self.tree.index(item)
@@ -613,7 +606,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             option.move_backwards()  
         
     def move_down_option(self, option):
-        print "Move down option " + str(option)
+        logging.info("Move down option " + str(option))
         
         item = str(self.tree.focus())
         index = self.tree.index(item)
@@ -659,8 +652,8 @@ class ConfigurationSchemaNavigator(tk.Frame):
             serializer = conf.ConfigurationSchemasXMLSerializer()
             for schema in schemas:
                 serializer.serialize(schema)
-            print filename
             serializer.write(filename)
+            logging.info('Schemas saved to ' + filename)
             tkMessageBox.showinfo('Schemas saved successfully', 'Schemas have been saved to ' + filename)
             
         dialog = SaveSchemasDialog(self, self.schemas, onsave=save_schemas)
@@ -668,7 +661,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
     def load_schemas(self):
         def load_schemas(schemas):
-            print "Load schemas"
+            logging.info("Loading schemas")
             
             self.tree.delete(*self.tree.get_children())
             self.items = {}
@@ -725,7 +718,7 @@ class SaveSchemasDialog(w.Dialog):
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
     def save_schemas(self):
-        print "Save schemas"
+        logging.info("Saving schemas")
         if self._onsave:
             self._onsave(self._schemas, self._filename.get(), self._format.get())
         self.destroy()
@@ -768,7 +761,7 @@ class LoadSchemasDialog(w.Dialog):
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
     def load_schemas(self):
-        print "Load schemas"
+        logging.info("Load schemas")
         unserializer = conf.ConfigurationSchemasXMLUnserializer()
         schemas = unserializer.read(self._filename.get())
         
@@ -1096,11 +1089,11 @@ class ConfigurationSchemaOptionCreator(w.Dialog):
         self.f.pack()
         
     def edit_option_type(self, ev):
-        print "Edit option type" + self.option_type.get() 
+        logging.info("Edit option type" + self.option_type.get()) 
         option_type = conf.OptionType.get_named(self.option_type.get())
         
         editor = OptionTypeEditor.for_option_type(option_type)
-        print "Editor " + str(editor)
+        logging.debug("Editor " + str(editor))
             
         self.option_type_editor.grid_forget()     
         
@@ -1171,7 +1164,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         # Option type editor
         if option.option_type:
             editor = OptionTypeEditor.for_option_type(option.option_type.__class__)
-            print "Editor for : " + str(option.option_type.__class__) + str(editor)
+            logging.debug("Editor for  " + str(option.option_type.__class__) + ": " + str(editor))
             if editor:
                 self.option_type_editor = editor(self.f, option.option_type)
             else:
@@ -1239,11 +1232,11 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         buttons.pack(side=tk.RIGHT)
         
     def edit_option_type(self, ev):
-        print "Edit option type" + self.option_type.get()
+        logging.info("Edit option type" + self.option_type.get())
         option_type = conf.OptionType.get_named(self.option_type.get())
         
         editor = OptionTypeEditor.for_option_type(option_type)
-        print "Editor " + str(editor)
+        logging.debug("Editor " + str(editor))
             
         self.option_type_editor.grid_forget()     
         
@@ -1343,10 +1336,7 @@ class ChoiceOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     
     def __init__(self, parent, option_type):
         OptionTypeEditor.__init__(self, parent, option_type)
-        
-        print "Option type: " + str(option_type)
-        print "Options: " + str(option_type.options())
-        
+               
         self.options_var = tk.StringVar()
         self.options_var.set(' '.join(option_type.options()))
         
@@ -1365,10 +1355,7 @@ class ListOptionTypeEditor(OptionTypeEditor, w.ListEditor):
     
     def __init__(self, parent, option_type):
         OptionTypeEditor.__init__(self, parent, option_type)
-        
-        print "Option type: " + str(option_type)
-        print "Options: " + str(option_type.options())
-        
+                
         self.options_var = tk.StringVar()
         self.options_var.set(' '.join(option_type.options()))
         
@@ -1554,7 +1541,7 @@ class ConfigurationNavigator(tk.Frame):
     def select_section(self, ev):
         id = self._sections.identify_row(ev.y)
         self._section = self._items[id]
-        print "Section: " + self._section.name
+        logging.info("Section selected: " + self._section.name)
         
         # Clear the right panel
         self._right_panel.forget()
@@ -1574,16 +1561,16 @@ class ConfigurationNavigator(tk.Frame):
             
     
     def restore_section(self, section):
-        print "Restore section " + section.name
+        logging.info("Restore section " + section.name)
         
     def sections_popup(self, ev):
-        print "Sections popup"
+        logging.debug("Sections popup")
         item = self._sections.identify_row(ev.y)
         section = self._items[item]
-        print "Section: " +  section.name
+        logging.debug("Section clicked: " +  section.name)
                  
     def configs_popup(self, ev):
-        print "Configs popup"
+        logging.debug("Configs popup")
         
         def create_configs_menu():
             popup.add_command(label="Add configuration", command=self.create_config)
@@ -1605,7 +1592,7 @@ class ConfigurationNavigator(tk.Frame):
             else:
                 config_name = self._configs_list.get(index)
                 config = next((config for config in self._configs if config.name == config_name), None)
-                print "Config: " + str(config)
+                logging.debug("Selected config: " + str(config))
                     
                 popup.add_command(label="Remove", command=lambda:self.remove_config(config, index))
                 popup.add_command(label="Edit", command=lambda:self.edit_config(config, index))
@@ -1624,7 +1611,7 @@ class ConfigurationNavigator(tk.Frame):
             popup.grab_release()
     
     def create_config(self):
-        print "Create config"
+        logging.info("Create config")
         def save_config(config):
             self._configs.append(config)
             self._configs_list.insert(tk.END, config.name)
@@ -1634,7 +1621,7 @@ class ConfigurationNavigator(tk.Frame):
                                   onsave=save_config)
     def load_configs(self):
         def load_configs(configs):
-            print "Load configs"
+            logging.info("Load configs")
             
             self._configs_list.delete(0, tk.END)
             self._configs = []
@@ -1675,12 +1662,12 @@ class ConfigurationNavigator(tk.Frame):
             open_save_dialog()
         
     def edit_config(self, config, index):
-        print "Edit config " + str(config)
+        logging.info("Edit config " + str(config))
         editor = ConfigurationEditor(self, config, self._configs)
         self.wait_window(editor)        
         
     def remove_config(self, config, index):
-        print "Remove config " + str(config)
+        logging.info("Remove config " + str(config))
         answer = tkMessageBox.askquestion('Remove?', 'Remove ' + config.name + ' configuration?')
         if answer == 'yes':
             self._configs.remove(config)
@@ -1711,7 +1698,7 @@ class ConfigurationNavigator(tk.Frame):
             tkMessageBox.showinfo('Valid configurations', 'All configurations are valid')
             
     def save_section(self, section):
-        print "Save section"
+        logging.info("Save section")
         
 class ConfigurationSectionEditor(tk.Frame):
     def __init__(self, parent, config, section, errors=[], **options):
@@ -1747,7 +1734,6 @@ class ConfigurationSectionEditor(tk.Frame):
         self._errors_panel = None
         
         if errors:
-            print "Errors!!!"
             self._errors_panel = tk.LabelFrame(self, text='Errors', font=('Arial',10, 'bold'), padx=10, pady=10)
             for error in errors.values():
                 tk.Label(self._errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
@@ -1818,24 +1804,24 @@ class ConfigurationSectionEditor(tk.Frame):
         buttons.pack(fill=tk.X)
     
     def set_option(self, option):
-        print "Set option " + str(option)
+        logging.info("Set option " + str(option))
         self._set_options[option.name] = option
         if self._unset_options.get(option.name):
             del self._unset_options[option.name]
         self._option_editors[option].disable()
             
     def unset_option(self, option):
-        print "Unset option " + str(option.name)
+        logging.info("Unset option " + str(option.name))
         self._unset_options[option.name] = option
         if self._set_options.get(option.name):
             del self._set_options[option.name]
         self._option_editors[option].disable()
             
     def restore_option(self, option):
-        print "Restore option " + str(option)
+        logging.info("Restore option " + str(option))
         
     def option_popup(self, ev, option):
-        print "Option " + option.name + " popup"
+        logging.info("Option " + option.name + " popup")
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         
@@ -1854,10 +1840,10 @@ class ConfigurationSectionEditor(tk.Frame):
             popup.grab_release()
             
     def save_section(self, section):
-        print 'Saving section ' + section.name
+        logging.info('Saving section ' + section.name)
         for option, editor in self._option_editors.iteritems():
             if editor.value_changed():
-                print "Setting option " + str(option.path()) + " value to " + str(editor.value())
+                logging.info("Setting option " + str(option.path()) + " value to " + str(editor.value()))
                 self._config.set_option_value(option, editor.value())
                 
         for option in self._unset_options.values():
@@ -1913,7 +1899,6 @@ class ConfigurationSectionViewer(tk.Frame):
         self._errors_panel = None
         
         if errors:
-            print "Errors!!!"
             self._errors_panel = tk.LabelFrame(self, text='Errors', font=('Arial',10, 'bold'), padx=10, pady=10)
             for error in errors.values():
                 tk.Label(self._errors_panel, text=error['message'], foreground='Red').pack(pady=5, fill=tk.X)
@@ -1973,33 +1958,32 @@ class ConfigurationSectionViewer(tk.Frame):
     def edit_option(self, ev, option):
         editor = OptionEditorDialog(self, option, self._config, onsave=self.save_option)
         position = "+%d+%d" % (ev.x_root, ev.y_root)
-        print "Position: " + position
         editor.geometry(position)
         
         self.wait_window(editor)
           
     def set_option(self, option):
-        print "Set option " + str(option)
+        logging.info("Set option " + str(option))
         editor = self._option_editors.get(option)
         self._config.set_option_value(option, editor.value())
         self.redraw()
             
     def unset_option(self, option):
-        print "Unset option " + str(option.name)
+        logging.info("Unset option " + str(option.name))
         self._config.unset_option(option)
         self.redraw()
         
     def save_option(self, option, editor):
         if editor.value_changed():
-            print "Setting option " + str(option.path()) + " value to " + str(editor.value())
+            logging.info("Setting option " + str(option.path()) + " value to " + str(editor.value()))
             self._config.set_option_value(option, editor.value())
             self.redraw()
             
     def restore_option(self, option):
-        print "Restore option " + str(option)
+        logging.info("Restore option " + str(option))
         
     def option_popup(self, ev, option):
-        print "Option " + option.name + " popup"
+        logging.info("Option " + option.name + " popup")
         # create a menu
         popup = tk.Menu(self, tearoff=0)
         
@@ -2115,7 +2099,7 @@ class ConfigurationEditor(w.Dialog):
         return conf.ConfigurationSchema.configuration_schemas()
     
     def save_config(self):
-        print "Save config"
+        logging.info("Save config")
         
         # Validation
         errors = '' 
@@ -2182,7 +2166,7 @@ class LoadConfigurationsDialog(w.Dialog):
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
     def load_configs(self):
-        print "Load configs"
+        logging.info("Load configs")
         unserializer = conf.ConfigurationsXMLUnserializer()
         configs = unserializer.read(self._filename.get())
         
@@ -2230,7 +2214,7 @@ class SaveConfigurationsDialog(w.Dialog):
         buttons.grid(row=2, column=1, sticky=tk.SE)
         
     def save_configs(self):
-        print "Save configs"
+        logging.info("Save configs")
         if self._onsave:
             self._onsave(self._configs, self._filename.get(), self._format.get())
         self.destroy()
@@ -2506,7 +2490,7 @@ class ManyOptionEditor(OptionEditor):
         editor_container = tk.Frame(self._editors)
         
         many_option_type = self._option_type.option_type
-        print "Many option type: " + str(many_option_type)
+        logging.debug("Many option type: " + str(many_option_type))
         editor_class = OptionEditor.for_option_type(many_option_type.__class__)
         editor = editor_class(editor_container, option_type=many_option_type)
         if value is not None:
@@ -2796,7 +2780,7 @@ class DependencyExpressionEditor(tk.Frame):
     def value(self):
         expression = self._expression_entry.get(1.0, tk.END).strip()
         if expression <> '':
-            print "Parsing expression: " + expression
+            logging.info("Parsing expression: " + expression)
             # Parse the expression
             try:
                 ast = conf.DependencyExpressionParser.parse_expression(expression)
@@ -3105,6 +3089,9 @@ if __name__ == '__main__':
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode', action='store_true')
     args = parser.parse_args()
+    
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
     
     schemas_file = None
     

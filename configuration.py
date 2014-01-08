@@ -3,6 +3,7 @@ from util import *
 from lxml import etree as et
 import datetime
 import dependencies
+import logging
 
 class ConfigurationSchema():
     _configuration_schemas = {}
@@ -17,7 +18,7 @@ class ConfigurationSchema():
     
     @classmethod
     def register_schema(cls, schema):
-        print "Registering schema " + schema.name
+        logging.info("Registering schema " + schema.name)
         cls._configuration_schemas[schema.name] = schema
         
     @classmethod
@@ -487,7 +488,7 @@ class ChoiceOptionType(OptionType):
         return self._options
     
     def add_option(self, option):
-        print "Adding option " + option + " to " + str(self)
+        logging.info("Adding option " + option + " to " + str(self))
         self._options.append(option)
     
     def accept(self, visitor):
@@ -589,7 +590,7 @@ class CustomOptionType(OptionType):
     
     @classmethod
     def register_custom_option_type(cls, option_type):
-        print "Registering custom option type " + option_type.name
+        logging.info("Registering custom option type " + option_type.name)
         cls._custom_option_types[option_type.name] = option_type
         
     @classmethod
@@ -651,7 +652,7 @@ class Configuration(object):
     
     @classmethod
     def register_config(cls, config):
-        print "Registering config " + config.name
+        logging.info("Registering config " + config.name)
         cls._configurations[config.name] = config
         
     @classmethod
@@ -742,7 +743,7 @@ class Configuration(object):
         if schema_option.dependency_expression is None:
             return True
         else:
-            print "Option enabled " + schema_option.path_string() + ": " + str(schema_option.dependency_expression.evaluate(self)) 
+            logging.info("Option enabled " + schema_option.path_string() + ": " + str(schema_option.dependency_expression.evaluate(self))) 
             return schema_option.dependency_expression.evaluate(self)
         
     def sections(self):
@@ -865,7 +866,7 @@ class ConfigurationsXMLUnserializer():
                 path = option.attrib['path'].split('.')
                 opt = schema.option_in_path(path)
                 value = opt.option_type.parse_value(option.attrib['value'])
-                #print 'Setting ' + str(opt) + ' value: ' + str(value)
+                logging.debug('Unserialize: Setting ' + str(opt) + ' value: ' + str(value))
                 cfg.set_option_value(opt, value)
                 
             self._configs.append(cfg)
@@ -975,7 +976,7 @@ class ConfigurationSchemasXMLUnserializer():
     def unserialize_section(self, section_elem):
         name = section_elem.attrib['name']
         doc = section_elem.findtext('documentation')
-        print "Unserializing section " + name
+        logging.debug("Unserializing section " + name)
         section = ConfigurationSchemaSection(name, documentation=doc)
         
         for option in section_elem.iterchildren(tag='option'):
@@ -994,9 +995,7 @@ class ConfigurationSchemasXMLUnserializer():
         option_type_elem = option_elem.find('type')
         option_type = self.unserialize_option_type(option_type_elem)
         dependency_expression = option_elem.findtext('dependency')
-        
-        print name + ":" + str(option_type)
-        
+                
         option = ConfigurationSchemaOption(name, option_type, documentation=doc)
         
         option.is_required = is_required is not None and eval(is_required)
@@ -1199,7 +1198,6 @@ class DependencyExpressionParser():
             raise Exception('Error parsing literal boolean ' + str(ast))
         
     def option_path(self, ast):
-        print "Option path " + str(ast)
         if isinstance(ast, list):
             path = [ast[0]]
             path.extend(ast[1].path)
@@ -1213,7 +1211,6 @@ class DependencyExpressionParser():
             for x in ast[1]:
                 name = name + x
                 
-        print "Identifier:" + name
         return name.strip()
     
     def literal_string(self, ast):
@@ -1223,7 +1220,7 @@ class DependencyExpressionParser():
         return DEString(string)
     
     def boolexp(self, ast):
-        print "Boolexp: " + str(ast)
+        #print "Boolexp: " + str(ast)
         if isinstance(ast, list):
             term = ast[0]
             connector = ast[1]
@@ -1241,7 +1238,7 @@ class DependencyExpressionParser():
             return ast
         
     def boolterm(self, ast):
-        print "Boolterm: " + str(ast)
+        #print "Boolterm: " + str(ast)
         if isinstance(ast, list):
             option_path = ast[0]
             operation = ast[1]
