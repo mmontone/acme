@@ -248,7 +248,7 @@ class ConfigurationSchemaSection:
         errors = {}
         for option in self.options():
             option_value, origin = config.option_value(option)
-            if option.is_required and option.default_value is None and option_value is None:
+            if config.option_is_enabled(option) and option.is_required and option.default_value is None and option_value is None:
                 errors[option.name] = {'option':option, 'message': option.name + ' is required'}
         if len(errors.values()) > 0:
             return errors
