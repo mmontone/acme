@@ -1014,6 +1014,8 @@ class ConfigurationSchemasXMLUnserializer():
         
         option = ConfigurationSchemaOption(name, option_type, documentation=doc)
         
+        option.is_required = is_required is not None and eval(is_required)
+        
         if default_value is not None:
             option.default_value = option_type.parse_value(default_value)
             
