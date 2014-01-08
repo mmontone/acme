@@ -504,28 +504,24 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def move_up_section(self, section):
         print "Move up section " + str(section)
         
-        # ui
         item = str(self.tree.focus())
         index = self.tree.index(item)
         parent = self.tree.parent(item)
         prev_item = self.tree.prev(item)
         if prev_item <> '':
             self.tree.move(item, parent, index - 1)
-            
-        section.move_backwards()          
+            section.move_backwards()          
         
     def move_down_section(self, section):
         print "Move down section " + str(section)
         
-        # ui 
         item = str(self.tree.focus())
         index = self.tree.index(item)
         parent = self.tree.parent(item)
         next_item = self.tree.next(item)
         if next_item <> '':
             self.tree.move(item, parent, index + 1)
-        
-        section.move_forward()
+            section.move_forward()
         
                 
     def section_status(self, ev):
@@ -607,8 +603,24 @@ class ConfigurationSchemaNavigator(tk.Frame):
     def move_up_option(self, option):
         print "Move up option " + str(option)
         
+        item = str(self.tree.focus())
+        index = self.tree.index(item)
+        parent = self.tree.parent(item)
+        prev_item = self.tree.prev(item)
+        if prev_item <> '':
+            self.tree.move(item, parent, index - 1)
+            option.move_backwards()  
+        
     def move_down_option(self, option):
         print "Move down option " + str(option)
+        
+        item = str(self.tree.focus())
+        index = self.tree.index(item)
+        parent = self.tree.parent(item)
+        next_item = self.tree.next(item)
+        if next_item <> '':
+            self.tree.move(item, parent, index + 1)
+            option.move_forward()
             
     def option_status(self, ev):
         item_id = str(self.tree.focus())

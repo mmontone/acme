@@ -206,6 +206,22 @@ class ConfigurationSchemaSection:
         
     def move_forward(self):
         self.schema().move_section_forward(self)
+        
+    def move_option_backwards(self, option):
+        index = self._options.index(option)
+        
+        if index > 0:
+            prev_option = self._options[index - 1]
+            self._options[index - 1] = option
+            self._options[index] = prev_option 
+            
+    def move_option_forward(self, option):
+        index = self._options.index(option)
+        
+        if index < len(self._options) - 1:
+            next_option = self._options[index - 1]
+            self._options[index + 1] = option
+            self._options[index] = next_option 
     
     def option_in_path(self, path):
         assert(path[0] == self.name)
@@ -322,6 +338,12 @@ class ConfigurationSchemaOption:
     
     def schema(self):
         return self.section.schema()
+    
+    def move_forward(self):
+        self.section.move_option_forward(self)
+        
+    def move_backwards(self):
+        self.section.move_option_backwards(self)
     
 class OptionType(object):
     _name = None
