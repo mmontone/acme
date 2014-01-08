@@ -139,6 +139,92 @@
         <type name="URI"/>
         <required>False</required>
       </option>
+      <option name="Directory">
+        <documentation>Directory test
+</documentation>
+        <type name="Directory"/>
+        <required>False</required>
+      </option>
+      <option name="Color">
+        <documentation>Color test
+</documentation>
+        <type name="Color"/>
+        <required>False</required>
+      </option>
+      <option name="Timezone">
+        <documentation>Timezone test
+</documentation>
+        <type name="Timezone"/>
+        <required>True</required>
+      </option>
+      <option name="Country">
+        <documentation>Country test
+</documentation>
+        <type name="Country"/>
+        <required>False</required>
+      </option>
+      <option name="Language">
+        <documentation>Language test
+</documentation>
+        <type name="Language"/>
+        <required>False</required>
+      </option>
+      <option name="Currency">
+        <documentation>Currency test
+</documentation>
+        <type name="Currency"/>
+        <required>False</required>
+      </option>
+      <option name="Date">
+        <documentation>Date test
+</documentation>
+        <type name="Date"/>
+        <required>False</required>
+      </option>
+      <option name="Time">
+        <documentation>Time test
+</documentation>
+        <type name="Time"/>
+        <required>False</required>
+      </option>
+      <option name="Datetime">
+        <documentation>Datetime test
+</documentation>
+        <type name="Datetime"/>
+        <required>False</required>
+      </option>
+      <option name="Choice">
+        <documentation>Choice test
+
+
+</documentation>
+        <type name="Choice">
+          <option value="Foo"/>
+          <option value="Bar"/>
+          <option value="Baz"/>
+        </type>
+        <required>False</required>
+      </option>
+      <option name="List">
+        <documentation>List test
+
+</documentation>
+        <type name="List">
+          <option value="Foo"/>
+          <option value="Bar"/>
+          <option value="Baz"/>
+        </type>
+        <required>False</required>
+      </option>
+      <option name="Many">
+        <documentation>Many test
+
+</documentation>
+        <type name="Many">
+          <type name="Filename"/>
+        </type>
+        <required>False</required>
+      </option>
     </section>
   </schema>
   <schema name="Log">
@@ -156,7 +242,10 @@
         <required>True</required>
       </option>
       <option name="Logging level">
-        <documentation>Logging level</documentation>
+        <documentation>Logging level
+
+
+</documentation>
         <type name="Choice">
           <option value="Info"/>
           <option value="Warning"/>
