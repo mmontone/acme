@@ -465,7 +465,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         item_id = str(self.tree.focus())
         section = self.find_section(item_id)
         
-        logging.debug('Selected section: ' + section)
+        logging.debug('Selected section: ' + str(section))
                
         self.editor.forget()
         self.editor = ConfigurationSchemaSectionEditor(self, section,
