@@ -1,6 +1,25 @@
 <schemas>
   <schema name="Web">
     <documentation></documentation>
+    <section name="Authentication">
+      <documentation></documentation>
+      <option name="Authentication enabled">
+        <documentation>Enable authentication?
+</documentation>
+        <type name="Boolean"/>
+        <required>False</required>
+      </option>
+      <option name="Authentication type">
+        <documentation>Type of authentication. Depends on authentication being enabled
+</documentation>
+        <type name="Choice">
+          <option value="HTTPS"/>
+          <option value="Password"/>
+        </type>
+        <required>True</required>
+        <dependency>Web.Authentication.Authentication enabled = True</dependency>
+      </option>
+    </section>
     <section name="Web server">
       <documentation></documentation>
       <option name="Host">
@@ -17,24 +36,6 @@
         <type name="Number"/>
         <required>True</required>
         <default>8080</default>
-      </option>
-    </section>
-    <section name="Authentication">
-      <documentation></documentation>
-      <option name="Authentication enabled">
-        <documentation>Enable authentication?</documentation>
-        <type name="Boolean"/>
-        <required>True</required>
-      </option>
-      <option name="Authentication type">
-        <documentation>Type of authentication. Depends on authentication being enabled
-</documentation>
-        <type name="Choice">
-          <option value="HTTPS"/>
-          <option value="Password"/>
-        </type>
-        <required>True</required>
-        <dependency>Web.Authentication.Authentication enabled = True</dependency>
       </option>
     </section>
     <section name="Assets">
@@ -89,7 +90,7 @@
           <option value="Plugin1"/>
           <option value="Plugin2"/>
         </type>
-        <required>False</required>
+        <required>True</required>
       </option>
     </section>
   </schema>
