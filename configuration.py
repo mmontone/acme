@@ -756,7 +756,7 @@ class Configuration(object):
             section_errors = section.validate(self)
             if section_errors:
                 errors.extend(section_errors.values())
-        if len(errors) > 1:
+        if len(errors) > 0:
             return errors
         else:
             return None
