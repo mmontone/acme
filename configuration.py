@@ -1,4 +1,5 @@
 #import xml.etree.ElementTree as et
+from util import *
 from lxml import etree as et
 import datetime
 import dependencies
@@ -354,14 +355,14 @@ class OptionType(object):
     
     @classmethod
     def get_named(cls, name):
-        option_type = next((option_type for option_type in cls.__subclasses__() if option_type.option_name() == name), None)
+        option_type = next((option_type for option_type in all_subclasses(cls) if option_type.option_name() == name), None)
         if not option_type:
             raise Exception('No option type named ' + name)
         return option_type
     
     @classmethod
     def option_types(cls):
-        return OptionType.__subclasses__()
+        return all_subclasses(OptionType)
     
     @property
     def name(self):
@@ -939,6 +940,12 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
     def visit_ColorOptionType(self, option_type):
         pass
     
+    def visit_EmailOptionType(self, option_type):
+        pass
+    
+    def visit_URIOptionType(self, option_type):
+        pass
+    
     def visit_ChoiceOptionType(self, option_type):
         for option in option_type.options():
             opt = et.SubElement(self._option_elem, 'option')
@@ -1043,6 +1050,12 @@ class ConfigurationSchemasXMLUnserializer():
         return option_type
     
     def visit_FilenameOptionType(self, option_type):
+        return option_type
+    
+    def visit_EmailOptionType(self, option_type):
+        return option_type
+    
+    def visit_URIOptionType(self, option_type):
         return option_type
     
     def visit_ChoiceOptionType(self, option_type):

@@ -7,7 +7,7 @@
         <documentation>Enable authentication?
 </documentation>
         <type name="Boolean"/>
-        <required>False</required>
+        <required>True</required>
       </option>
       <option name="Authentication type">
         <documentation>Type of authentication. Depends on authentication being enabled
@@ -91,6 +91,53 @@
           <option value="Plugin2"/>
         </type>
         <required>True</required>
+      </option>
+    </section>
+    <section name="Option types">
+      <documentation>Option types tests
+</documentation>
+      <option name="String">
+        <documentation>String test
+
+
+</documentation>
+        <type name="String"/>
+        <required>False</required>
+      </option>
+      <option name="Number">
+        <documentation>Number test
+
+
+</documentation>
+        <type name="Number"/>
+        <required>False</required>
+      </option>
+      <option name="Boolean">
+        <documentation>Boolean test
+
+
+</documentation>
+        <type name="Boolean"/>
+        <required>False</required>
+      </option>
+      <option name="Filename">
+        <documentation>Filename test
+
+</documentation>
+        <type name="Filename"/>
+        <required>False</required>
+      </option>
+      <option name="Email">
+        <documentation>Email test
+</documentation>
+        <type name="Email"/>
+        <required>False</required>
+      </option>
+      <option name="URI">
+        <documentation>URI test
+</documentation>
+        <type name="URI"/>
+        <required>False</required>
       </option>
     </section>
   </schema>

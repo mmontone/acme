@@ -1,3 +1,4 @@
+from util import *
 import Tkinter as tk
 import ttk
 import widgets as w
@@ -1162,7 +1163,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_type = tk.StringVar()
         if option.option_type:
             self.option_type.set(option.option_type.name)
-        option_types = map(lambda o: o.option_name(), filter(lambda ot: ot.name, conf.OptionType.__subclasses__()))
+        option_types = map(lambda o: o.option_name(), filter(lambda ot: ot.name, all_subclasses(conf.OptionType)))
         options = tk.OptionMenu(self.f, self.option_type, *option_types, command=self.edit_option_type)
         set_status_message(options, "Select the type of option")
         options.grid(row=1, column=1, sticky=tk.W) 
@@ -1331,7 +1332,7 @@ class OptionTypeEditor(object, tk.Frame):
         
     @classmethod
     def for_option_type(cls, option_type):
-        subclasses = OptionTypeEditor.__subclasses__()
+        subclasses = all_subclasses(OptionTypeEditor)
         return next((editor for editor in subclasses if editor.option_type == option_type), None)
     
     def option_type_instance(self):
@@ -2287,7 +2288,7 @@ class OptionEditor(object, tk.Frame):
        
     @classmethod
     def for_option_type(cls, option_type):
-        subclasses = OptionEditor.__subclasses__()
+        subclasses = all_subclasses(OptionEditor)
         return next((editor for editor in subclasses if editor.option_type == option_type), None)
         
 class StringOptionEditor(OptionEditor):
@@ -2678,21 +2679,11 @@ class DirectoryOptionEditor(OptionEditor):
         directory = tkFileDialog.askdirectory()
         self._var.set(directory)
         
-class URIOptionEditor(OptionEditor):
+class URIOptionEditor(StringOptionEditor):
     option_type = conf.URIOptionType
     
-    def __init__(self, master, **options):
-        OptionEditor.__init__(self, master, **options)
-        
-        self._var = tk.StringVar()
-        if self._option_schema and self._option_schema.default_value:
-            self._var.set(self._option_schema.default_value)
-            
-        entry = tk.Entry(self, textvariable=self._var)
-        entry.pack()
-        
-    def value(self):
-        return self._var.get()
+class EmailOptionEditor(StringOptionEditor):
+    option_type = conf.EmailOptionType       
     
 class TimeOptionEditor(OptionEditor):
     option_type = conf.TimeOptionType
