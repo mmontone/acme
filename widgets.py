@@ -170,12 +170,12 @@ class Dialog(tk.Toplevel):
         size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
-        print "Screen width: " + str(w)
-        print "Screen height: " + str(h)
-        print "Size: " + str(size)
-        print "X: " + str(x)
-        print "Y: " + str(y)
-        print "X2: " + str(self.winfo_width())
+        #print "Screen width: " + str(w)
+        #print "Screen height: " + str(h)
+        #print "Size: " + str(size)
+        #print "X: " + str(x)
+        #print "Y: " + str(y)
+        #print "X2: " + str(self.winfo_width())
         #self.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.geometry("+%d+%d" % (size + (x, y)))
         
