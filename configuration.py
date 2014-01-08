@@ -920,43 +920,21 @@ class ConfigurationSchemasXMLSerializer(XMLSerializer):
         element.attrib['name'] = option_type.name
         self._option_elem = element
         
-        option_type.accept(self)
+        visitor_method = getattr(self, "serialize" + option_type.name + "OptionType", None)
+        if callable(visitor_method):
+            visitor_method(option_type)     
     
-    def visit_StringOptionType(self, option_type):
-        pass
-            
-    def visit_NumberOptionType(self, option_type):
-        pass
-    
-    def visit_BooleanOptionType(self, option_type):
-        pass
-    
-    def visit_FilenameOptionType(self, option_type):
-        pass
-    
-    def visit_DatetimeOptionType(self, option_type):
-        pass
-    
-    def visit_ColorOptionType(self, option_type):
-        pass
-    
-    def visit_EmailOptionType(self, option_type):
-        pass
-    
-    def visit_URIOptionType(self, option_type):
-        pass
-    
-    def visit_ChoiceOptionType(self, option_type):
+    def serializeChoiceOptionType(self, option_type):
         for option in option_type.options():
             opt = et.SubElement(self._option_elem, 'option')
             opt.attrib['value'] = option
             
-    def visit_ListOptionType(self, option_type):
+    def serializeListOptionType(self, option_type):
         for option in option_type.options():
             opt = et.SubElement(self._option_elem, 'option')
             opt.attrib['value'] = option
             
-    def visit_ManyOptionType(self, option_type):
+    def serializeManyOptionType(self, option_type):
         many_type = option_type.option_type
         many_type_elem = et.SubElement(self._option_elem, 'type')
         many_type_elem.attrib['name'] = many_type.name
@@ -1038,48 +1016,29 @@ class ConfigurationSchemasXMLUnserializer():
         option_type_class = OptionType.get_named(name)
         
         option_type = option_type_class()
-        return option_type.accept(self)
-    
-    def visit_NumberOptionType(self, option_type):
-        return option_type
-    
-    def visit_StringOptionType(self, option_type):
-        return option_type
-    
-    def visit_BooleanOptionType(self, option_type):
-        return option_type
-    
-    def visit_FilenameOptionType(self, option_type):
-        return option_type
-    
-    def visit_EmailOptionType(self, option_type):
-        return option_type
-    
-    def visit_URIOptionType(self, option_type):
-        return option_type
-    
-    def visit_ChoiceOptionType(self, option_type):
+        
+        visitor_method = getattr(self, "unserialize" + option_type.name + "OptionType", None)
+        if callable(visitor_method):
+            return visitor_method(option_type)
+        else:
+            return option_type        
+       
+    def unserializeChoiceOptionType(self, option_type):
         for option in self._option_type_elem.iterchildren(tag='option'):
             option_type.add_option(option.attrib['value'])
         return option_type
     
-    def visit_ListOptionType(self, option_type):
+    def unserializeListOptionType(self, option_type):
         for option in self._option_type_elem.iterchildren(tag='option'):
             option_type.add_option(option.attrib['value'])
         return option_type
     
-    def visit_ManyOptionType(self, option_type):
+    def unserializeManyOptionType(self, option_type):
         many_type_elem = self._option_type_elem.find('type')
         
         many_type = self.unserialize_option_type(many_type_elem)
         option_type.option_type = many_type
-        return option_type
-    
-    def visit_DatetimeOptionType(self, option_type):
-        return option_type
-    
-    def visit_ColorOptionType(self, option_type):
-        return option_type
+        return option_type   
     
 class YAMLSerializer(Serializer):
     pass
