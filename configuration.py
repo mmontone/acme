@@ -400,8 +400,14 @@ class BooleanOptionType(OptionType):
 class EmailOptionType(OptionType):
     _name = "Email"
     
+    def accept(self, visitor):
+        return visitor.visit_EmailOptionType(self)
+    
 class URIOptionType(OptionType):
     _name = "URI"
+    
+    def accept(self, visitor):
+        return visitor.visit_URIOptionType(self)
     
 class FilenameOptionType(OptionType):
     _name = "Filename"
@@ -412,6 +418,9 @@ class FilenameOptionType(OptionType):
 class DirectoryOptionType(OptionType):
     _name = "Directory"
     
+    def accept(self, visitor):
+        return visitor.visit_DirectoryOptionType(self)
+    
 class ColorOptionType(OptionType):
     _name = "Color"
     
@@ -421,20 +430,38 @@ class ColorOptionType(OptionType):
 class TimezoneOptionType(OptionType):
     _name = "Timezone"
     
+    def accept(self, visitor):
+        return visitor.visit_TimezoneOptionType(self)
+    
 class CountryOptionType(OptionType):
     _name = "Country"
+    
+    def accept(self, visitor):
+        return visitor.visit_CountryOptionType(self)
     
 class LanguageOptionType(OptionType):
     _name = "Language"
     
+    def accept(self, visitor):
+        return visitor.visit_LanguageOptionType(self)
+    
 class CurrencyOptionType(OptionType):
     _name = "Currency"
+    
+    def accept(self, visitor):
+        return visitor.visit_CurrencyOptionType(self)
     
 class DateOptionType(OptionType):
     _name = "Date"
     
+    def accept(self, visitor):
+        return visitor.visit_DateOptionType(self)
+    
 class TimeOptionType(OptionType):
     _name = "Time"
+    
+    def accept(self, visitor):
+        return visitor.visit_TimeOptionType(self)
     
 class DatetimeOptionType(OptionType):
     _name = "Datetime"
@@ -502,6 +529,9 @@ class MaybeOptionType(OptionType):
     def option_type(self, value):
         self._option_type = value
         return self
+    
+    def accept(self, visitor):
+        return visitor.visit_MaybeOptionType(self)
         
 class OneOfOptionType(OptionType):
     _name = "One of"
@@ -517,6 +547,9 @@ class OneOfOptionType(OptionType):
     def option_types(self, value):
         self._option_types = value
         return self       
+    
+    def accept(self, visitor):
+        return visitor.visit_OneOfOptionType(self)
     
 class ManyOptionType(OptionType):
     _name = "Many"   
