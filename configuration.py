@@ -4,6 +4,8 @@ from lxml import etree as et
 import datetime
 import dependencies
 import logging
+import email.utils
+import urlparse
 
 class ConfigurationSchema():
     _configuration_schemas = {}
@@ -251,7 +253,13 @@ class ConfigurationSchemaSection:
         for option in self.options():
             option_value, origin = config.option_value(option)
             if config.option_is_enabled(option) and option.is_required and option.default_value is None and option_value is None:
-                errors[option.name] = {'option':option, 'message': option.name + ' is required'}
+                errors[option.name] = {'option':option, 'message': option.path_string() + ' is required'}
+            else:
+                if option_value is not None:
+                    error = option.validate(option_value)
+                    if error is not None:
+                        errors[option.name] = {'option':option, 'message' : option.path_string() + ": " + error}             
+                
         if len(errors.values()) > 0:
             return errors
         else:
@@ -353,6 +361,9 @@ class ConfigurationSchemaOption:
     def display_value(self, value):
         return self.option_type.display_value(value)
     
+    def validate(self, value):
+        return self.option_type.validate(value)
+    
 class OptionType(object):
     _name = None
     
@@ -383,6 +394,9 @@ class OptionType(object):
     
     def display_value(self, value):
         return str(value)
+    
+    def validate(self, value):
+        return None
    
 class StringOptionType(OptionType):
     _name = "String"
@@ -399,6 +413,10 @@ class NumberOptionType(OptionType):
     def parse_value(self, value):
         return int(value)
     
+    def validate(self, value):
+        if not isinstance(value, int):
+            return "Should be a number"        
+    
 class BooleanOptionType(OptionType):
     _name = "Boolean"
     
@@ -407,6 +425,10 @@ class BooleanOptionType(OptionType):
         
     def parse_value(self, value):
         return value == 'True'
+    
+    def validate(self, value):
+        if not isinstance(value, bool):
+            return "Should be a boolean"
    
 class EmailOptionType(OptionType):
     _name = "Email"
@@ -414,11 +436,20 @@ class EmailOptionType(OptionType):
     def accept(self, visitor):
         return visitor.visit_EmailOptionType(self)
     
+    def validate(self, value):
+        x, y = email.utils.parseaddr(value)
+        if x == '' and y == '':
+            return str(value) + " is an invalid email"
+    
 class URIOptionType(OptionType):
     _name = "URI"
     
     def accept(self, visitor):
         return visitor.visit_URIOptionType(self)
+    
+    def validate(self, value):
+        uri = urlparse.urlparse(value)
+        #print "URI validation result: " + str(uri)
     
 class FilenameOptionType(OptionType):
     _name = "Filename"
@@ -856,6 +887,9 @@ class ConfigurationOption():
     
     def display_value(self, value):
         return self.schema.display_value(value)
+    
+    def validate(self):
+        return self.schema.validate(self.value)
     
 class Serializer:
     pass
