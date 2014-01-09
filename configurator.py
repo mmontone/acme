@@ -2548,6 +2548,11 @@ class TimezoneOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
+        self._initial_value = None
+        
+        if self._option_schema and self._option_schema.default_value is not None:
+            self._initial_value = self._option_schema.default_value
+        
         self._lb = tk.Listbox(self)
         
         index = 0
@@ -2569,6 +2574,15 @@ class TimezoneOptionEditor(OptionEditor):
         else:
             selection = pytz.all_timezones[int(selections[0])]
             return selection
+        
+    def set_value(self, value):
+        for index, item in enumerate(pytz.all_timezones):
+            if item == value:
+                self._lb.selection_set(index)
+                self._initial_value = value
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class CountryOptionEditor(OptionEditor):
     option_type = conf.CountryOptionType
