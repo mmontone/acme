@@ -1,4 +1,4 @@
-* Move up and down sections and options
+* Make it work multiplatform (Windows and OS/X)
 * Option groups. Group of options that are placed inside the same tk.LabelFrame
 * Graphical dependencies editor
 * Sections dependencies (a section activation depending on an option value)
@@ -13,8 +13,7 @@
 * tk manual viewer??
 * 'Maybe' option type. The 'maybe' option type is a composite type. It can contain another option type or nothing.
   It can be seen as the equivalent of Haskell's Maybe type.
-* 'Many' option type. The 'many' option type is a composite type. Options of this type contain several instances of other options.
-  It can be seen as the equivalent of Haskell's 'List a' type.
+* 'Many' option type. The 'many' option type is a composite type. Options of thi
 * Custom option types. The user can create his own option types from the "setup" interface. Custom option types are created from a combination of other existing option types. The custom option types are serialized to the schema file. For instance, a new "Asset" custom option type could be formed form a title (string) and file location (filename).
 * Tests. Unit tests.
 * Bug fixing
