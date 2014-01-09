@@ -2851,11 +2851,7 @@ class TimeOptionEditor(OptionEditor):
         self._seconds_var.set(str(value.second))
         
     def value(self):
-        print "Get time value"
         time = datetime.time(int(self._hours_var.get()), int(self._minutes_var.get()), int(self._seconds_var.get()))
-        print "Hours: " + str(self._hours_var.get())
-        print "Minutes: " + str(self._minutes_var.get())
-        print "Time: " + str(time)
         return time
     
     def value_changed(self):
