@@ -2889,39 +2889,29 @@ class DatetimeOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
+        self._initial_value = None
+        
+        self._date_editor = DateOptionEditor(self)
+        self._date_editor.pack()
+        
+        self._time_editor = TimeOptionEditor(self)
+        self._time_editor.pack()
+        
         if self._option_schema and self._option_schema.default_value:
-            self._date = self._option_schema.default_value
-        else:
-            self._date = None
-            
-        self._calendar = tkCalendar.Calendar(self,date=self._date,dateformat="%d/%m/%Y")
-        self._calendar.pack()
-        
-        time = tk.Frame(self)
-        
-        self._hours_var = tk.IntVar()
-        self._minutes_var = tk.IntVar()
-        self._seconds_var = tk.IntVar()
-        
-        self._hours = tk.Spinbox(time, from_=0, to=23)
-        self._hours.pack(side=tk.LEFT)
-        
-        self._minutes = tk.Spinbox(time, from_=0, to=59)
-        self._minutes.pack(side=tk.LEFT)
-        
-        self._seconds = tk.Spinbox(time, from_=0, to=59)
-        self._seconds.pack(side=tk.LEFT)
-        time.pack()
+            self._initial_value = self._option_schema.default_value
+            self._date_editor.set_value(self._initial_value[0])
+            self._time_editor.set_value(self._initial_value[1])           
         
     def value(self):
-        return self._calendar.dt
+        return (self._date_editor.value(), self._time_editor.value())
     
     def set_value(self, value):
-        self._calendar.dt = value
-        self._calendar.showmonth()
+        self._date_editor.set_value(value[0])
+        self._time_editor.set_value(value[1])
+        self._initial_value = value
     
     def value_changed(self):
-        return self._calendar.dt <> self._date
+        return self._initial_value <> self.value()
     
 class DependencyExpressionEditor(tk.Frame):
     def __init__(self, parent, option):
@@ -2995,7 +2985,7 @@ class PathSelector(tk.Frame):
         if self._section_var.get() <> '':
             section = self._schema.get_section(self._section_var.get())
             
-            #Redraw
+            # Redraw
             for child in self.winfo_children():
                 child.forget()
             
