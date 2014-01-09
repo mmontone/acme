@@ -2590,15 +2590,41 @@ class CountryOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        lb = tk.Listbox(self)
+        self._initial_value = None
         
+        if self._option_schema and self._option_schema.default_value is not None:
+            self._initial_value = self._option_schema.default_value
+        
+        self._lb = tk.Listbox(self)
+        
+        index = 0
         for country in pycountry.countries:
-            lb.insert(tk.END, country.name)
+            self._lb.insert(tk.END, country.name)
+            if self._option_schema and self._option_schema.default_value == country.name:
+                self._lb.selection_set(index)
+            index = index + 1
             
-        ysb = ttk.Scrollbar(self, orient='vertical', command=lb.yview)
-        lb.configure(yscroll=ysb.set)
-        lb.pack(side=tk.LEFT)
+        ysb = ttk.Scrollbar(self, orient='vertical', command=self._lb.yview)
+        self._lb.configure(yscroll=ysb.set)
+        self._lb.pack(side=tk.LEFT)
         ysb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+    def value(self):
+        selections = self._lb.curselection()
+        if len(selections) < 1:
+            return None
+        else:
+            selection = list(pycountry.countries)[int(selections[0])]
+            return selection.name
+        
+    def set_value(self, value):
+        for index, item in enumerate(pycountry.countries):
+            if item.name == value:
+                self._lb.selection_set(index)
+                self._initial_value = value
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value   
         
 class LanguageOptionEditor(OptionEditor):
     option_type = conf.LanguageOptionType
