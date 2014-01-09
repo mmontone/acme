@@ -350,6 +350,9 @@ class ConfigurationSchemaOption:
     def unparse_value(self, value):
         return self.option_type.unparse_value(value)
     
+    def display_value(self, value):
+        return self.option_type.display_value(value)
+    
 class OptionType(object):
     _name = None
     
@@ -376,6 +379,9 @@ class OptionType(object):
         return value
     
     def unparse_value(self, value):
+        return str(value)
+    
+    def display_value(self, value):
         return str(value)
    
 class StringOptionType(OptionType):
@@ -466,8 +472,10 @@ class DateOptionType(OptionType):
         return datetime.datetime.strptime(value, "%d/%m/%Y")  
     
     def unparse_value(self, value):
-        return value.strftime("%d/%m/%Y") 
-         
+        return value.strftime("%d/%m/%Y")
+    
+    def display_value(self, value):
+        return value.strftime("%d/%m/%Y")         
     
 class TimeOptionType(OptionType):
     _name = "Time"
@@ -479,6 +487,9 @@ class TimeOptionType(OptionType):
         return datetime.datetime.strptime(value, "%H:%M:%S")
     
     def unparse_value(self, value):
+        return value.strftime("%H:%M:%S")
+    
+    def display_value(self, value):
         return value.strftime("%H:%M:%S")
     
 class DatetimeOptionType(OptionType):
@@ -495,7 +506,12 @@ class DatetimeOptionType(OptionType):
     def unparse_value(self, value):
         datestring = value[0].strftime("%d/%m/%Y")
         timestring = value[1].strftime("%H:%M:%S")
-        return "('" + datestring + "','" + timestring + "')"               
+        return "('" + datestring + "','" + timestring + "')"
+    
+    def display_value(self, value):
+        datestring = value[0].strftime("%d/%m/%Y")
+        timestring = value[1].strftime("%H:%M:%S")
+        return datestring + " " + timestring                       
     
 class ChoiceOptionType(OptionType):
     _name = "Choice"
@@ -537,6 +553,9 @@ class ListOptionType(OptionType):
     
     def parse_value(self, value):
         return eval(value)
+    
+    def display_value(self, value):
+        return ', '.join(value)
         
 class MaybeOptionType(OptionType):
     _name = "Maybe"
@@ -598,6 +617,9 @@ class ManyOptionType(OptionType):
     
     def parse_value(self, str):
         return eval(str)
+    
+    def display_value(self, value):
+        return ', '.join(value)
     
 class CustomOptionType(OptionType):
     
@@ -831,6 +853,9 @@ class ConfigurationOption():
     
     def unparse_value(self, value):
         return self.schema.unparse_value(value)
+    
+    def display_value(self, value):
+        return self.schema.display_value(value)
     
 class Serializer:
     pass
