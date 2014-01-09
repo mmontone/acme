@@ -346,6 +346,9 @@ class ConfigurationSchemaOption:
         
     def move_backwards(self):
         self.section.move_option_backwards(self)
+        
+    def unparse_value(self, value):
+        return self.option_type.unparse_value(value)
     
 class OptionType(object):
     _name = None
@@ -459,11 +462,24 @@ class DateOptionType(OptionType):
     def accept(self, visitor):
         return visitor.visit_DateOptionType(self)
     
+    def parse_value(self, value):
+        return datetime.datetime.strptime(value, "%d/%m/%Y")  
+    
+    def unparse_value(self, value):
+        return value.strftime("%d/%m/%Y") 
+         
+    
 class TimeOptionType(OptionType):
     _name = "Time"
     
     def accept(self, visitor):
         return visitor.visit_TimeOptionType(self)
+    
+    def parse_value(self, value):
+        return datetime.datetime.strptime(value, "%H:%M:%S")
+    
+    def unparse_value(self, value):
+        return value.strftime("%H:%M:%S")
     
 class DatetimeOptionType(OptionType):
     _name = "Datetime"
@@ -471,8 +487,15 @@ class DatetimeOptionType(OptionType):
     def accept(self, visitor):
         return visitor.visit_DatetimeOptionType(self)
     
-    def unparse_value(self, string):
-        return datetime.strptime(string, '%d/%m/%Y')
+    def parse_value(self, value):
+        tuple = eval(value)
+        return (datetime.datetime.strptime(tuple[0], "%d/%m/%Y"),
+                datetime.datetime.strptime(tuple[1], "%H:%M:%S"))
+     
+    def unparse_value(self, value):
+        datestring = value[0].strftime("%d/%m/%Y")
+        timestring = value[1].strftime("%H:%M:%S")
+        return "('" + datestring + "','" + timestring + "')"               
     
 class ChoiceOptionType(OptionType):
     _name = "Choice"
@@ -806,6 +829,9 @@ class ConfigurationOption():
     def __str__(self):
         return self.name
     
+    def unparse_value(self, value):
+        return self.schema.unparse_value(value)
+    
 class Serializer:
     pass
 
@@ -833,7 +859,7 @@ class ConfigurationsXMLSerializer(XMLSerializer):
             option_elem.attrib['value'] = self.serialize_option_value(option)
             
     def serialize_option_value(self, option):
-        return str(option.value)
+        return option.unparse_value(option.value)
        
     def write(self, recipient):
         tree = et.ElementTree(self._root)
