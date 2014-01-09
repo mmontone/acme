@@ -1975,8 +1975,12 @@ class ConfigurationSectionViewer(tk.Frame):
                 opt_val = option_value
                 if not option_value and option.default_value:
                     opt_val= option.default_value
+                    
+                opt_display = '<No value>'
+                if opt_val is not None:
+                    opt_display = option.display_value(opt_val)
                                
-                value_display = tk.Label(options, text=option.display_value(opt_val))
+                value_display = tk.Label(options, text=opt_display)
                 value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
                 set_status_message(value_display, 'Double click to edit')
                 
