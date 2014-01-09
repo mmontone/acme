@@ -15,6 +15,7 @@ import test
 import argparse
 import grako
 import logging
+import datetime
 
 configs_file = None
 schemas_file = None
@@ -2819,18 +2820,46 @@ class TimeOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        self._hours_var = tk.IntVar()
-        self._minutes_var = tk.IntVar()
-        self._seconds_var = tk.IntVar()
+        self._hours_var = tk.StringVar()
+        self._hours_var.set('0')
+        self._minutes_var = tk.StringVar()
+        self._minutes_var.set('0')
+        self._seconds_var = tk.StringVar()
+        self._seconds_var.set('0')
         
-        self._hours = tk.Spinbox(self, from_=0, to=23)
+        self._initial_value = None
+        
+        if self._option_schema and self._option_schema.default_value:
+            self._initial_value = self._option_schema.default_value
+            self._hours_var.set(str(self._initial_value.hour))
+            self._minutes_var.set(str(self._initial_value.minute))
+            self._seconds_var.set(str(self._initial_value.second))                
+                    
+        self._hours = tk.Spinbox(self, from_=0, to=23, textvariable=self._hours_var)
         self._hours.pack(side=tk.LEFT)
         
-        self._minutes = tk.Spinbox(self, from_=0, to=59)
+        self._minutes = tk.Spinbox(self, from_=0, to=59, textvariable=self._minutes_var)
         self._minutes.pack(side=tk.LEFT)
         
-        self._seconds = tk.Spinbox(self, from_=0, to=59)
+        self._seconds = tk.Spinbox(self, from_=0, to=59, textvariable=self._seconds_var)
         self._seconds.pack(side=tk.LEFT)
+        
+    def set_value(self, value):
+        self._initial_value = value
+        self._hours_var.set(str(value.hour))
+        self._minutes_var.set(str(value.minute))
+        self._seconds_var.set(str(value.second))
+        
+    def value(self):
+        print "Get time value"
+        time = datetime.time(int(self._hours_var.get()), int(self._minutes_var.get()), int(self._seconds_var.get()))
+        print "Hours: " + str(self._hours_var.get())
+        print "Minutes: " + str(self._minutes_var.get())
+        print "Time: " + str(time)
+        return time
+    
+    def value_changed(self):
+        return self.value() <> self._initial_value 
         
 class DateOptionEditor(OptionEditor):
     option_type = conf.DateOptionType
