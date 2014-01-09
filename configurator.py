@@ -1964,12 +1964,12 @@ class ConfigurationSectionViewer(tk.Frame):
                 if errors and errors.get(option.name):
                     label_color = 'Red'
                     
-                label = tk.Label(options, text=label_text, foreground=label_color)
+                label = tk.Label(options, text=label_text, foreground=label_color,  font=('Helvetica', 10, 'bold'))
                 
                 # Option label popup
                 label.bind('<ButtonRelease-3>', lambda ev, option=option: self.option_popup(ev, option))
                 
-                label.grid(row=row, column=0, padx=30, pady=10, sticky=tk.NW)
+                label.grid(row=row, column=0, padx=30, pady=2, sticky=tk.NW)
                 
                 # Option value
                 opt_val = option_value
@@ -1980,13 +1980,13 @@ class ConfigurationSectionViewer(tk.Frame):
                 if opt_val is not None:
                     opt_display = option.display_value(opt_val)
                                
-                value_display = tk.Label(options, text=opt_display)
+                value_display = tk.Label(options, text=opt_display, font=('Helvetica', 10))
                 value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
                 set_status_message(value_display, 'Double click to edit')
                 
-                value_display.grid(row=row, column=1, padx=10, pady=10, sticky=tk.NW)
+                value_display.grid(row=row, column=1, padx=10, pady=2, sticky=tk.NW)
                 
-                documentation = option.documentation
+                documentation = option.documentation.strip()
                 if origin and origin <> self._config:
                     documentation = documentation + '\n\n This option is set in ' + origin.name + ' configuration.'
                     
@@ -1994,12 +1994,9 @@ class ConfigurationSectionViewer(tk.Frame):
                     documentation = documentation + '\n\n This option is set to its default value'
                     
                 doc = tk.Label(options, text=documentation, font=('Verdana', 8, 'italic'))
-                doc.grid(row=row, column=2, padx=20, pady=10, sticky=tk.NW)
+                doc.grid(row=row, column=2, padx=20, pady=2, sticky=tk.NW)
                     
-                row = row + 1
-                         
-        #options.pack(fill=tk.BOTH, expand=tk.Y)
-        #canvas.pack()
+                row = row + 1        
         
     def scroll_options_down(self, event):
         #self._canvas.yview_scroll(-1*(event.delta/120), "units")
