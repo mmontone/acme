@@ -2838,16 +2838,25 @@ class DateOptionEditor(OptionEditor):
     def __init__(self, master, **options):
         OptionEditor.__init__(self, master, **options)
         
-        if self._option_schema and self._option_schema.default_value:
-            date = self._option_schema.default_value
-        else:
-            date = None
+        self._dateformat = "%d/%m/%Y"
+        self._initial_value = None
         
-        self._calendar = tkCalendar.Calendar(self,date=date,dateformat="%d/%m/%Y")
+        if self._option_schema and self._option_schema.default_value:
+            self._initial_value = self._option_schema.default_value
+                
+        self._calendar = tkCalendar.Calendar(self,date=self._initial_value,dateformat="%d/%m/%Y")
         self._calendar.pack()
         
     def value(self):
         return self._calendar.dt
+    
+    def set_value(self, value):
+        self._calendar.dt = value
+        self._initial_value = value
+        self._calendar.showmonth()
+        
+    def value_changed(self):
+        return self.value() <> self._initial_value
         
 class DatetimeOptionEditor(OptionEditor):
     option_type = conf.DatetimeOptionType

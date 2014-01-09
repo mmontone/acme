@@ -4,7 +4,7 @@ class Calendar(Tkinter.Frame): # class calendarTk
     """ Calendar, the current date is exposed today, or transferred to date"""
     def __init__(self,master=None,date=None,dateformat="%d/%m/%Y",command=lambda i:None):
         Tkinter.Frame.__init__(self, master)
-        self.dt=datetime.datetime.now() if date is None else date #datetime.datetime.strptime(date, dateformat) 
+        self.dt=datetime.datetime.now() if date is None else datetime.datetime.strptime(date, dateformat) 
         self.showmonth()
         self.command=command
         self.dateformat=dateformat
