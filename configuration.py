@@ -353,6 +353,9 @@ class ConfigurationSchemaOption:
     def move_backwards(self):
         self.section.move_option_backwards(self)
         
+    def parse_value(self, value):
+        return self._option_type.parse_value(value)
+        
     def unparse_value(self, value):
         return self.option_type.unparse_value(value)
     
@@ -565,6 +568,10 @@ class ChoiceOptionType(OptionType):
     def accept(self, visitor):
         return visitor.visit_ChoiceOptionType(self)
     
+    def validate(self, value):
+        if not value in self.options():
+            return '\'' + str(value) + '\' is not a valid choice (' + ', '.join(self.options()) + ')'
+    
 class ListOptionType(OptionType):
     _name = "List"
     
@@ -588,6 +595,11 @@ class ListOptionType(OptionType):
     
     def display_value(self, value):
         return ', '.join(value)
+    
+    def validate(self, value):
+        vals = list(set(value) - set(self.options()))
+        if len(vals) > 0:
+            return str(vals) + ' are not a valid list members (' + ', '.join(self.options()) + ')'
         
 class MaybeOptionType(OptionType):
     _name = "Maybe"
