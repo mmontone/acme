@@ -397,6 +397,9 @@ class OptionType(object):
     
     def validate(self, value):
         return None
+    
+    def __str__(self):
+        return self.name
    
 class StringOptionType(OptionType):
     _name = "String"
@@ -652,6 +655,9 @@ class ManyOptionType(OptionType):
     def display_value(self, value):
         return ', '.join(value)
     
+    def __str__(self):
+        return self.name + '(' + str(self.option_type) + ')'
+    
 class CustomOptionType(OptionType):
     
     _custom_option_types = {}
@@ -840,7 +846,10 @@ class Configuration(object):
             return errors
         else:
             logging.info('Configuration ' + self.name + ' is valid')
-            return None        
+            return None
+        
+    def __str__(self):
+        return self.name        
         
 class ConfigurationOption():
     

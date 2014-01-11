@@ -3253,19 +3253,22 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
     parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
-    parser.add_argument('--get', help='Get an option value')
-    parser.add_argument('--set', help='Set an option value')
     parser.add_argument('-l', '--list-configs', help='List configurations', action='store_true')
+    parser.add_argument('-i', '--inspect-config', help='Inspect a configuration. A CSV(Comma separated values) list with <option path>, <value>, <option type>, <origin>')
+    parser.add_argument('-g', '--get', help='Get an option value')
+    parser.add_argument('--set', help='Set an option value')
     parser.add_argument('--validate', help='Enable or disable configurations validation')
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
     args = parser.parse_args()
-    
-    if args.debug:
+        
+    if args.debug is not None:
         if args.debug == 'INFO':
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.DEBUG)
+            
+    logging.info("Command line args: " + str(args))
     
     schemas_file = None
     
@@ -3306,9 +3309,36 @@ if __name__ == '__main__':
         configs = unserializer.read(configs_file)
         
     # List configurations?
-    if args.list_configs is not None:
+    if args.list_configs:
         for config in configs:
             print config.name
+        sys.exit()
+        
+    # Inspect config?
+    if args.inspect_config is not None:
+                
+        config = conf.Configuration.get_named(args.inspect_config)
+        schema = config.schema
+        
+        def inspect_section(section):
+            for option in section.options():
+                value, origin = config.option_value(option)
+                
+                option_value = value
+                if option_value is None:
+                    option_value = option.default_value
+                    
+                option_origin = origin
+                if option_origin is None:
+                    option_origin = 'Default'
+                    
+                if option_value is not None:
+                    print option.path_string() + ", " + option.unparse_value(option_value) + ", " + str(option.option_type) + ", " + str(option_origin) 
+                for section in section.subsections():
+                    inspec_section(section)
+                    
+        for section in schema.sections():
+            inspect_section(section)
         sys.exit()
         
     # Process get and set parameters
@@ -3327,7 +3357,21 @@ if __name__ == '__main__':
             option = config.schema.option_in_path(option_path)
             value, origin = config.option_value(option)
             logging.info(str(option_path) + ' option value: ' + str(value))
-            print value
+            
+            option_value = value
+            if option_value is None:
+                option_value = option.default_value
+                
+            if option_value is None:
+                print 'Not set'
+            else:
+                option_origin = origin
+                if option_origin is None:
+                    option_origin = 'Default'
+                print option.unparse_value(option_value)
+                print str(option.option_type)
+                print str(option_origin)
+            
             sys.exit()
             
     if args.set is not None:
