@@ -3259,7 +3259,9 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--inspect-config', help='Inspect a configuration. A CSV(Comma separated values) list with <option path>, <value>, <option type>, <origin>')
     parser.add_argument('-g', '--get', help='Get an option value')
     parser.add_argument('--set', help='Set an option value')
-    parser.add_argument('--validate', help='Enable or disable configurations validation')
+    parser.add_argument('--validation', help='Enable or disable configurations validation')
+    parser.add_argument('--validate', help='Validate a configuration. Pass the configuration name')
+    parser.add_argument('--validate-all', help='Validate all configurations', action='store_true')
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
     args = parser.parse_args()
@@ -3314,6 +3316,32 @@ if __name__ == '__main__':
     if args.list_configs:
         for config in configs:
             print config.name
+        sys.exit()
+        
+    # Validate configuration?
+    if args.validate is not None:
+        config = conf.Configuration.get_named(args.validate)
+        errors = config.validate()
+        
+        if errors is not None:
+            error_msgs = "\n".join(map(lambda e: e.get('message'), errors))
+            sys.exit(config.name + " configuration is not valid: \n\n" + error_msgs)
+        else:
+            print "The configuration is valid"
+            sys.exit()
+            
+    # Validate all?
+    if args.validate_all:
+        for config in conf.Configuration.configurations():
+            errors = config.validate()
+        
+            if errors is not None:
+                print config.name + " is invalid: \n"
+                for error in errors:
+                    print error.get('message')  
+                print ""             
+            else:
+                print config.name + " is valid\n"            
         sys.exit()
         
     # Inspect config?
@@ -3397,7 +3425,7 @@ if __name__ == '__main__':
                     serializer.serialize(config)
                 serializer.write(configs_file)
                 sys.exit()
-            if not args.validate in ['False', 'No', 'Off', 'false', 'no', 'off']:
+            if not args.validation in ['False', 'No', 'Off', 'false', 'no', 'off']:
                 errors = config.validate()
                 if errors is not None:
                     error_msgs = ', '.join(map(lambda e: e.get('message'), errors))
