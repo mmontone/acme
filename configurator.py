@@ -1973,7 +1973,7 @@ class ConfigurationSectionViewer(tk.Frame):
                 
                 # Option value
                 opt_val = option_value
-                if not option_value and option.default_value:
+                if option_value is None and option.default_value:
                     opt_val= option.default_value
                     
                 opt_display = '<No value>'
@@ -2402,6 +2402,7 @@ class NumberOptionEditor(OptionEditor):
     
     def set_value(self, value):
         self._var.set(value)
+        self._initial_value = value
         
     def value_changed(self):
         return self.value() <> self._initial_value
@@ -2433,6 +2434,7 @@ class BooleanOptionEditor(OptionEditor):
     
     def set_value(self, value):
         self._var.set(1 if value else 0)
+        self._initial_value = value
     
     def value_changed(self):
         return self.value() <> self._initial_value
