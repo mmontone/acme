@@ -3255,6 +3255,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
     parser.add_argument('--get', help='Get an option value')
     parser.add_argument('--set', help='Set an option value')
+    parser.add_argument('-l', '--list-configs', help='List configurations', action='store_true')
     parser.add_argument('--validate', help='Enable or disable configurations validation')
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
@@ -3303,6 +3304,12 @@ if __name__ == '__main__':
     if os.path.exists(configs_file):
         unserializer = conf.ConfigurationsXMLUnserializer()
         configs = unserializer.read(configs_file)
+        
+    # List configurations?
+    if args.list_configs is not None:
+        for config in configs:
+            print config.name
+        sys.exit()
         
     # Process get and set parameters
     if args.get is not None:
