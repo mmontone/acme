@@ -1980,7 +1980,7 @@ class ConfigurationSectionViewer(tk.Frame):
                 if opt_val is not None:
                     opt_display = option.display_value(opt_val)
                                
-                value_display = tk.Label(options, text=opt_display, font=('Helvetica', 10))
+                value_display = tk.Label(options, text=opt_display, font=('Helvetica', 10), bd=1, relief=tk.RIDGE, background="white")
                 value_display.bind('<Double-Button-1>', lambda ev, option=option: self.edit_option(ev, option))
                 set_status_message(value_display, 'Double click to edit')
                 
