@@ -3417,7 +3417,8 @@ if __name__ == '__main__':
             logging.info('Trying to set option ' + str(option_path) + ' from ' + config_name + ' configuration')
             config = conf.Configuration.get_named(config_name)
             option = config.schema.option_in_path(option_path)
-            config.set_option_value(option, value)
+            parsed_value = option.parse_value(value)
+            config.set_option_value(option, parsed_value)
             
             def serialize_config():
                 serializer = conf.ConfigurationsXMLSerializer()
