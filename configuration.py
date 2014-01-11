@@ -116,10 +116,10 @@ class ConfigurationSchema():
         return self.name 
     
     def path(self):
-        return (self.name,)
+        return ()
     
     def option_in_path(self, path):
-        section = next((s for s in self.sections() if s.name == path[1]), None)
+        section = next((s for s in self.sections() if s.name == path[0]), None)
         if not section:
             raise Exception('Section ' + path[1] + ' not found')
         return section.option_in_path(path[1:])
@@ -228,22 +228,20 @@ class ConfigurationSchemaSection:
             self._options[index] = next_option 
     
     def option_in_path(self, path):
-        assert(path[0] == self.name)
-        
-        if len(path) > 2:
+        if len(path) > 1:
             # There are subsections in path
-            subsection = next((s for s in self._subsections if s.name == path[1]), None)
+            subsection = next((s for s in self._subsections if s.name == path[0]), None)
             
             if not subsection:
-                raise Exception('Subsection not found ' + path[1])
+                raise Exception('Subsection not found ' + path[0])
             
             return subsection.option_in_path(path[1:])
         else:
             # Find the option
-            option = next((o for o in self._options if o.name == path[1]), None)
+            option = next((o for o in self._options if o.name == path[0]), None)
             
             if not option:
-                raise Exception('Option not found ' + path[1])
+                raise Exception('Option not found ' + path[0])
             
             return option
         
