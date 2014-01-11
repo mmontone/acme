@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from util import *
 import Tkinter as tk
 import ttk
