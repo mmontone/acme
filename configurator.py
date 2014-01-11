@@ -3442,7 +3442,10 @@ if __name__ == '__main__':
     elif args.setup:
         configurator = SchemasConfigurator(root)
     else:
-        configurator = Configurator(root, configs=configs)
+        if len(schemas) == 0:
+            sys.exit('Can\'t load configuration schemas')
+        else:
+            configurator = Configurator(root, configs=configs)
     
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
