@@ -18,6 +18,7 @@ import argparse
 import grako
 import logging
 import datetime
+import json
 
 configs_file = None
 schemas_file = None
@@ -3249,6 +3250,13 @@ def set_status_message(widget, message):
 def image(filename):
     return os.path.dirname(os.path.realpath(__file__)) + "/images/" + filename
 
+class ConfiguratorJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%d/%m/%Y %H:%M:%S")
+            
+        return json.JSONEncoder.default(self, obj)
+
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='Configurator. Configuration management utility.')
@@ -3262,6 +3270,7 @@ if __name__ == '__main__':
     parser.add_argument('--validation', help='Enable or disable configurations validation')
     parser.add_argument('--validate', help='Validate a configuration. Pass the configuration name')
     parser.add_argument('--validate-all', help='Validate all configurations', action='store_true')
+    parser.add_argument('--json', help="Use JSON for communication", action="store_true")
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
     args = parser.parse_args()
@@ -3314,8 +3323,11 @@ if __name__ == '__main__':
         
     # List configurations?
     if args.list_configs:
-        for config in configs:
-            print config.name
+        if args.json:
+            print json.dumps(map(lambda c: c.name, configs))
+        else:
+            for config in configs:
+                print config.name
         sys.exit()
         
     # Validate configuration?
@@ -3350,25 +3362,51 @@ if __name__ == '__main__':
         config = conf.Configuration.get_named(args.inspect_config)
         schema = config.schema
         
-        def inspect_section(section):
-            for option in section.options():
-                value, origin = config.option_value(option)
+        if args.json:
+            def inspect_section(section, options):
+                for option in section.options():
+                    value, origin = config.option_value(option)
                 
-                option_value = value
-                if option_value is None:
-                    option_value = option.default_value
+                    option_value = value
+                    if option_value is None:
+                        option_value = option.default_value
                     
-                option_origin = origin
-                if option_origin is None:
-                    option_origin = 'Default'
+                    option_origin = origin
+                    if option_origin is None:
+                        option_origin = 'Default'
                     
-                if option_value is not None:
-                    print option.path_string() + ", " + option.unparse_value(option_value) + ", " + str(option.option_type) + ", " + str(option_origin) 
-                for section in section.subsections():
-                    inspec_section(section)
+                    if option_value is not None:
+                        attributes = {'option': option.path_string(),
+                                      'value': option_value,
+                                      'type': str(option.option_type),
+                                      'origin': str(option_origin)}
+                        options.append(attributes) 
+                    for section in section.subsections():
+                        inspect_section(section, options)
+            options = []
+            for section in config.sections():
+                inspect_section(section, options)
+            print json.dumps(options, cls=ConfiguratorJSONEncoder)
+        else:
+            def inspect_section(section):
+                for option in section.options():
+                    value, origin = config.option_value(option)
                     
-        for section in schema.sections():
-            inspect_section(section)
+                    option_value = value
+                    if option_value is None:
+                        option_value = option.default_value
+                        
+                    option_origin = origin
+                    if option_origin is None:
+                        option_origin = 'Default'
+                        
+                    if option_value is not None:
+                        print option.path_string() + ", " + option.unparse_value(option_value) + ", " + str(option.option_type) + ", " + str(option_origin) 
+                    for section in section.subsections():
+                        inspect_section(section)
+                        
+            for section in schema.sections():
+                inspect_section(section)
         sys.exit()
         
     # Process get and set parameters
@@ -3397,10 +3435,16 @@ if __name__ == '__main__':
             else:
                 option_origin = origin
                 if option_origin is None:
-                    option_origin = 'Default'
-                print option.unparse_value(option_value)
-                print str(option.option_type)
-                print str(option_origin)
+                        option_origin = 'Default'
+                if args.json:
+                    attributes = {'value' : option_value,
+                                  'type': str(option.option_type),
+                                  'origin' : str(option_origin)}
+                    print json.dumps(attributes, cls=ConfiguratorJSONEncoder)
+                else:
+                    print option.unparse_value(option_value)
+                    print str(option.option_type)
+                    print str(option_origin)
             
             sys.exit()
             
