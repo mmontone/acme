@@ -797,6 +797,7 @@ class Configuration(object):
         return self
     
     def set_option_value(self, schema_option, value):
+        logging.info(self.name + ' configuration: Setting ' + schema_option.path_string() + ' to ' + str(value))
         option = ConfigurationOption(schema_option, value=value)
         self._options[schema_option] = option
         
@@ -819,7 +820,7 @@ class Configuration(object):
         if schema_option.dependency_expression is None:
             return True
         else:
-            logging.info("Option enabled " + schema_option.path_string() + ": " + str(schema_option.dependency_expression.evaluate(self))) 
+            logging.debug("Option enabled " + schema_option.path_string() + ": " + str(schema_option.dependency_expression.evaluate(self))) 
             return schema_option.dependency_expression.evaluate(self)
         
     def sections(self):

@@ -3255,6 +3255,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
     parser.add_argument('--get', help='Get an option value')
     parser.add_argument('--set', help='Set an option value')
+    parser.add_argument('--validate', help='Enable or disable configurations validation')
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
     args = parser.parse_args()
@@ -3336,16 +3337,22 @@ if __name__ == '__main__':
             config = conf.Configuration.get_named(config_name)
             option = config.schema.option_in_path(option_path)
             config.set_option_value(option, value)
-            errors = config.validate()
-            if errors is not None:
-                error_msgs = ', '.join(map(lambda e: e.get('message'), errors))
-                sys.exit(config.name + " configuration is not valid: " + error_msgs)
-            else:
+            
+            def serialize_config():
                 serializer = conf.ConfigurationsXMLSerializer()
                 for config in configs:
                     serializer.serialize(config)
                 serializer.write(configs_file)
-                sys.exit()                                                 
+                sys.exit()
+            if not args.validate in ['False', 'No', 'Off', 'false', 'no', 'off']:
+                errors = config.validate()
+                if errors is not None:
+                    error_msgs = ', '.join(map(lambda e: e.get('message'), errors))
+                    sys.exit(config.name + " configuration is not valid: " + error_msgs)
+                else:
+                    serialize_config()
+            else:
+                serialize_config()                                       
         
     root = tk.Tk()
     
