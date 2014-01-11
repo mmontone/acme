@@ -3453,7 +3453,14 @@ if __name__ == '__main__':
             sys.exit('No configurations loaded')
         else:
             logging.info('Set option: ' + args.set)
-            full_option_path, value = args.set.split('=')
+            
+            if args.json:
+                list = json.loads(args.set)
+                full_option_path = list[0]
+                value = list[1]
+            else:
+                full_option_path, value = args.set.split('=')
+                
             split_path = full_option_path.split('.')
             config_name = split_path[0]
             option_path = split_path[1:]
@@ -3462,6 +3469,7 @@ if __name__ == '__main__':
             config = conf.Configuration.get_named(config_name)
             option = config.schema.option_in_path(option_path)
             parsed_value = option.parse_value(value)
+                
             config.set_option_value(option, parsed_value)
             
             def serialize_config():
