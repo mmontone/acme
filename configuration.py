@@ -843,7 +843,9 @@ class ConfigurationOption():
     
     def __init__(self, schema, **options):
         self._schema = schema
-        self._value = options.get('value') or None
+        self._value = None
+        if options.get('value') is not None:
+            self._value = options.get('value')
         
     @property
     def schema(self):
