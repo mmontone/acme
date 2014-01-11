@@ -558,7 +558,7 @@ class ChoiceOptionType(OptionType):
         return self._options
     
     def add_option(self, option):
-        logging.info("Adding option " + option + " to " + str(self))
+        logging.debug("Adding option " + option + " to " + str(self))
         self._options.append(option)
     
     def accept(self, visitor):
@@ -835,9 +835,11 @@ class Configuration(object):
             if section_errors:
                 errors.extend(section_errors.values())
         if len(errors) > 0:
+            logging.info('Configuration ' + self.name + ' is not valid: ' + str(errors))
             return errors
         else:
-            return None
+            logging.info('Configuration ' + self.name + ' is valid')
+            return None        
         
 class ConfigurationOption():
     

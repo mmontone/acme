@@ -3253,12 +3253,17 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
     parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
+    parser.add_argument('--get', help='Get an option value')
+    parser.add_argument('--set', help='Set an option value')
     parser.add_argument('--setup', help='Edit configuration schemas', action='store_true')
-    parser.add_argument('--debug', help='Run in debug mode', action='store_true')
+    parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
     args = parser.parse_args()
     
     if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
+        if args.debug == 'INFO':
+            logging.basicConfig(level=logging.INFO)
+        else:
+            logging.basicConfig(level=logging.DEBUG)
     
     schemas_file = None
     
@@ -3296,7 +3301,51 @@ if __name__ == '__main__':
     
     if os.path.exists(configs_file):
         unserializer = conf.ConfigurationsXMLUnserializer()
-        configs = unserializer.read(configs_file)        
+        configs = unserializer.read(configs_file)
+        
+    # Process get and set parameters
+    if args.get is not None:
+        if len(configs) == 0:
+            sys.exit('No configurations loaded')
+        else:
+            logging.info('Get option at ' + args.get)
+            full_option_path = args.get
+            split_path = full_option_path.split('.')
+            config_name = split_path[0]
+            option_path = split_path[1:]
+            
+            logging.info('Trying to read option ' + str(option_path) + ' from ' + config_name + ' configuration')
+            config = conf.Configuration.get_named(config_name)
+            option = config.schema.option_in_path(option_path)
+            value, origin = config.option_value(option)
+            logging.info(str(option_path) + ' option value: ' + str(value))
+            print value
+            sys.exit()
+            
+    if args.set is not None:
+        if len(configs) == 0:
+            sys.exit('No configurations loaded')
+        else:
+            logging.info('Set option: ' + args.set)
+            full_option_path, value = args.set.split('=')
+            split_path = full_option_path.split('.')
+            config_name = split_path[0]
+            option_path = split_path[1:]
+            
+            logging.info('Trying to set option ' + str(option_path) + ' from ' + config_name + ' configuration')
+            config = conf.Configuration.get_named(config_name)
+            option = config.schema.option_in_path(option_path)
+            config.set_option_value(option, value)
+            errors = config.validate()
+            if errors is not None:
+                error_msgs = ', '.join(map(lambda e: e.get('message'), errors))
+                sys.exit(config.name + " configuration is not valid: " + error_msgs)
+            else:
+                serializer = conf.ConfigurationsXMLSerializer()
+                for config in configs:
+                    serializer.serialize(config)
+                serializer.write(configs_file)
+                sys.exit()                                                 
         
     root = tk.Tk()
     
