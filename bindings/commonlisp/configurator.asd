@@ -40,4 +40,5 @@ OTHER DEALINGS IN THE SOFTWARE."
     :depends-on
     (:trivial-shell
      :cl-json
-     :puri))
+     :puri
+     :local-time))

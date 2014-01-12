@@ -71,7 +71,7 @@
 
 (defgeneric parse-configuration-option% (option-type option-value))
 
-(defmethod parse-configuration-option% (option-type option-value)
+(defmethod parse-configuration-option% (option-type value)
   ;(error "Can't parse option with type ~A" option-type)
   value)
 
@@ -102,6 +102,26 @@
 
 (defmethod parse-configuration-option% ((option-type (eql :uri)) value)
   (puri:parse-uri value))
+
+(defmethod parse-configuration-option% ((option-type (eql :time)) value)
+    (local-time:parse-timestring value :start 10))
+
+(defmethod parse-configuration-option% ((option-type (eql :date)) value)
+    (local-time:parse-timestring value :end 8
+				 :date-separator #\/))
+
+(defmethod parse-configuration-option% ((option-type (eql :datetime)) value)
+  (destructuring-bind (date time) value
+    (let ((parsed-time (local-time:parse-timestring time :start 10))
+	  (parsed-date (local-time:parse-timestring date :end 8
+						    :date-separator #\/)))
+      (local-time:encode-timestamp 0
+				   (local-time:timestamp-second parsed-time)
+				   (local-time:timestamp-minute parsed-time)
+				   (local-time:timestamp-hour parsed-time)
+				   (local-time:timestamp-day parsed-date)
+				   (local-time:timestamp-month parsed-date)
+				   (local-time:timestamp-year parsed-date)))))
 
 (defun configurator-get* (path)
   (parse-configuration-option (configurator-get path)))
