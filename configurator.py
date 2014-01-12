@@ -461,7 +461,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
 
     def remove_schema(self, schema, id):
         if tkMessageBox.askquestion("Remove?", "Remove " + schema.name + " configuration schema?") == 'yes':
-            schema.remove
+            schema.remove()
             self.tree.delete(id)
             del self.items[id]            
             
