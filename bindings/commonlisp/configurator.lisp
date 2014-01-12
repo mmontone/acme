@@ -61,3 +61,54 @@
       (if (not (equalp status 0))
 	  (error error))
       (cl-json:decode-json-from-string output))))
+
+(defun parse-configuration-option (alist)
+  (parse-configuration-option%
+   (intern
+    (string-upcase (cdr (assoc :type alist)))
+    :keyword)
+   (cdr (assoc :value alist))))
+
+(defgeneric parse-configuration-option% (option-type option-value))
+
+(defmethod parse-configuration-option% (option-type option-value)
+  ;(error "Can't parse option with type ~A" option-type)
+  value)
+
+(defmethod parse-configuration-option% ((option-type (eql :string)) value)
+  (assert (stringp value))
+  value)
+
+(defmethod parse-configuration-option% ((option-type (eql :number)) value)
+  (assert (numberp value))
+  value)
+
+(defmethod parse-configuration-option% ((option-type (eql :number)) value)
+  (assert (typep value 'boolean))
+  value)
+
+(defmethod parse-configuration-option% ((option-type (eql :list)) value)
+  (assert (typep value 'list))
+  value)
+
+(defmethod parse-configuration-option% ((option-type (eql :choice)) value)
+  value)
+
+(defun configurator-get* (path)
+  (parse-configuration-option (configurator-get path)))
+
+(defparameter *configuration* nil)
+
+(defun call-with-configuration (config function)
+  (let ((*configuration* config))
+    (funcall function)))
+
+(defmacro with-configuration (config &body body)
+  `(call-with-configuration ,config (lambda () ,@body)))
+
+(defun get* (path &optional (config *configuration*))
+  (configurator-get* (format nil "~A.~A" config path)))
+
+(defun set* (path value &optional (config *configuration*))
+  (configurator-set (format nil "~A.~A" config path)
+		    value))

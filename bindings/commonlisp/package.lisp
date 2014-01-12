@@ -6,4 +6,9 @@
 	   #:configurator-setup
 	   #:configurator-setup-example
 	   #:configurator-list-configs
-	   #:configurator-inspect))
+	   #:configurator-inspect
+	   #:configurator-get*
+	   #:parse-configuration-option
+	   #:with-configuration
+	   #:get*
+	   #:set*))
