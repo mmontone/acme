@@ -41,4 +41,5 @@ OTHER DEALINGS IN THE SOFTWARE."
     (:trivial-shell
      :cl-json
      :puri
-     :local-time))
+     :local-time
+     :cl-colors))
