@@ -124,7 +124,7 @@
 				   (local-time:timestamp-year parsed-date)))))
 
 (defmethod parse-configuration-option% ((option-type (eql :color)) value)
-  (cl-colors:hex-to-rgb (subseq value 1))))
+  (cl-colors:hex-to-rgb (subseq value 1)))
 
 (defun configurator-get* (path)
   (parse-configuration-option (configurator-get path)))
