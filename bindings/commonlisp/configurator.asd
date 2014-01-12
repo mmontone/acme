@@ -38,4 +38,6 @@ OTHER DEALINGS IN THE SOFTWARE."
      (:file "configurator"))
     :serial t
     :depends-on
-    (:trivial-shell :cl-json))
+    (:trivial-shell
+     :cl-json
+     :puri))

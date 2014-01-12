@@ -94,6 +94,15 @@
 (defmethod parse-configuration-option% ((option-type (eql :choice)) value)
   value)
 
+(defmethod parse-configuration-option% ((option-type (eql :filename)) value)
+  (pathname value))
+
+(defmethod parse-configuration-option% ((option-type (eql :directory)) value)
+  (pathname value))
+
+(defmethod parse-configuration-option% ((option-type (eql :uri)) value)
+  (puri:parse-uri value))
+
 (defun configurator-get* (path)
   (parse-configuration-option (configurator-get path)))
 
