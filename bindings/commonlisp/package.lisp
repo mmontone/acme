@@ -10,5 +10,7 @@
 	   #:configurator-get*
 	   #:parse-configuration-option
 	   #:with-configuration
-	   #:get*
-	   #:set*))
+	   #:config-get
+	   #:config-set
+	   #:in-configuration
+	   #:get-current-configuration))

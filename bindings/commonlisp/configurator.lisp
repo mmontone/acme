@@ -7,16 +7,43 @@
   "configurator")
 (defparameter *configuration-schemas-pathname* nil)
 (defparameter *configurations-pathname* nil)
+(defparameter *configurations* nil)
+
+(defclass configuration ()
+  ((name :initarg :name
+	 :initform (error "Provide the name")
+	 :accessor name)
+   (options :accessor options
+	    :initform (make-hash-table :test #'equalp))))
+
+(defmethod print-object ((config configuration) stream)
+  (print-unreadable-object (config stream :type t :identity t)
+    (format stream "~S" (name config))))
 
 (defun configurator-setup (schemas-pathname configs-pathname)
   (setf *configuration-schemas-pathname* schemas-pathname)
   (setf *configurations-pathname* configs-pathname)
+  (load-configurations)
   t)
 
 (defun configurator-setup-example ()
   (configurator-setup
    (asdf:system-relative-pathname :configurator "../../doc/example/configurator.schema")
    (asdf:system-relative-pathname :configurator "../../doc/example/configurator.config")))
+
+(defun load-configurations ()
+  (setf *configurations* (make-hash-table :test #'equalp))
+  (loop for config-name in (configurator-list-configs)
+       do
+       (let ((data (configurator-inspect config-name)))
+	 (let ((config (make-instance 'configuration
+				      :name config-name)))
+	   (loop for option-data in data
+	      do (setf (gethash (cdr (assoc :option option-data))
+				(options config))
+		       (parse-configuration-option option-data)))
+	   (setf (gethash config-name *configurations*)
+		 config)))))
 
 (defun configurator-inspect (config)
   (let ((command (format nil "~A --schemas ~A --configs ~A -i ~A --json"
@@ -27,7 +54,7 @@
     (multiple-value-bind (output error status) (trivial-shell:shell-command command)
       (if (not (equalp status 0))
 	  (error error))
-      (cl-json:decode-json-from-string output))))
+      (json:decode-json-from-string output))))
 
 (defun configurator-get (path)
   (let ((command (format nil "~A --schemas ~A --configs ~A --get '~A' --json"
@@ -38,7 +65,7 @@
     (multiple-value-bind (output error status) (trivial-shell:shell-command command)
       (if (not (equalp status 0))
 	  (error error))
-      (cl-json:decode-json-from-string output))))
+      (json:decode-json-from-string output))))
 
 (defun configurator-set (option value)
   (let ((command (format nil "~A --schemas ~A --configs ~A --set '~A' --json"
@@ -60,7 +87,7 @@
     (multiple-value-bind (output error status) (trivial-shell:shell-command command)
       (if (not (equalp status 0))
 	  (error error))
-      (cl-json:decode-json-from-string output))))
+      (json:decode-json-from-string output))))
 
 (defun parse-configuration-option (alist)
   (parse-configuration-option%
@@ -83,7 +110,7 @@
   (assert (numberp value))
   value)
 
-(defmethod parse-configuration-option% ((option-type (eql :number)) value)
+(defmethod parse-configuration-option% ((option-type (eql :boolean)) value)
   (assert (typep value 'boolean))
   value)
 
@@ -123,8 +150,8 @@
 				   (local-time:timestamp-month parsed-date)
 				   (local-time:timestamp-year parsed-date)))))
 
-(defmethod parse-configuration-option% ((option-type (eql :color)) value)
-  (cl-colors:hex-to-rgb (subseq value 1)))
+;(defmethod parse-configuration-option% ((option-type (eql :color)) value)
+;  (cl-colors:hex-to-rgb (subseq value 1)))
 
 (defun configurator-get* (path)
   (parse-configuration-option (configurator-get path)))
@@ -132,15 +159,29 @@
 (defparameter *configuration* nil)
 
 (defun call-with-configuration (config function)
-  (let ((*configuration* config))
+  (let ((*configuration* (if (stringp config)
+			     (get-config config)
+			     config)))
     (funcall function)))
 
 (defmacro with-configuration (config &body body)
   `(call-with-configuration ,config (lambda () ,@body)))
 
-(defun get* (path &optional (config *configuration*))
-  (configurator-get* (format nil "~A.~A" config path)))
+(defun config-get (path &optional (config *configuration*))
+  (gethash path (options config)))
 
-(defun set* (path value &optional (config *configuration*))
-  (configurator-set (format nil "~A.~A" config path)
-		    value))
+(defun config-set (path value &optional (config *configuration*))
+  (setf (gethash path (options config)) value))
+
+(defun in-configuration (config)
+  (setf *configuration* (if (stringp config)
+			    (get-config config)
+			    config)))
+
+(defun get-config (name)
+  (or
+   (gethash name *configurations*)
+   (error "~A configuration not loaded" name)))
+
+(defun get-current-configuration ()
+  *configuration*)
