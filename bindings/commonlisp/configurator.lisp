@@ -125,7 +125,7 @@
   (pathname value))
 
 (defmethod parse-configuration-option% ((option-type (eql :directory)) value)
-  (pathname value))
+  (pathname (format nil "~A/" value)))
 
 (defmethod parse-configuration-option% ((option-type (eql :uri)) value)
   (puri:parse-uri value))
