@@ -3306,8 +3306,8 @@ if __name__ == '__main__':
     if args.configs is not None:
         if os.path.exists(args.configs):
             configs_file = args.configs
-        elif os.path.exists(os.getcwd() + '/' + args.config):
-            configs_file = os.path.exists(os.getcwd() + '/' + args.config)
+        elif os.path.exists(os.getcwd() + '/' + args.configs):
+            configs_file = os.path.exists(os.getcwd() + '/' + args.configs)
         else:
             sys.exit('Configuration file ' + args.configs + ' does not exist')     
     
