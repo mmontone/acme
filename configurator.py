@@ -3242,6 +3242,153 @@ class SchemasConfigurator(tk.Frame):
     def quit(self):
         root.quit()
         
+class ConfigurationConfigurator(tk.Frame):
+    def __init__(self, parent, config):
+        
+        tk.Frame.__init__(self, parent)
+        
+        self._config = config
+        self._items = {}
+        
+        parent.title(config.name + ' configuration')
+        
+        # Menubar
+        self.menu_bar = tk.Menu(self)
+        
+        help_menu = tk.Menu(self.menu_bar)
+        help_menu.add_command(label='About', command=self.help_about)
+        set_status_message(help_menu, 'About configurator')
+        
+        self.menu_bar.add_cascade(label='Help', menu=help_menu)
+        
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
+        #self.menu_bar.icon = quit_icon
+        
+        self.menu_bar.add_command(label='Quit', command=self.quit)
+                
+        try:
+            parent.config(menu=self.menu_bar)
+        except AttributeError:
+            # master is a toplevel window (Python 1.4/Tkinter 1.63)
+            parent.tk.call(parent, "config", "-menu", menu_bar)
+            
+        # Configuration sections
+        
+        self._left_panel = tk.Frame(self)
+        
+        self._sections = ttk.Treeview(self._left_panel)
+        self._sections.bind('<ButtonRelease-1>', self.select_section)
+                
+        ysb = ttk.Scrollbar(self._left_panel, orient='vertical', command=self._sections.yview)
+        ysb.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        xsb = ttk.Scrollbar(self._left_panel, orient='horizontal', command=self._sections.xview)
+        xsb.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self._sections.configure(yscroll=ysb.set, xscroll=xsb.set)
+        
+        sections = self._config.sections()
+            
+        if len(sections) > 1:
+            self._section = sections[0]
+        
+            for section in sections:
+                self.insert_section(section)
+            
+            self._sections.selection_set(self._sections.get_children()[0])
+            
+        self._sections.pack(fill=tk.Y, expand=True)
+        self._left_panel.pack(side=tk.LEFT, fill=tk.Y)
+           
+        self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        
+        if len(sections) > 1:
+            self.insert_section_editor(sections[0])
+                           
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH)
+            
+        # Status bar
+        self.status = w.StatusBar(self)
+        self.status.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        # Buttons
+        buttons = tk.Frame(self)
+        save_btn = tk.Button(buttons, text='Save', command=self.save_configs)
+        save_btn.pack(side=tk.LEFT)
+        
+        cancel_btn = tk.Button(buttons, text='Cancel', command=self.quit)
+        cancel_btn.pack(side=tk.LEFT)
+        
+        buttons.pack(fill=tk.X, side=tk.BOTTOM)
+    
+    def insert_section(self, section, parent=''):
+        sid = self._sections.insert(parent, 'end', text=section.name)
+        self._items[sid] = section
+        
+        for subsection in section.subsections():
+            self.insert_section(subsection, sid)
+        
+    def insert_section_editor(self, section, errors=None):
+        #section_editor = ConfigurationSectionEditor(self._right_panel, 
+        #                                            config=self._config, 
+        #                                            section=section,
+        #                                            errors=errors,
+        #                                            onsave=lambda section: self.save_section(section))
+        section_editor = ConfigurationSectionViewer(self._right_panel,
+                                                    config=self._config,
+                                                    section=section,
+                                                    errors=errors)
+        section_editor.pack(expand=True, fill=tk.BOTH)
+        
+    def select_section(self, ev):
+        id = self._sections.identify_row(ev.y)
+        self._section = self._items[id]
+        logging.info("Section selected: " + self._section.name)
+        
+        # Clear the right panel
+        self._right_panel.forget()
+        self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
+        
+        # Put the options editing on the right panel
+        self.insert_section_editor(self._section)
+        
+        self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+          
+    def save_configs(self):
+        def save_configs(configs, filename, format):
+            serializer = conf.ConfigurationsXMLSerializer()
+            for config in configs:
+                serializer.serialize(config)
+            serializer.write(filename)
+            tkMessageBox.showinfo('Configurations saved successfully', 'Configurations have been saved on ' + filename)
+        
+        error_msg = ''
+        configs = conf.Configuration.configurations()    
+        for config in configs:
+            errors = config.validate()
+            if errors:
+                error_msg = error_msg + '\n' + config.name + " configuration is invalid: \n"
+                for error in errors:
+                    error_msg = error_msg + "    " + error['message'] + '\n'
+        def open_save_dialog():
+            dialog = SaveConfigurationsDialog(self, configs, onsave=save_configs)
+            self.wait_window(dialog)
+        if error_msg <> '':
+            answer = tkMessageBox.askquestion('Save configurations?', 'There are invalid configurations, save anyway? \n' + error_msg)
+            if answer == 'yes':
+                open_save_dialog()
+        else:
+            open_save_dialog()
+                  
+    def help_about(self):
+        d = AboutDialog(self)
+
+        self.wait_window(d)
+        
+    def quit(self):
+        root.quit()
+        
 def set_status_message(widget, message):
     global configurator
     widget.bind('<Enter>', lambda ev:configurator.status.set(message))
@@ -3267,6 +3414,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--inspect-config', help='Inspect a configuration. A CSV(Comma separated values) list with <option path>, <value>, <option type>, <origin>')
     parser.add_argument('-g', '--get', help='Get an option value')
     parser.add_argument('--set', help='Set an option value')
+    parser.add_argument('--config', help="Edit a specific configuration")
     parser.add_argument('--validation', help='Enable or disable configurations validation')
     parser.add_argument('--validate', help='Validate a configuration. Pass the configuration name')
     parser.add_argument('--validate-all', help='Validate all configurations', action='store_true')
@@ -3498,7 +3646,10 @@ if __name__ == '__main__':
         if len(schemas) == 0:
             sys.exit('Can\'t load configuration schemas')
         else:
-            configurator = Configurator(root, configs=configs)
+            if args.config is not None:
+                configurator = ConfigurationConfigurator(root, config=conf.Configuration.get_named(args.config))
+            else:
+                configurator = Configurator(root, configs=configs)
     
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
