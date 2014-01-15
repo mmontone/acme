@@ -3362,6 +3362,7 @@ class ConfigurationConfigurator(tk.Frame):
                 serializer.serialize(config)
             serializer.write(filename)
             tkMessageBox.showinfo('Configurations saved successfully', 'Configurations have been saved on ' + filename)
+            self.quit()
         
         error_msg = ''
         configs = conf.Configuration.configurations()    
