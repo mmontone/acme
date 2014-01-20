@@ -89,6 +89,7 @@ This is Configurator library documentation
 * Examples::                            Some examples
 * Frontend::                            Configurator frontend
 * Custom option types::                 How to define custom option types
+* Language bindings::                   Language bindings
 * System reference::                    The system reference
 * References::                          Related work
 * Index::                               Complete index.
@@ -125,6 +126,8 @@ Examples
 Frontend
 
 Custom option types
+
+Language bindings
 
 System References
 
@@ -599,6 +602,15 @@ Configurations can be edited from a Tk interface.
 @chapter Custom option types
 
 How to define custom option types
+
+@node Language bindings
+@chapter Language bindings
+
+There are language bindings implemented for Python, PHP and Common Lisp for the moment.
+
+Bindings can be found in the bindings directory. For how they are used, look at the tests in the corresponding directory.
+
+In general, bindings ivoke configurator from the command line using JSON for communication.
 
 @node System reference
 @chapter System reference
