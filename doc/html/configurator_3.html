@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- 
+This manual is for Configurator version 0.1.
+
+Copyright C 2013 Mariano Montone
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being "A GNU Manual,"
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled "GNU Free Documentation License."
+
+(a) The FSF's Back-Cover Text is: "You have the freedom to copy and
+modify this GNU manual.  Buying copies from the FSF supports it in
+developing GNU and promoting software freedom."
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+ -->
+<!-- Created on January 20, 2014 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Configurator - An configuration management utility: 3. Running</title>
+
+<meta name="description" content="Configurator - An configuration management utility: 3. Running">
+<meta name="keywords" content="Configurator - An configuration management utility: 3. Running">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="Running"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="configurator_2.html#Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-overview" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator_2.html#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-1"></a>
+<h1 class="chapter">3. Running</h1>
+<a name="index-running"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Running-overview">3.1 Running overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Running-modes">3.2 Running modes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Command-line-summary">3.3 Command line summary</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+</table>
+
+<hr size="6">
+<a name="Running-overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-modes" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-overview-1"></a>
+<h2 class="section">3.1 Running overview</h2>
+<a name="index-running-1"></a>
+
+<p>Configurator is run invoking <em>configurator</em> command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
+</p>
+<p>A configurations schemas files is required. By default, Configurator looks for <em>configurator.schema</em> in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the <em>&ndash;schemas SCHEMAS</em> option.
+</p>
+<p>If the schemas file is found, then it is parsed and loaded. The schemas file is in XML format.
+</p>
+<p>Apart from that, Configurator maintains configurations in another file, which by default is <em>configurator.config</em>. It can be specified to be something else through the <em>&ndash;configs CONFIGS</em> option.
+</p>
+<hr size="6">
+<a name="Running-modes"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running-overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Command-line-summary" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-modes-1"></a>
+<h2 class="section">3.2 Running modes</h2>
+
+<p>Configurator can be run in three different modes fundamentally.
+</p>
+<ul>
+<li>
+<em>Normal mode</em>: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn&rsquo;t need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.
+
+<p>This is an example of Configurator running in normal mode:
+</p>
+<img src="images/configurator1.png" alt="images/configurator1">
+
+</li><li>
+<em>Setup mode</em>: this mode is invoked running configurator with the <em>&ndash;setup</em> option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
+
+<p>This is an example of Configurator running in setup mode:
+</p>
+<img src="images/schemas1.png" alt="images/schemas1">
+
+</li><li>
+<em>Full mode</em>: this mode is invoked running configurator with the <em>&ndash;full</em> option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
+
+<p>This is an example of Configurator running in full mode:
+</p>
+<img src="images/full.png" alt="images/full">
+
+</li></ul>
+
+<hr size="6">
+<a name="Command-line-summary"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running-modes" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Command-line-summary-1"></a>
+<h2 class="section">3.3 Command line summary</h2>
+
+<pre class="verbatim">
+$&gt; configurator -h
+
+usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+
+Configurator. Configuration management utility.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f, --full            Run the full configurator (both configurations and
+                        schemas navigation)
+  -s SCHEMAS, --schemas SCHEMAS
+                        The configuration schemas files. Default is
+                        configurator.schema
+  -c CONFIGS, --configs CONFIGS
+                        The configurations file. Default is
+                        configurator.config
+  --setup               Edit configuration schemas
+  --debug               Run in debug mode
+
+</pre>
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>marian</em> on <em>January 20, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

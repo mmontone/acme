@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- 
+This manual is for Configurator version 0.1.
+
+Copyright C 2013 Mariano Montone
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being "A GNU Manual,"
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled "GNU Free Documentation License."
+
+(a) The FSF's Back-Cover Text is: "You have the freedom to copy and
+modify this GNU manual.  Buying copies from the FSF supports it in
+developing GNU and promoting software freedom."
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+ -->
+<!-- Created on January 20, 2014 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Configurator - An configuration management utility: 4. Configuration schemas</title>
+
+<meta name="description" content="Configurator - An configuration management utility: 4. Configuration schemas">
+<meta name="keywords" content="Configurator - An configuration management utility: 4. Configuration schemas">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="Configuration-schemas"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="configurator_3.html#Command-line-summary" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator_3.html#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configuration-schemas-1"></a>
+<h1 class="chapter">4. Configuration schemas</h1>
+<a name="index-configuration-schema"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Built_002din-option-types">4.1 Built-in option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       The built-in option types
+</td></tr>
+</table>
+
+<p>Configuration schemas define the structure of a configuration.
+</p>
+<ul>
+<li>
+<em>configuration-schema-name</em> is the name of the configuration-schema and the configuration-schema is globally identified by it. See <em>find-configuration-schema</em>
+
+</li><li>
+<em>parent-configuration-schema</em> is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+
+</li><li>
+<em>configuration-schema-documentation</em> is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
+</li></ul>
+
+<p>That is a typical configuration schema needed to connect to a database.
+</p>
+<p>It has only one section <em>Database</em> where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type <em>String</em>.
+</p>
+<hr size="6">
+<a name="Built_002din-option-types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#String" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Built_002din-option-types-1"></a>
+<h2 class="section">4.1 Built-in option types</h2>
+<a name="index-option-type"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#String">4.1.1 String</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The String option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Number">4.1.2 Number</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Number option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Boolean">4.1.3 Boolean</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        The Boolean option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Email">4.1.4 Email</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          The Email option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Url">4.1.5 Url</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            The URL option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Filename">4.1.6 Filename</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       The Filename option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Choice">4.1.7 Choice</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Choice option type
+</td></tr>
+<tr><td align="left" valign="top"><a href="#List">4.1.8 List</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           The List option type
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="String"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Number" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="String-1"></a>
+<h3 class="subsection">4.1.1 String</h3>
+<a name="index-string"></a>
+
+<p>The String option type ensures that the the option value is of type string.
+</p>
+
+
+<hr size="6">
+<a name="Number"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#String" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Boolean" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Number-1"></a>
+<h3 class="subsection">4.1.2 Number</h3>
+<a name="index-number"></a>
+
+<p>The Number option type ensures that the the option value is of type Number.
+</p>
+
+
+<hr size="6">
+<a name="Boolean"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Number" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Email" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Boolean-1"></a>
+<h3 class="subsection">4.1.3 Boolean</h3>
+<a name="index-boolean"></a>
+
+<p>The boolean option type ensures that the the option value is of type boolean (True or False).
+</p>
+
+
+<hr size="6">
+<a name="Email"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Boolean" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Url" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Email-1"></a>
+<h3 class="subsection">4.1.4 Email</h3>
+<a name="index-email"></a>
+
+<p>The email option type ensures that the the option value is a valid email string.
+</p>
+
+
+<hr size="6">
+<a name="Url"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Email" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Filename" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Url-1"></a>
+<h3 class="subsection">4.1.5 Url</h3>
+<a name="index-url"></a>
+
+<p>The url option ensures that the the option value is a valid url.
+</p>
+
+
+<hr size="6">
+<a name="Filename"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Url" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Choice" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Filename-1"></a>
+<h3 class="subsection">4.1.6 Filename</h3>
+<a name="index-filename"></a>
+
+<p>The pathaname option type ensures that the the option value is a valid pathname and the file or directory exists.
+</p>
+
+
+
+<hr size="6">
+<a name="Choice"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Filename" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#List" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Choice-1"></a>
+<h3 class="subsection">4.1.7 Choice</h3>
+<a name="index-choice"></a>
+
+<p>The Choice option type ensures that the option value is one of the options listed.
+</p>
+
+
+<hr size="6">
+<a name="List"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Choice" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="List-1"></a>
+<h3 class="subsection">4.1.8 List</h3>
+<a name="index-list"></a>
+
+<p>The <em>List</em> option type ensures that the option value is a subset of the options listed. 
+</p>
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_5.html#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_11.html#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>marian</em> on <em>January 20, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>
