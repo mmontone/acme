@@ -10,7 +10,24 @@ The idea is to define configuration schemas and get a proper way of:
 - Being able to define configuration schemas from the GUI, with no need for programming in most cases.
 - Provide configurations documentation and validation.
 - Edit configurations from a GUI.
-- Define your own option configurations types and provide validation for them. 
+- Define your own option configurations types and provide validation for them.
+
+
+##Install##
+
+Download Configurator, or clone the git repository. Then run ``sudo sh ./install.sh``. That installs configurator on ``/usr/local/lib/configurator`` directory, and a ``configurator`` binary on ``/usr/local/bin``. After that, you can run configurator typing ``configurator`` at the shell.
+
+##Quickstart##
+
+There are some example configurations and schemas to see what the application is about.
+
+Run ``configurator``, ``configurator --full``, and ``configurator --setup`` from the ``doc/example`` directory.
+
+##Documentation##
+
+[Manual in HTML format](http://mmontone.github.io/configurator/doc/configurator.html)
+
+[Manual in PDF format](http://mmontone.github.io/configurator/doc/configurator.pdf)
 
 ##Running##
 
