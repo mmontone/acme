@@ -60,6 +60,7 @@ license to the document, as described in section 6 of the license.
 @titlepage
 @title Configurator
 @subtitle A configuration management utility
+@subtitle User manual
 @subtitle Release @value{VERSION}
 @author by Mariano Montone
 
