@@ -45,19 +45,19 @@ Configurator can be run in three different modes fundamentally.
 
     This is an example of Configurator running in normal mode: 
 
-![configs](https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png)
+![configs](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png)
 
 - **Setup mode**: this mode is invoked running configurator with the --setup option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
 
     This is an example of Configurator running in setup mode: 
 
-![schemas](https://raw.github.com/mmontone/configurator/master/doc/images/schemas1.png)
+![schemas](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas1.png)
 
 - **Full mode:** this mode is invoked running configurator with the –full option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
 
    This is an example of Configurator running in full mode: 
 
-![full](https://raw.github.com/mmontone/configurator/master/doc/images/full.png)
+![full](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/full.png)
 
 ###Command line summary:###
 
@@ -86,13 +86,13 @@ Configurator can be run in three different modes fundamentally.
 
 Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
 
-![newschema](https://raw.github.com/mmontone/configurator/master/doc/images/newschema.png)
+![newschema](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/newschema.png)
 
 Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.
 
 Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.
 
-![schemas_navigation](https://raw.github.com/mmontone/configurator/master/doc/images/schemas_navigation.png)
+![schemas_navigation](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas_navigation.png)
 
 ### Sections ###
 
@@ -102,11 +102,11 @@ Each configuration schema section has a name, a documentation, subsections and a
 
 Options in schemas have a name and a type. 
 
-![schema_option](https://raw.github.com/mmontone/configurator/master/doc/images/schema_option.png)
+![schema_option](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schema_option.png)
 
 The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.
 
-![option_editing](https://raw.github.com/mmontone/configurator/master/doc/images/option_editing.png)
+![option_editing](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/option_editing.png)
 
 Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. 
 
@@ -122,7 +122,7 @@ Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option 
 
 Dependency expressions can be added in the schema option editing screen:
 
-![dependencies](https://raw.github.com/mmontone/configurator/master/doc/images/dependencies.png)
+![dependencies](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/dependencies.png)
 
 ## Configurations ##
 
@@ -132,7 +132,7 @@ Configurations belong to one and only one configuration schema, and that's compu
 
 Configurations can be added and removed from the list appering on the left of the configurations navigator.
 
-![configs](https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png)
+![configs](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png)
 
 Configurations can be loaded and saved. They are serialized in XML format. The default filename is ``configurator.config``, but it can be changed if desired.
 
