@@ -25,9 +25,9 @@ Run ``configurator``, ``configurator --full``, and ``configurator --setup`` from
 
 ##Documentation##
 
-[Manual in HTML format](http://mmontone.github.io/configurator/doc/configurator.html)
+User manual: [HTML](http://mmontone.github.io/configurator/doc/user-manual/configurator.html) [PDF](http://mmontone.github.io/configurator/doc/user-manual/configurator.pdf)
 
-[Manual in PDF format](http://mmontone.github.io/configurator/doc/configurator.pdf)
+Developer manual: [HTML](http://mmontone.github.io/configurator/doc/developer-manual/html/index.html) [PDF](http://mmontone.github.io/configurator/doc/developer-manual/configurator.pdf)
 
 ##Running##
 
