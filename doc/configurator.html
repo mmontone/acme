@@ -22,7 +22,7 @@ separately from the collection, you can do so by adding a copy of the
 license to the document, as described in section 6 of the license.
 
  -->
-<!-- Created on January 20, 2014 by texi2html 1.82
+<!-- Created on January 21, 2014 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -124,10 +124,6 @@ Configuration schemas
 
 Configurations
 
-</pre></th></tr><tr><td align="left" valign="top"><a href="#Working-with-configurations">5.1 Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
-</td></tr>
-<tr><td align="left" valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 Examples
 
 </pre></th></tr><tr><td align="left" valign="top"><a href="#Use-cases">6.1 Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
@@ -230,6 +226,8 @@ Index
 <h2 class="section">1.2 Installation</h2>
 <a name="index-installation"></a>
 
+<p>Download Configurator, or clone the git repository from <a href="https://github.com/mmontone/configurator">https://github.com/mmontone/configurator</a>. Then run sudo <tt>sh ./install.sh</tt>. That installs configurator on <tt>/usr/local/lib/configurator</tt> directory, and the configurator binary on <tt>/usr/local/bin</tt>. After that, you can run configurator typing <tt>configurator</tt> at the shell.
+</p>
 <hr size="6">
 <a name="Feedback"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -276,11 +274,11 @@ Index
 <h2 class="section">1.4 Conventions</h2>
 <a name="index-conventions"></a>
 
-<p>Hear are some coding conventions we&rsquo;d like to follow:
+<p>Hear are some coding conventions we&rsquo;d like to follow
 </p>
 <ul>
 <li>
-We <em>do</em> believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
+We <em>do</em> believe in documentation. Document your variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
 
 </li><li>
 We don&rsquo;t want functions to be shorter than the should nor longer than they should. There is no &quot;every function should have at most ten lines of code&quot; rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. 
@@ -460,7 +458,10 @@ Define your own option configurations types and provide validation for them.
 <pre class="verbatim">
 $&gt; configurator -h
 
-usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+usage: configurator [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [-l]
+                    [-i INSPECT_CONFIG] [-g GET] [--set SET] [--config CONFIG]
+                    [--validation VALIDATION] [--validate VALIDATE]
+                    [--validate-all] [--json] [--setup] [--debug DEBUG]
 
 Configurator. Configuration management utility.
 
@@ -474,15 +475,28 @@ optional arguments:
   -c CONFIGS, --configs CONFIGS
                         The configurations file. Default is
                         configurator.config
+  -l, --list-configs    List configurations
+  -i INSPECT_CONFIG, --inspect-config INSPECT_CONFIG
+                        Inspect a configuration. A CSV(Comma separated values)
+                        list with &lt;option path&gt;, &lt;value&gt;, &lt;option type&gt;,
+                        &lt;origin&gt;
+  -g GET, --get GET     Get an option value
+  --set SET             Set an option value
+  --config CONFIG       Edit a specific configuration
+  --validation VALIDATION
+                        Enable or disable configurations validation
+  --validate VALIDATE   Validate a configuration. Pass the configuration name
+  --validate-all        Validate all configurations
+  --json                Use JSON for communication
   --setup               Edit configuration schemas
-  --debug               Run in debug mode
-
+  --debug DEBUG         Run in debug mode. Provide the debugging level, one of
+                        DEBUG or INFO
 </pre>
 <hr size="6">
 <a name="Configuration-schemas"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Command-line-summary" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Schema-sections" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Running" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
@@ -501,31 +515,123 @@ optional arguments:
 <a name="index-configuration-schema"></a>
 
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Built_002din-option-types">4.1 Built-in option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       The built-in option types
+<tr><td align="left" valign="top"><a href="#Schema-sections">4.1 Schema sections</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             Configuration schema sections
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Schema-options">4.2 Schema options</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              Configuration schema options
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Built_002din-option-types">4.3 Built-in option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       The built-in option types
 </td></tr>
 </table>
 
-<p>Configuration schemas define the structure of a configuration.
-</p>
-<ul>
-<li>
-<em>configuration-schema-name</em> is the name of the configuration-schema and the configuration-schema is globally identified by it. See <em>find-configuration-schema</em>
 
-</li><li>
-<em>parent-configuration-schema</em> is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
-
-</li><li>
-<em>configuration-schema-documentation</em> is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
-</li></ul>
-
-<p>That is a typical configuration schema needed to connect to a database.
+<p>Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
 </p>
-<p>It has only one section <em>Database</em> where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type <em>String</em>.
+<img src="images/newschema.png" alt="images/newschema">
+
+<p>Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.
 </p>
+<p>Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.
+</p>
+<img src="images/schemas_navigation.png" alt="images/schemas_navigation">
+
+<hr size="6">
+<a name="Schema-sections"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Schema-options" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Schema-sections-1"></a>
+<h2 class="section">4.1 Schema sections</h2>
+<a name="index-section"></a>
+
+<p>Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections&rsquo; options can all be added and removed from the tree widget on the left of the schemas navigator.
+</p>
+<hr size="6">
+<a name="Schema-options"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Schema-sections" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Options-dependencies" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Schema-options-1"></a>
+<h2 class="section">4.2 Schema options</h2>
+<a name="index-option"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Options-dependencies">4.2.1 Options dependencies</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+</table>
+
+<p>Options in schemas have a name and a type. 
+</p>
+<img src="images/schema_option.png" alt="images/schema_option">
+
+<p>The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.
+</p>
+<img src="images/option_editing.png" alt="images/option_editing">
+
+<p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn&rsquo;t assign one in the configuration. 
+</p>
+<p>They also have a documentation string. This is very important for the end user to know the option meaning.
+</p>
+<hr size="6">
+<a name="Options-dependencies"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Schema-options" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Schema-options" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Options-dependencies-1"></a>
+<h3 class="subsection">4.2.1 Options dependencies</h3>
+<a name="index-dependency"></a>
+
+<p>It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.
+</p>
+<p>Configurator has support for that by attaching a dependencies expression to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
+</p>
+<p>Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: <tt>Database.Engine = 'MySQL'</tt>. This way the <tt>Storage engine</tt> option will only be editable when the Database.Engine is set to &rsquo;MySQL&rsquo;.
+</p>
+<p>Dependency expressions can be added in the schema option editing screen:
+</p>
+<img src="images/dependencies.png" alt="images/dependencies">
+
 <hr size="6">
 <a name="Built_002din-option-types"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#Options-dependencies" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#String" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -541,25 +647,25 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Built_002din-option-types-1"></a>
-<h2 class="section">4.1 Built-in option types</h2>
+<h2 class="section">4.3 Built-in option types</h2>
 <a name="index-option-type"></a>
 
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#String">4.1.1 String</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The String option type
+<tr><td align="left" valign="top"><a href="#String">4.3.1 String</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The String option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Number">4.1.2 Number</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Number option type
+<tr><td align="left" valign="top"><a href="#Number">4.3.2 Number</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Number option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Boolean">4.1.3 Boolean</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        The Boolean option type
+<tr><td align="left" valign="top"><a href="#Boolean">4.3.3 Boolean</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        The Boolean option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Email">4.1.4 Email</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          The Email option type
+<tr><td align="left" valign="top"><a href="#Email">4.3.4 Email</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          The Email option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Url">4.1.5 Url</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            The URL option type
+<tr><td align="left" valign="top"><a href="#Url">4.3.5 Url</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            The URL option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Filename">4.1.6 Filename</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       The Filename option type
+<tr><td align="left" valign="top"><a href="#Filename">4.3.6 Filename</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       The Filename option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Choice">4.1.7 Choice</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Choice option type
+<tr><td align="left" valign="top"><a href="#Choice">4.3.7 Choice</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         The Choice option type
 </td></tr>
-<tr><td align="left" valign="top"><a href="#List">4.1.8 List</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           The List option type
+<tr><td align="left" valign="top"><a href="#List">4.3.8 List</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           The List option type
 </td></tr>
 </table>
 
@@ -582,7 +688,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="String-1"></a>
-<h3 class="subsection">4.1.1 String</h3>
+<h3 class="subsection">4.3.1 String</h3>
 <a name="index-string"></a>
 
 <p>The String option type ensures that the the option value is of type string.
@@ -608,7 +714,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Number-1"></a>
-<h3 class="subsection">4.1.2 Number</h3>
+<h3 class="subsection">4.3.2 Number</h3>
 <a name="index-number"></a>
 
 <p>The Number option type ensures that the the option value is of type Number.
@@ -634,7 +740,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Boolean-1"></a>
-<h3 class="subsection">4.1.3 Boolean</h3>
+<h3 class="subsection">4.3.3 Boolean</h3>
 <a name="index-boolean"></a>
 
 <p>The boolean option type ensures that the the option value is of type boolean (True or False).
@@ -660,7 +766,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Email-1"></a>
-<h3 class="subsection">4.1.4 Email</h3>
+<h3 class="subsection">4.3.4 Email</h3>
 <a name="index-email"></a>
 
 <p>The email option type ensures that the the option value is a valid email string.
@@ -686,7 +792,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Url-1"></a>
-<h3 class="subsection">4.1.5 Url</h3>
+<h3 class="subsection">4.3.5 Url</h3>
 <a name="index-url"></a>
 
 <p>The url option ensures that the the option value is a valid url.
@@ -712,7 +818,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Filename-1"></a>
-<h3 class="subsection">4.1.6 Filename</h3>
+<h3 class="subsection">4.3.6 Filename</h3>
 <a name="index-filename"></a>
 
 <p>The pathaname option type ensures that the the option value is a valid pathname and the file or directory exists.
@@ -739,7 +845,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Choice-1"></a>
-<h3 class="subsection">4.1.7 Choice</h3>
+<h3 class="subsection">4.3.7 Choice</h3>
 <a name="index-choice"></a>
 
 <p>The Choice option type ensures that the option value is one of the options listed.
@@ -765,7 +871,7 @@ optional arguments:
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="List-1"></a>
-<h3 class="subsection">4.1.8 List</h3>
+<h3 class="subsection">4.3.8 List</h3>
 <a name="index-list"></a>
 
 <p>The <em>List</em> option type ensures that the option value is a subset of the options listed. 
@@ -776,7 +882,7 @@ optional arguments:
 <a name="Configurations"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#List" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
@@ -793,65 +899,22 @@ optional arguments:
 <a name="Configurations-1"></a>
 <h1 class="chapter">5. Configurations</h1>
 
-<p>How to define configurations
+<p>Configurations are instances of Configuration schemas, much like objects are instances of classes in object oriented programming languages. That is, configurations structure is determined by the configuration schema they belong to. In particular, their sections are that of their configuration schemas; and their options values depend on the option schemas defined in the configruration schemas.
 </p>
-<table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Working-with-configurations">5.1 Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
-</td></tr>
-<tr><td align="left" valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-</table>
-
-<hr size="6">
-<a name="Working-with-configurations"></a>
-<table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configurations" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Next section in reading order"> &gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
-<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
-<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
-<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
-</tr></table>
-<a name="Working-with-configurations-1"></a>
-<h2 class="section">5.1 Working with configurations</h2>
-
-<p>The API for working with configurations
+<p>Configurations belong to one and only one configuration schema, and that&rsquo;s compulsory, as it can be expected. Besides, configurations can inherit from each other: a configuration can inherit from another configuration and overwrite its parent options values. A configuration can have one and only one parent, o no parent; this is different from configuration schemas, that can have several parents. An understandable restriction is that the configuration parent schema has to be the same that the configuration schema.
 </p>
-<hr size="6">
-<a name="Configurations-serialization"></a>
-<table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Working-with-configurations" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
-<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
-<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
-<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
-</tr></table>
-<a name="Configurations-serialization-1"></a>
-<h2 class="section">5.2 Configurations serialization</h2>
-<a name="index-serialization"></a>
+<p>Configurations can be added and removed from the list appering on the left of the configurations navigator.
+</p>
+<img src="images/configurator1.png" alt="images/configurator1">
 
-<p>There are two output backends: an sexp-backend and a xml-backend
+<p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <tt>configurator.config</tt>, but it can be changed if desired.
+</p>
+<p>Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with <tt>required</tt> enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be <tt>set</tt> and <tt>unset</tt>. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
 </p>
 <hr size="6">
 <a name="Examples"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configurations-serialization" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#Configurations" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -1299,38 +1362,40 @@ optional arguments:
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-B">B</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-boolean">boolean</a></td><td valign="top"><a href="#Boolean">4.1.3 Boolean</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-boolean">boolean</a></td><td valign="top"><a href="#Boolean">4.3.3 Boolean</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-C">C</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-choice">choice</a></td><td valign="top"><a href="#Choice">4.1.7 Choice</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-choice">choice</a></td><td valign="top"><a href="#Choice">4.3.7 Choice</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-configuration-schema">configuration schema</a></td><td valign="top"><a href="#Configuration-schemas">4. Configuration schemas</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-conventions">conventions</a></td><td valign="top"><a href="#Conventions">1.4 Conventions</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-D">D</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-debugging">debugging</a></td><td valign="top"><a href="#Debugging">6.1.1 Debugging</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-dependency">dependency</a></td><td valign="top"><a href="#Options-dependencies">4.2.1 Options dependencies</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-deployment">deployment</a></td><td valign="top"><a href="#Deployment">6.1.4 Deployment</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-E">E</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-email">email</a></td><td valign="top"><a href="#Email">4.1.4 Email</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-email">email</a></td><td valign="top"><a href="#Email">4.3.4 Email</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">6. Examples</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-F">F</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-feedback">feedback</a></td><td valign="top"><a href="#Feedback">1.3 Feedback</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-filename">filename</a></td><td valign="top"><a href="#Filename">4.1.6 Filename</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-filename">filename</a></td><td valign="top"><a href="#Filename">4.3.6 Filename</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-I">I</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-installation">installation</a></td><td valign="top"><a href="#Installation">1.2 Installation</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-introduction">introduction</a></td><td valign="top"><a href="#Introduction">1. Introduction</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-L">L</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-list">list</a></td><td valign="top"><a href="#List">4.1.8 List</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-list">list</a></td><td valign="top"><a href="#List">4.3.8 List</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-logging">logging</a></td><td valign="top"><a href="#Logging">6.1.2 Logging</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-N">N</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-number">number</a></td><td valign="top"><a href="#Number">4.1.2 Number</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-number">number</a></td><td valign="top"><a href="#Number">4.3.2 Number</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-O">O</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-option-type">option type</a></td><td valign="top"><a href="#Built_002din-option-types">4.1 Built-in option types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-option">option</a></td><td valign="top"><a href="#Schema-options">4.2 Schema options</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-option-type">option type</a></td><td valign="top"><a href="#Built_002din-option-types">4.3 Built-in option types</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-overview">overview</a></td><td valign="top"><a href="#Overview">2. Overview</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-R">R</a></th><td></td><td></td></tr>
@@ -1339,15 +1404,15 @@ optional arguments:
 <tr><td></td><td valign="top"><a href="#index-running-1">running</a></td><td valign="top"><a href="#Running-overview">3.1 Running overview</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-S">S</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-serialization">serialization</a></td><td valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-string">string</a></td><td valign="top"><a href="#String">4.1.1 String</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-section">section</a></td><td valign="top"><a href="#Schema-sections">4.1 Schema sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-string">string</a></td><td valign="top"><a href="#String">4.3.1 String</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-summary">summary</a></td><td valign="top"><a href="#Summary">1.1 Summary</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-T">T</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-testing">testing</a></td><td valign="top"><a href="#Testing">6.1.3 Testing</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-U">U</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-url">url</a></td><td valign="top"><a href="#Url">4.1.5 Url</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-url">url</a></td><td valign="top"><a href="#Url">4.3.5 Url</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-B" class="summary-letter"><b>B</b></a>
@@ -1472,24 +1537,25 @@ optional arguments:
   </ul></li>
   <li><a name="toc-Configuration-schemas-1" href="#Configuration-schemas">4. Configuration schemas</a>
   <ul class="toc">
-    <li><a name="toc-Built_002din-option-types-1" href="#Built_002din-option-types">4.1 Built-in option types</a>
+    <li><a name="toc-Schema-sections-1" href="#Schema-sections">4.1 Schema sections</a></li>
+    <li><a name="toc-Schema-options-1" href="#Schema-options">4.2 Schema options</a>
     <ul class="toc">
-      <li><a name="toc-String-1" href="#String">4.1.1 String</a></li>
-      <li><a name="toc-Number-1" href="#Number">4.1.2 Number</a></li>
-      <li><a name="toc-Boolean-1" href="#Boolean">4.1.3 Boolean</a></li>
-      <li><a name="toc-Email-1" href="#Email">4.1.4 Email</a></li>
-      <li><a name="toc-Url-1" href="#Url">4.1.5 Url</a></li>
-      <li><a name="toc-Filename-1" href="#Filename">4.1.6 Filename</a></li>
-      <li><a name="toc-Choice-1" href="#Choice">4.1.7 Choice</a></li>
-      <li><a name="toc-List-1" href="#List">4.1.8 List</a></li>
+      <li><a name="toc-Options-dependencies-1" href="#Options-dependencies">4.2.1 Options dependencies</a></li>
+    </ul></li>
+    <li><a name="toc-Built_002din-option-types-1" href="#Built_002din-option-types">4.3 Built-in option types</a>
+    <ul class="toc">
+      <li><a name="toc-String-1" href="#String">4.3.1 String</a></li>
+      <li><a name="toc-Number-1" href="#Number">4.3.2 Number</a></li>
+      <li><a name="toc-Boolean-1" href="#Boolean">4.3.3 Boolean</a></li>
+      <li><a name="toc-Email-1" href="#Email">4.3.4 Email</a></li>
+      <li><a name="toc-Url-1" href="#Url">4.3.5 Url</a></li>
+      <li><a name="toc-Filename-1" href="#Filename">4.3.6 Filename</a></li>
+      <li><a name="toc-Choice-1" href="#Choice">4.3.7 Choice</a></li>
+      <li><a name="toc-List-1" href="#List">4.3.8 List</a></li>
     </ul>
 </li>
   </ul></li>
-  <li><a name="toc-Configurations-1" href="#Configurations">5. Configurations</a>
-  <ul class="toc">
-    <li><a name="toc-Working-with-configurations-1" href="#Working-with-configurations">5.1 Working with configurations</a></li>
-    <li><a name="toc-Configurations-serialization-1" href="#Configurations-serialization">5.2 Configurations serialization</a></li>
-  </ul></li>
+  <li><a name="toc-Configurations-1" href="#Configurations">5. Configurations</a></li>
   <li><a name="toc-Examples-1" href="#Examples">6. Examples</a>
   <ul class="toc">
     <li><a name="toc-Use-cases-1" href="#Use-cases">6.1 Use cases</a>
@@ -1526,7 +1592,7 @@ optional arguments:
 </tr></table>
 <h1>About This Document</h1>
 <p>
-  This document was generated by <em>marian</em> on <em>January 20, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>marian</em> on <em>January 21, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
 </p>
 <p>
   The buttons in the navigation panels have the following meaning:
@@ -1628,7 +1694,7 @@ optional arguments:
 <hr size="1">
 <p>
  <font size="-1">
-  This document was generated by <em>marian</em> on <em>January 20, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>marian</em> on <em>January 21, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 

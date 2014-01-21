@@ -22,7 +22,7 @@ separately from the collection, you can do so by adding a copy of the
 license to the document, as described in section 6 of the license.
 
  -->
-<!-- Created on January 20, 2014 by texi2html 1.82
+<!-- Created on January 21, 2014 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -66,7 +66,7 @@ ul.toc {list-style: none}
 <a name="Configurations"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="configurator_4.html#List" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="configurator_6.html#Examples" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="configurator.html#Top" title="Up section"> Up </a>]</td>
@@ -83,64 +83,21 @@ ul.toc {list-style: none}
 <a name="Configurations-1"></a>
 <h1 class="chapter">5. Configurations</h1>
 
-<p>How to define configurations
+<p>Configurations are instances of Configuration schemas, much like objects are instances of classes in object oriented programming languages. That is, configurations structure is determined by the configuration schema they belong to. In particular, their sections are that of their configuration schemas; and their options values depend on the option schemas defined in the configruration schemas.
 </p>
-<table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Working-with-configurations">5.1 Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
-</td></tr>
-<tr><td align="left" valign="top"><a href="#Configurations-serialization">5.2 Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-</table>
-
-<hr size="6">
-<a name="Working-with-configurations"></a>
-<table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configurations" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Next section in reading order"> &gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="configurator_6.html#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_12.html#Index" title="Index">Index</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
-</tr></table>
-<a name="Working-with-configurations-1"></a>
-<h2 class="section">5.1 Working with configurations</h2>
-
-<p>The API for working with configurations
+<p>Configurations belong to one and only one configuration schema, and that&rsquo;s compulsory, as it can be expected. Besides, configurations can inherit from each other: a configuration can inherit from another configuration and overwrite its parent options values. A configuration can have one and only one parent, o no parent; this is different from configuration schemas, that can have several parents. An understandable restriction is that the configuration parent schema has to be the same that the configuration schema.
 </p>
-<hr size="6">
-<a name="Configurations-serialization"></a>
-<table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Working-with-configurations" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="configurator_6.html#Examples" title="Next section in reading order"> &gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configurations" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="configurator_6.html#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="configurator.html#Top" title="Cover (top) of document">Top</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_12.html#Index" title="Index">Index</a>]</td>
-<td valign="middle" align="left">[<a href="configurator_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
-</tr></table>
-<a name="Configurations-serialization-1"></a>
-<h2 class="section">5.2 Configurations serialization</h2>
-<a name="index-serialization"></a>
+<p>Configurations can be added and removed from the list appering on the left of the configurations navigator.
+</p>
+<img src="images/configurator1.png" alt="images/configurator1">
 
-<p>There are two output backends: an sexp-backend and a xml-backend
+<p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <tt>configurator.config</tt>, but it can be changed if desired.
+</p>
+<p>Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with <tt>required</tt> enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be <tt>set</tt> and <tt>unset</tt>. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
 </p>
 <hr size="6">
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="configurator_4.html#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="configurator_6.html#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -154,7 +111,7 @@ ul.toc {list-style: none}
 </tr></table>
 <p>
  <font size="-1">
-  This document was generated by <em>marian</em> on <em>January 20, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>marian</em> on <em>January 21, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 
