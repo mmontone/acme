@@ -163,6 +163,8 @@ Configurator is a configuration management utility
 @section Installation
 @cindex installation
 
+Download Configurator, or clone the git repository from @url{https://github.com/mmontone/configurator}. Then run sudo @verb{|sh ./install.sh|}. That installs configurator on @verb{|/usr/local/lib/configurator|} directory, and the configurator binary on @verb{|/usr/local/bin|}. After that, you can run configurator typing @verb{|configurator|} at the shell.
+
 @node Feedback
 @section Feedback
 @cindex feedback
@@ -173,12 +175,12 @@ Mail marianomontone at gmail dot com with feedback
 @section Conventions
 @cindex conventions
 
-Hear are some coding conventions we'd like to follow:
+Hear are some coding conventions we'd like to follow
 
 @itemize @bullet
 
 @item
-We @emph{do} believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
+We @emph{do} believe in documentation. Document your variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
 
 @item
 We don't want functions to be shorter than the should nor longer than they should. There is no "every function should have at most ten lines of code" rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. 
@@ -269,7 +271,10 @@ This is an example of Configurator running in full mode:
 
 $> configurator -h
 
-usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+usage: configurator [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [-l]
+                    [-i INSPECT_CONFIG] [-g GET] [--set SET] [--config CONFIG]
+                    [--validation VALIDATION] [--validate VALIDATE]
+                    [--validate-all] [--json] [--setup] [--debug DEBUG]
 
 Configurator. Configuration management utility.
 
@@ -283,9 +288,22 @@ optional arguments:
   -c CONFIGS, --configs CONFIGS
                         The configurations file. Default is
                         configurator.config
+  -l, --list-configs    List configurations
+  -i INSPECT_CONFIG, --inspect-config INSPECT_CONFIG
+                        Inspect a configuration. A CSV(Comma separated values)
+                        list with <option path>, <value>, <option type>,
+                        <origin>
+  -g GET, --get GET     Get an option value
+  --set SET             Set an option value
+  --config CONFIG       Edit a specific configuration
+  --validation VALIDATION
+                        Enable or disable configurations validation
+  --validate VALIDATE   Validate a configuration. Pass the configuration name
+  --validate-all        Validate all configurations
+  --json                Use JSON for communication
   --setup               Edit configuration schemas
-  --debug               Run in debug mode
-
+  --debug DEBUG         Run in debug mode. Provide the debugging level, one of
+                        DEBUG or INFO
 @end verbatim
 
 @node Configuration schemas
@@ -293,25 +311,61 @@ optional arguments:
 @cindex configuration schema
 
 @menu
+* Schema sections::             Configuration schema sections
+* Schema options::              Configuration schema options
 * Built-in option types::       The built-in option types
 @end menu
 
-Configuration schemas define the structure of a configuration.
 
-@itemize @bullet
-@item
-@emph{configuration-schema-name} is the name of the configuration-schema and the configuration-schema is globally identified by it. See @emph{find-configuration-schema}
+Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
 
-@item
-@emph{parent-configuration-schema} is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+@image{images/newschema, 6in}
 
-@item
-@emph{configuration-schema-documentation} is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
-@end itemize
+Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.
 
-That is a typical configuration schema needed to connect to a database.
+Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.
 
-It has only one section @emph{Database} where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type @emph{String}.
+@image{images/schemas_navigation, 6in}
+
+@node Schema sections
+@section Schema sections
+@cindex section
+
+Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections' options can all be added and removed from the tree widget on the left of the schemas navigator.
+
+@node Schema options
+@section Schema options
+@cindex option
+
+@menu
+* Options dependencies::                Options dependencies
+@end menu
+
+Options in schemas have a name and a type. 
+
+@image{images/schema_option, 6in}
+
+The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.
+
+@image{images/option_editing, 6in}
+
+Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. 
+
+They also have a documentation string. This is very important for the end user to know the option meaning.
+
+@node Options dependencies
+@subsection Options dependencies
+@cindex dependency
+
+It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.
+
+Configurator has support for that by attaching a dependencies expression to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
+
+Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: @verb{|Database.Engine = 'MySQL'|}. This way the @verb{|Storage engine|} option will only be editable when the Database.Engine is set to 'MySQL'.
+
+Dependency expressions can be added in the schema option editing screen:
+
+@image{images/dependencies, 6in}
 
 @node Built-in option types
 @section Built-in option types
