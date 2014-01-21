@@ -17,19 +17,15 @@ The idea is to define configuration schemas and get a proper way of:
 
 Download Configurator, or clone the git repository. Then run ``sudo sh ./install.sh``. That installs configurator on ``/usr/local/lib/configurator`` directory, and a ``configurator`` binary on ``/usr/local/bin``. After that, you can run configurator typing ``configurator`` at the shell.
 
-##Quickstart##
-
-There are some example configurations and schemas to see what the application is about.
-
-Run ``configurator``, ``configurator --full``, and ``configurator --setup`` from the ``doc/example`` directory.
-
 ##Documentation##
 
 User manual: [HTML](http://mmontone.github.io/configurator/doc/user-manual/configurator.html) [PDF](http://mmontone.github.io/configurator/doc/user-manual/configurator.pdf)
 
 Developer manual: [HTML](http://mmontone.github.io/configurator/doc/developer-manual/html/index.html) [PDF](http://mmontone.github.io/configurator/doc/developer-manual/configurator.pdf)
 
-##Running##
+##Quick introduction##
+
+###Running###
 
 Configurator is run invoking configurator command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
 
@@ -59,30 +55,7 @@ Configurator can be run in three different modes fundamentally.
 
 ![full](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/full.png)
 
-###Command line summary:###
-
-    $> configurator -h
-
-    usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
-
-    Configurator. Configuration management utility.
-
-    optional arguments:
-       -h, --help            show this help message and exit
-       -f, --full            Run the full configurator (both configurations and
-                             schemas navigation)
-       -s SCHEMAS, --schemas SCHEMAS
-                             The configuration schemas files. Default is
-                             configurator.schema
-       -c CONFIGS, --configs CONFIGS
-                             The configurations file. Default is
-                             configurator.config
-       --setup               Edit configuration schemas
-       --debug               Run in debug mode
-
-## Configuration schemas ##
-
-### Schemas ###
+### Configuration schemas ###
 
 Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
 
@@ -94,11 +67,7 @@ Configuration schemas have sections, each containing other sections and schema o
 
 ![schemas_navigation](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas_navigation.png)
 
-### Sections ###
-
 Each configuration schema section has a name, a documentation, subsections and a list of option schemas. Sections, subsections, and sections' options can all be added and removed from the tree widget on the left of the schemas navigator.
-
-### Options ###
 
 Options in schemas have a name and a type. 
 
@@ -112,19 +81,7 @@ Apart from name and type, schema options specify if it required for the option t
 
 They also have a documentation string. This is very important for the end user to know the option meaning.
 
-#### Options dependencies ####
-
-It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.
-
-Configurator has support for that by attaching a ``dependencies expression`` to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
-
-Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: ``Database.Engine = 'MySQL'``. This way the ``Storage engine`` option will only be editable when the Database.Engine is set to 'MySQL'.
-
-Dependency expressions can be added in the schema option editing screen:
-
-![dependencies](https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/dependencies.png)
-
-## Configurations ##
+### Configurations ###
 
 Configurations are instances of Configuration schemas, much like objects are instances of classes in object oriented programming languages. That is, configurations structure is determined by the configuration schema they belong to. In particular, their sections are that of their configuration schemas; and their options values depend on the option schemas defined in the configruration schemas.
 
@@ -137,3 +94,9 @@ Configurations can be added and removed from the list appering on the left of th
 Configurations can be loaded and saved. They are serialized in XML format. The default filename is ``configurator.config``, but it can be changed if desired.
 
 Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with ``required`` enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be ``set`` and ``unset``. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
+
+###Examples###
+
+There are some example configurations and schemas to see what the application is about.
+
+Run ``configurator``, ``configurator --full``, and ``configurator --setup`` from the ``doc/example`` directory.
