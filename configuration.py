@@ -1,3 +1,7 @@
+"""
+The configuration module
+"""
+
 #import xml.etree.ElementTree as et
 from util import *
 from lxml import etree as et
@@ -8,6 +12,13 @@ import email.utils
 import urlparse
 
 class ConfigurationSchema():
+    """Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
+
+Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.
+
+Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.
+    """
+
     _configuration_schemas = {}
     
     @classmethod
@@ -20,15 +31,18 @@ class ConfigurationSchema():
     
     @classmethod
     def register_schema(cls, schema):
+        """Register a schema, globally. This is called automatically when a configuration schema is created."""
         logging.info("Registering schema " + schema.name)
         cls._configuration_schemas[schema.name] = schema
         
     @classmethod
     def unregister_schema(cls, schema):
+        """Unregister a schema, globally."""
         del cls._configuration_schemas[schema.name]
         
     @classmethod
     def configuration_schemas(cls):
+        """Return the list of globally registered configuration schemas"""
         return cls._configuration_schemas.values()        
     
     def __init__(self, name='', **args):
@@ -39,14 +53,17 @@ class ConfigurationSchema():
         ConfigurationSchema.register_schema(self)
                 
     def section(self, section):
+        """Add section to schema"""
         self._direct_sections.append(section)
         section.parent = self
         return self
     
     def direct_sections(self):
+        """Return schema's direct sections (without looking at schema's parents sections)"""
         return self._direct_sections
     
     def sections(self):
+        """Return schema's sections recursively considering its parents"""
         sections = []
         sections.extend(self.direct_sections())
         
@@ -55,6 +72,7 @@ class ConfigurationSchema():
         return sections
     
     def move_section_backwards(self, section):
+        """Move a section backwards. For moving sections from UI"""
         index = self._direct_sections.index(section)
         
         if index > 0:
