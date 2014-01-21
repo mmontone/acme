@@ -73,7 +73,7 @@
 
 <p>This is an example of Configurator running in normal mode: </p>
 </li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png" alt="configs"></p>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png" alt="configs"></p>
 
 <ul>
 <li>
@@ -81,7 +81,7 @@
 
 <p>This is an example of Configurator running in setup mode: </p>
 </li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schemas1.png" alt="schemas"></p>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas1.png" alt="schemas"></p>
 
 <ul>
 <li>
@@ -89,7 +89,7 @@
 
 <p>This is an example of Configurator running in full mode: </p>
 </li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/full.png" alt="full"></p>
+</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/full.png" alt="full"></p>
 
 <h3>
 <a name="command-line-summary" class="anchor" href="#command-line-summary"><span class="octicon octicon-link"></span></a>Command line summary:</h3>
@@ -128,13 +128,13 @@ optional arguments:
 
 <p>Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/newschema.png" alt="newschema"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/newschema.png" alt="newschema"></p>
 
 <p>Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.</p>
 
 <p>Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schemas_navigation.png" alt="schemas_navigation"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas_navigation.png" alt="schemas_navigation"></p>
 
 <h3>
 <a name="sections" class="anchor" href="#sections"><span class="octicon octicon-link"></span></a>Sections</h3>
@@ -146,11 +146,11 @@ optional arguments:
 
 <p>Options in schemas have a name and a type. </p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/schema_option.png" alt="schema_option"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schema_option.png" alt="schema_option"></p>
 
 <p>The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/option_editing.png" alt="option_editing"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/option_editing.png" alt="option_editing"></p>
 
 <p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. </p>
 
@@ -167,7 +167,7 @@ optional arguments:
 
 <p>Dependency expressions can be added in the schema option editing screen:</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/dependencies.png" alt="dependencies"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/dependencies.png" alt="dependencies"></p>
 
 <h2>
 <a name="configurations" class="anchor" href="#configurations"><span class="octicon octicon-link"></span></a>Configurations</h2>
@@ -178,7 +178,7 @@ optional arguments:
 
 <p>Configurations can be added and removed from the list appering on the left of the configurations navigator.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/images/configurator1.png" alt="configs"></p>
+<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png" alt="configs"></p>
 
 <p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <code>configurator.config</code>, but it can be changed if desired.</p>
 
