@@ -1,5 +1,10 @@
 """
-The configuration module
+
+.. module:: configuration
+     :synopsis: Implements the configurations model.
+
+.. moduleauthor:: Mariano Montone <marianomontone@gmail.com>
+
 """
 
 #import xml.etree.ElementTree as et
@@ -23,6 +28,7 @@ Configuration schemas have sections, each containing other sections and schema o
     
     @classmethod
     def get_named(cls, name):
+        """Get the configuration schema registered with name *name*"""
         schema = cls._configuration_schemas.get(name)
         if schema is None:
             raise Exception(name + ' schema not found')
@@ -53,7 +59,7 @@ Configuration schemas have sections, each containing other sections and schema o
         ConfigurationSchema.register_schema(self)
                 
     def section(self, section):
-        """Add section to schema"""
+        """Add section *section* to schema"""
         self._direct_sections.append(section)
         section.parent = self
         return self
@@ -72,7 +78,7 @@ Configuration schemas have sections, each containing other sections and schema o
         return sections
     
     def move_section_backwards(self, section):
-        """Move a section backwards. For moving sections from UI"""
+        """Move *section* backwards. For moving sections from UI"""
         index = self._direct_sections.index(section)
         
         if index > 0:
@@ -81,6 +87,7 @@ Configuration schemas have sections, each containing other sections and schema o
             self._direct_sections[index] = prev_section 
             
     def move_section_forward(self, section):
+        """Move *section* forward (reorder). For moving sections from UI"""
         index = self._direct_sections.index(section)
         
         if index < len(self._direct_sections) - 1:
@@ -89,21 +96,26 @@ Configuration schemas have sections, each containing other sections and schema o
             self._direct_sections[index] = next_section 
     
     def get_section(self, name):
+        """Get section with name"""
         return next((s for s in self._direct_sections if s.name == name), None)
         
     def remove_section(self, section):
+        """Remove *section* from the schema"""
         self._direct_sections.remove(section)
             
     def parents(self):
+        """Returns the schema's parents list"""
         return map(lambda name: ConfigurationSchema.get_named(name), self._parents)
     
     def set_parents(self, parents):
+        """Sets the schema's parents to *parents* list"""
         self._parents = []
         for parent in parents:
             self.add_parent(parent)
         return self
     
     def add_parent(self, parent):
+        """Adds *parent* to the list of schema's parents"""
         if isinstance(parent, str):
             self._parents.append(parent)
         else:
@@ -111,6 +123,7 @@ Configuration schemas have sections, each containing other sections and schema o
         
     @property
     def name(self):
+        """The schema's name"""
         return self._name
     
     @name.setter
@@ -120,6 +133,7 @@ Configuration schemas have sections, each containing other sections and schema o
     
     @property
     def documentation(self):
+        """The schema's documentation"""
         return self._documentation
     
     @documentation.setter
@@ -143,6 +157,8 @@ Configuration schemas have sections, each containing other sections and schema o
         return section.option_in_path(path[1:])
         
 class ConfigurationSchemaSection:
+    """Configuration schema section"""
+    
     def __init__(self, name='', **args):
         self._name = name
         self._subsections = []
@@ -153,6 +169,7 @@ class ConfigurationSchemaSection:
         
     @property
     def name(self):
+        """Section name"""
         return self._name
     
     @name.setter
@@ -161,32 +178,41 @@ class ConfigurationSchemaSection:
         return self
         
     def subsections(self):
+        """Return the section's subsections"""
         return self._subsections
             
     def add_section(self, section):
+        """Adds section *section* as a subsection"""
         self._subsections.append(section)
         section.parent = self
         return self
     
     def remove_section(self, section):
+        """Removes the subsection *section*"""
         self._subsections.remove(section)
     
     def options(self):
+        """Returns the section's options list"""
         return self._options
     
     def add_option(self, option):
+        """Adds option *option* to the section"""
         self._options.append(option)
         option.section = self
         return self
     
     def remove_option(self, option):
+        """Removes option *option* from the section"""
         self._options.remove(option)        
         
     def get_option(self, name):
+        """Gets section option with name *name* from the section.
+        If it is not found, None is return"""
         return next((opt for opt in self._options if opt.name == name), None)
         
     @property
     def documentation(self):
+        """The section's documentation"""
         return self._documentation
     
     @documentation.setter
@@ -196,6 +222,7 @@ class ConfigurationSchemaSection:
     
     @property
     def parent(self):
+        """The section's parent. It can be the configuration schema if it is a top-level section, of the parent section if it is a subsection"""
         return self._parent
     
     @parent.setter
@@ -205,6 +232,7 @@ class ConfigurationSchemaSection:
     
     @property
     def dependency_expression(self):
+        """The section's dependency expression"""
         return self._dependency_expression
     
     @dependency_expression.setter
