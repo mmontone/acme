@@ -2064,6 +2064,8 @@ class OptionEditorDialog(tk.Toplevel):
         self._option = option
         self._onsave = options.get('onsave')
         
+        self.transient(master)
+        
         option_editor_class = OptionEditor.for_option_type(option.option_type.__class__)
                         
         self._option_editor = option_editor_class(self, option_schema=option)
