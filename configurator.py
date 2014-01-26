@@ -1482,7 +1482,7 @@ class ConfigurationNavigator(tk.Frame):
             self._config = configs[0]
             sections = self._config.sections()
             
-            if len(sections) > 1:
+            if len(sections) > 0:
                 self._section = sections[0]
         
                 for section in sections:
@@ -1495,7 +1495,7 @@ class ConfigurationNavigator(tk.Frame):
            
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
-        if len(configs) > 0 and len(sections) > 1:
+        if len(configs) > 0 and len(sections) > 0:
             self.insert_section_editor(sections[0])
                            
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -3292,7 +3292,7 @@ class ConfigurationConfigurator(tk.Frame):
         
         sections = self._config.sections()
             
-        if len(sections) > 1:
+        if len(sections) > 0:
             self._section = sections[0]
         
             for section in sections:
@@ -3305,7 +3305,7 @@ class ConfigurationConfigurator(tk.Frame):
            
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
         
-        if len(sections) > 1:
+        if len(sections) > 0:
             self.insert_section_editor(sections[0])
                            
         self._right_panel.pack(side=tk.LEFT, fill=tk.BOTH)
