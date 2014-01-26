@@ -1519,13 +1519,15 @@ class ConfigurationNavigator(tk.Frame):
         selection = self._configs_list.curselection()
         self._config = self._configs[int(selection[0])]
         
+        logging.info("Config selected: " + self._config.name)
+        
         # Refill the sections list with the configuration sections
         self._sections.delete(*self._sections.get_children())
         self._items = {}
         
         sections = self._config.sections()
         
-        if len(sections) > 1:
+        if len(sections) > 0:
             self._section = sections[0]
             for section in sections:
                 self.insert_section(section)
@@ -1536,7 +1538,7 @@ class ConfigurationNavigator(tk.Frame):
         self._right_panel.forget()
         self._right_panel = tk.Frame(self, pady=10, relief=tk.FLAT)
                 
-        if len(sections) > 1:
+        if len(sections) > 0:
             # Put the options editing on the right panel
             self.insert_section_editor(sections[0])
                 
