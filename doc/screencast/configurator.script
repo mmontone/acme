@@ -1,0 +1,33 @@
+Welcome to this screencast about Configurator. Configurator is a configuration management tool. Its purpose is to improve and facilitate the handling of configurations in a software project. Let's give it a try. First, we download the tool. It can be downloaded from its github page.
+
+To install it, run the install script from the shell. Make sure you have system administration permissions.
+
+After the install, you should be able to run configurator from the command line.
+
+To configure our project we need to create a configuration schema first. Configuration schemas are descriptions of configurations. They describe configurations which have different sections and options with different types and properties. In short, configuration schemas are to configurations what classes are to objects in object oriented programming languages, or what X M L schemas are to X M L documents. So, let's create a configuration schema to understand what this is all about. Schemas can be created and edited with the setup command line option.
+
+Configuration schemas need a name, a description, and a list of parents.
+
+Each configuration schema has a list of sections. A section needs a name and a description. In this example, we create one section for the database configuration, and another for the web server configuration.
+
+Now we add option schemas to each section. Option schemas have a name, a type, whether the option is required or not, and an optional default value
+
+By default, configuration schemas are saved to a configuration.schema file.
+
+The configuration schemas file is supposed to be put under version control.
+
+Now that we have the configuration schemas we can create the configurations. To create the configurations, run configurator from the command line.
+
+Now we can create a development configuration from the user interface.
+
+Configurations belong to a configuration schema.
+
+Once the configuration is created, we can start editing its options.
+
+Configurations need to be valid before being saved. That means that every option that was declared as required in the configuration schema needs to have a value.
+
+Configurations are saved to a configuration.config file by default. This file is not supposed to be shared; it belongs to each application installation and should not be put under version control.
+
+Example configurations are delivered in the configurator distribution. We can appreciate the different specific option editors looking at them.
+
+This was a short overview of configurator. There are more features to explore. Please take a look at the documentation to read about them. Thanks for watching.

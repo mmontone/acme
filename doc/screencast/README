@@ -1,0 +1,3 @@
+To record the screencast, Kazam recorder has been used.
+
+To read the script, configurator.script is loaded using Read_Text/python/pico_read_text_file_split.py
