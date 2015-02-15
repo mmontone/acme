@@ -15,7 +15,12 @@ The idea is to define configuration schemas and get a proper way of:
 
 ##Install##
 
-Download Configurator, or clone the git repository. Then run ``sudo sh ./install.sh``. That installs configurator on ``/usr/local/lib/configurator`` directory, and a ``configurator`` binary on ``/usr/local/bin``. After that, you can run configurator typing ``configurator`` at the shell.
+Using pip:
+```
+sudo pip install https://github.com/mmontone/configurator/archive/master.zip
+```
+
+or download Configurator and then run ``sudo sh ./install.sh``. That installs configurator on ``/usr/local/lib/configurator`` directory, and a ``configurator`` binary on ``/usr/local/bin``. After that, you can run configurator typing ``configurator`` at the shell.
 
 ##Documentation##
 
