@@ -3409,8 +3409,7 @@ class ConfiguratorJSONEncoder(json.JSONEncoder):
             
         return json.JSONEncoder.default(self, obj)
 
-if __name__ == '__main__':
-    
+def main():    
     parser = argparse.ArgumentParser(description='Configurator. Configuration management utility.')
     parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
@@ -3658,3 +3657,6 @@ if __name__ == '__main__':
     
     configurator.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
+
+if __name__ == '__main__':
+    main()
