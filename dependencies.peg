@@ -1,27 +1,27 @@
 (*  To compile: grako -w '' dependencies.peg > dependencies.py *)
 
-number = ?/[0-9]+/? .
-identifier = ident_start {ident_cont}* .
+number = ?/[0-9]+/? ;
+identifier = ident_start {ident_cont}* ;
 
-ident_start = ?/[a-zA-Z_\ ]/? .
-ident_cont = ident_start | ?/[0-9]/? .
+ident_start = ?/[a-zA-Z_\ ]/? ;
+ident_cont = ident_start | ?/[0-9]/? ;
 
-spacing = {space}* .
-space = ' ' | '\t' | $ . 
-eol = '\r\n' | '\n' | '\r' .
+spacing = {space}* ;
+space = ' ' | '\t' | $ ; 
+eol = '\r\n' | '\n' | '\r' ;
 
-option_path = @identifier '.' @option_path | identifier .
+option_path = @identifier '.' @option_path | identifier ;
 
 boolexp = @boolterm spacing @boolean_connector spacing @boolexp | 
-          boolterm.
+          boolterm;
 
 boolterm = bool_literal | 
            @option_path spacing @operation spacing @value |
-           '(' spacing @boolexp spacing ')'.
+           '(' spacing @boolexp spacing ')';
            
-bool_literal = 'True' | 'False'.
+bool_literal = 'True' | 'False';
 
-value = number | literal_string | bool_literal | path:option_path.
-operation = 'IS' | '=' | '<>' | '>' | '<' .
-literal_string = "'" @{?/[\w\ ]/?}* "'" .
-boolean_connector = 'AND' | 'OR' | 'XOR' .
+value = number | literal_string | bool_literal | path:option_path;
+operation = 'IS' | '=' | '<>' | '>' | '<' ;
+literal_string = "'" @{?/[\w\ ]/?}* "'" ;
+boolean_connector = 'AND' | 'OR' | 'XOR' ;
