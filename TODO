@@ -1,3 +1,6 @@
+* Variables access. Environment: $(HOME)/project and configuration variables: $(database.name)-assets
+* Dialog UI: http://pythondialog.sourceforge.net/
+* Installer. Make application installer from configurations. Before, after scripts. Etc...
 * Make it work multiplatform (Windows and OS/X)
 * Option groups. Group of options that are placed inside the same tk.LabelFrame
 * Graphical dependencies editor
