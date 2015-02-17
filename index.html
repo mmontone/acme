@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Configurator by mmontone</title>
+    <title>Acme by mmontone</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -20,9 +20,9 @@
   <body>
       <div id="header">
         <nav>
-          <li class="fork"><a href="https://github.com/mmontone/configurator">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/mmontone/configurator/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/mmontone/configurator/tarball/master">TAR</a></li>
+          <li class="fork"><a href="https://github.com/mmontone/acme">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/mmontone/acme/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/mmontone/acme/tarball/master">TAR</a></li>
           <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
@@ -31,17 +31,17 @@
 
       <section>
         <div id="title">
-          <h1>Configurator</h1>
-          <p>Configuration management utility</p>
+          <h1>Acme</h1>
+          <p>Application Configuration ManagEr</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/mmontone">mmontone</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
         </div>
 
         <h1>
-<a name="configurator" class="anchor" href="#configurator"><span class="octicon octicon-link"></span></a>Configurator</h1>
+<a name="acme" class="anchor" href="#acme"><span class="octicon octicon-link"></span></a>Acme</h1>
 
-<p><strong>Configurator</strong> is a configuration management utility. It is written in Python and provides a Tk GUI for configurations manipulation.</p>
+<p><strong>Acme</strong> is an Application Configuration ManagEr. It is written in Python and provides a Tk GUI for configurations manipulation.</p>
 
 <h2>
 <a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
@@ -61,68 +61,68 @@
 <h2>
 <a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>Running</h2>
 
-<p>Configurator is run invoking configurator command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.</p>
+<p>Acme is run invoking acme command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.</p>
 
 <p>A configuration schemas files is required. The schemas file contains a serialization of the configuration schemas in XML format.</p>
 
-<p>By default, Configurator looks for configurator.schema in the current directory. It shows an error if it can not find it. A different file or location can be specified through the –schemas SCHEMAS option. If the schemas file is found, then it is parsed and loaded. </p>
+<p>By default, Acme looks for acme.schema in the current directory. It shows an error if it can not find it. A different file or location can be specified through the –schemas SCHEMAS option. If the schemas file is found, then it is parsed and loaded. </p>
 
-<p>Apart from that, Configurator maintains configurations in another file, which by default is configurator.config. That file contains the configurations serialized in XML format. It can be specified to be something else WITH the -–configs CONFIGS option. </p>
+<p>Apart from that, Acme maintains configurations in another file, which by default is acme.config. That file contains the configurations serialized in XML format. It can be specified to be something else WITH the -–configs CONFIGS option. </p>
 
-<p>Configurator can be run in three different modes fundamentally.</p>
-
-<ul>
-<li>
-<p><strong>Normal mode</strong>: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI is meant for end users. The user can create, remove and edit his configurations from here. He doesn’t need to know about how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.</p>
-
-<p>This is an example of Configurator running in normal mode: </p>
-</li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png" alt="configs"></p>
+<p>Acme can be run in three different modes fundamentally.</p>
 
 <ul>
 <li>
-<p><strong>Setup mode</strong>: this mode is invoked running configurator with the --setup option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.</p>
+<p><strong>Normal mode</strong>: this mode is invoked running acme with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI is meant for end users. The user can create, remove and edit his configurations from here. He doesn’t need to know about how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.</p>
 
-<p>This is an example of Configurator running in setup mode: </p>
+<p>This is an example of Acme running in normal mode: </p>
 </li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas1.png" alt="schemas"></p>
+</ul><p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/acme1.png" alt="configs"></p>
 
 <ul>
 <li>
-<p><strong>Full mode:</strong> this mode is invoked running configurator with the –full option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.</p>
+<p><strong>Setup mode</strong>: this mode is invoked running acme with the --setup option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.</p>
 
-<p>This is an example of Configurator running in full mode: </p>
+<p>This is an example of Acme running in setup mode: </p>
 </li>
-</ul><p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/full.png" alt="full"></p>
+</ul><p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/schemas1.png" alt="schemas"></p>
+
+<ul>
+<li>
+<p><strong>Full mode:</strong> this mode is invoked running acme with the –full option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.</p>
+
+<p>This is an example of Acme running in full mode: </p>
+</li>
+</ul><p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/full.png" alt="full"></p>
 
 <h3>
 <a name="command-line-summary" class="anchor" href="#command-line-summary"><span class="octicon octicon-link"></span></a>Command line summary:</h3>
 
-<pre><code>$&gt; configurator -h
+<pre><code>$&gt; acme -h
 
-usage: configurator.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
+usage: acme.py [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [--setup] [--debug]
 
-Configurator. Configuration management utility.
+Acme. Application Configuration ManagEr.
 
 optional arguments:
    -h, --help            show this help message and exit
-   -f, --full            Run the full configurator (both configurations and
+   -f, --full            Run the full acme (both configurations and
                          schemas navigation)
    -s SCHEMAS, --schemas SCHEMAS
                          The configuration schemas files. Default is
-                         configurator.schema
+                         acme.schema
    -c CONFIGS, --configs CONFIGS
                          The configurations file. Default is
-                         configurator.config
+                         acme.config
    --setup               Edit configuration schemas
    --debug               Run in debug mode
 </code></pre>
 
 <h2>Manual</h2>
 
-<p>User manual: <a href="http://mmontone.github.io/configurator/doc/user-manual/html/configurator.html">HTML</a>&nbsp;<a href="http://mmontone.github.io/configurator/doc/user-manual/configurator.pdf">PDF</a></p>
+<p>User manual: <a href="http://mmontone.github.io/acme/doc/user-manual/html/acme.html">HTML</a>&nbsp;<a href="http://mmontone.github.io/acme/doc/user-manual/acme.pdf">PDF</a></p>
 
-<p>Developer manual: <a href="http://mmontone.github.io/configurator/doc/developer-manual/html/index.html">HTML</a>&nbsp;<a href="http://mmontone.github.io/configurator/doc/developer-manual/configurator.pdf">PDF</a></p>
+<p>Developer manual: <a href="http://mmontone.github.io/acme/doc/developer-manual/html/index.html">HTML</a>&nbsp;<a href="http://mmontone.github.io/acme/doc/developer-manual/acme.pdf">PDF</a></p>
 
 <h2>
 <a name="configuration-schemas" class="anchor" href="#configuration-schemas"><span class="octicon octicon-link"></span></a>Configuration schemas</h2>
@@ -132,13 +132,13 @@ optional arguments:
 
 <p>Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/newschema.png" alt="newschema"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/newschema.png" alt="newschema"></p>
 
 <p>Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.</p>
 
 <p>Configuration schemas have sections, each containing other sections and schema options. The schemas sections and options can be manipulated in the tree appearing on the left of the configuration schemas navigator.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schemas_navigation.png" alt="schemas_navigation"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/schemas_navigation.png" alt="schemas_navigation"></p>
 
 <h3>
 <a name="sections" class="anchor" href="#sections"><span class="octicon octicon-link"></span></a>Sections</h3>
@@ -150,11 +150,11 @@ optional arguments:
 
 <p>Options in schemas have a name and a type. </p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/schema_option.png" alt="schema_option"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/schema_option.png" alt="schema_option"></p>
 
 <p>The type of option determines the possible values that can be assigned to it in configurations. The option type can be String, Number, Boolean, Email, URI, Filename, Directory, Color, Timezone, Language, Country, Currency, Date, Time, Datetime, etc. Some of them will be described later. When editing configurations, each option is edited with its corresponding editor, depending on the type of option. For instance, options of type Date are edited using a calendar.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/option_editing.png" alt="option_editing"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/option_editing.png" alt="option_editing"></p>
 
 <p>Apart from name and type, schema options specify if it required for the option to be assigned a value in the configuration. Also, they can have a default value in case the user doesn't assign one in the configuration. </p>
 
@@ -165,13 +165,13 @@ optional arguments:
 
 <p>It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.</p>
 
-<p>Configurator has support for that by attaching a <code>dependencies expression</code> to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. </p>
+<p>Acme has support for that by attaching a <code>dependencies expression</code> to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. </p>
 
 <p>Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: <code>Database.Engine = 'MySQL'</code>. This way the <code>Storage engine</code> option will only be editable when the Database.Engine is set to 'MySQL'.</p>
 
 <p>Dependency expressions can be added in the schema option editing screen:</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/dependencies.png" alt="dependencies"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/dependencies.png" alt="dependencies"></p>
 
 <h2>
 <a name="configurations" class="anchor" href="#configurations"><span class="octicon octicon-link"></span></a>Configurations</h2>
@@ -182,9 +182,9 @@ optional arguments:
 
 <p>Configurations can be added and removed from the list appering on the left of the configurations navigator.</p>
 
-<p><img src="https://raw.github.com/mmontone/configurator/master/doc/user-manual/images/configurator1.png" alt="configs"></p>
+<p><img src="https://raw.github.com/mmontone/acme/master/doc/user-manual/images/acme1.png" alt="configs"></p>
 
-<p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <code>configurator.config</code>, but it can be changed if desired.</p>
+<p>Configurations can be loaded and saved. They are serialized in XML format. The default filename is <code>acme.config</code>, but it can be changed if desired.</p>
 
 <p>Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with <code>required</code> enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be <code>set</code> and <code>unset</code>. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.</p>
       </section>
