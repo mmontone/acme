@@ -3653,7 +3653,10 @@ def main():
         acme = SchemasManager(root)
     else:
         if len(schemas) == 0:
-            sys.exit('Can\'t load configuration schemas')
+            print 'Can\'t load configuration schemas'
+            print ''
+            parser.print_help()
+            sys.exit(1)
         else:
             if args.config is not None:
                 acme = ConfigurationManager(root, config=conf.Configuration.get_named(args.config))
