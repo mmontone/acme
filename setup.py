@@ -6,15 +6,15 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
     setup(
-        name='configurator',
+        name='acme',
         # Versions should comply with PEP440. For a discussion on single-sourcing
         # the version across setup.py and the project code, see
         # https://packaging.python.org/en/latest/single_source_version.html
         version='0.0.1',
-        description='Application configuration utility',
+        description='Application configuration manager',
         long_description=long_description,
         # The project's main homepage.
-        url='https://github.com/mmontone/configurator',
+        url='https://github.com/mmontone/acme',
         # Author details
         author='Mariano Montone',
         author_email='marianomontone@gmail.com',
@@ -41,7 +41,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
         keywords='utilities setuptools development',
         # You can just specify the packages manually here if your project is
         # simple. Or you can use find_packages().
-        packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+        packages=['acme'],
         # List run-time dependencies here. These will be installed by pip when your
         # project is installed. For an analysis of "install_requires" vs pip's
         # requirements files see:
@@ -70,7 +70,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
         # pip to create the appropriate form of executable for the target platform.
         entry_points={
             'console_scripts': [
-                'configurator=configurator:main',
+                'acme=acme.acme:main',
             ],
         },
     )

@@ -349,7 +349,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
         
         self.tree.pack(fill=tk.Y, expand=True)
         
-        self.tree.bind('<Leave>', lambda ev:configurator.status.set(''))
+        self.tree.bind('<Leave>', lambda ev:acme.status.set(''))
                 
         for schema in schemas:
             self.insert_schema(schema)
@@ -454,7 +454,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             self.schemas.append(schema)
             id = self.tree.insert('', 'end', text=schema.name, tags='schema')
             self.items[id] = schema
-            configurator.status.set('Configuration schema ' + schema.name + ' has been created')
+            acme.status.set('Configuration schema ' + schema.name + ' has been created')
             
         creator = ConfigurationSchemaCreator(self, onsave=save_schema)
         self.wait_window(creator)
@@ -537,7 +537,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             schema.section(section)
             id = self.tree.insert(item_id, 'end', text=section.name, tags='section')
             self.items[id] = section
-            configurator.status.set('Section ' + section.name + ' created in ' + schema.name + ' configuration schema')
+            acme.status.set('Section ' + section.name + ' created in ' + schema.name + ' configuration schema')
             
         creator = ConfigurationSchemaSectionCreator(self, onsave=save_section)
         self.wait_window(creator)
@@ -547,7 +547,7 @@ class ConfigurationSchemaNavigator(tk.Frame):
             section.add_section(subsection)
             id = self.tree.insert(item_id, 'end', text=subsection.name, tags='section')
             self.items[id] = subsection
-            configurator.status.set('Subsection ' + subsection.name + ' created in ' + section.name + ' section')
+            acme.status.set('Subsection ' + subsection.name + ' created in ' + section.name + ' section')
             
         creator = ConfigurationSchemaSectionCreator(self, onsave=save_subsection)
         self.wait_window(creator)
@@ -557,14 +557,14 @@ class ConfigurationSchemaNavigator(tk.Frame):
             section.remove()
             self.tree.delete(id)
             del self.items[id]
-            configurator.status.set(section.name + " section removed")
+            acme.status.set(section.name + " section removed")
             
     def add_option(self, section, item_id):
         def save_option(option):
             section.add_option(option)
             id = self.tree.insert(item_id, 'end', text=option.name, tags='option')
             self.items[id] = option
-            configurator.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
+            acme.status.set('Option ' + option.name + ' created in ' + section.name + ' section')
             
         creator = ConfigurationSchemaOptionCreator(self, onsave=save_option)
         self.wait_window(creator)        
@@ -835,7 +835,7 @@ class ConfigurationSchemaEditor(tk.Frame):
             self.schema.documentation = self.schema_doc.get(1.0, tk.END)
             self.schema.set_parents(self.parents.get_selection())
                         
-            configurator.status.set(self.schema.name + " configuration schema has been updated")
+            acme.status.set(self.schema.name + " configuration schema has been updated")
             if self._onsave:
                 self._onsave()
     
@@ -843,12 +843,12 @@ class ConfigurationSchemaEditor(tk.Frame):
         self.schema_name.set(self.schema.name)
         self.schema_doc.delete(1.0, tk.END)
         self.schema_doc.insert(1.0, self.schema.documentation)
-        configurator.status.set(self.schema.name + " configuration schema has been restored to its original state")
+        acme.status.set(self.schema.name + " configuration schema has been restored to its original state")
         
     def remove_schema(self):
         if tkMessageBox.askquestion("Remove?", "Remove " + self.schema.name + " configuration schema?") == 'yes':
             self.schema.remove()
-            configurator.status.set(self.schema.name + " configuration schema has been removed")
+            acme.status.set(self.schema.name + " configuration schema has been removed")
             if self._onremove:
                 self._onremove()
                 
@@ -903,7 +903,7 @@ class ConfigurationSchemaCreator(w.Dialog):
             schema.documentation = self.schema_doc.get(1.0, tk.END)
             schema.set_parents(self.parents.get_selection())
             
-            configurator.status.set(schema.name + " configuration schema has been updated")
+            acme.status.set(schema.name + " configuration schema has been updated")
             
             if self._onsave:
                 self._onsave(schema)
@@ -962,7 +962,7 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         else:
             self.section.name = self.section_name.get()
             self.section.documentation = self.section_documentation.get(1.0, tk.END)
-            configurator.status.set(self.section.name + " section has been updated")
+            acme.status.set(self.section.name + " section has been updated")
             
             if self._onsave:
                 self._onsave()
@@ -971,12 +971,12 @@ class ConfigurationSchemaSectionEditor(tk.Frame):
         self.section_name.set(self.section.name)
         self.section_documentation.delete(1.0, tk.END)
         self.section_documentation.insert(1.0, self.section.documentation)
-        configurator.status.set(self.section.name + " section has been restored to its original state")
+        acme.status.set(self.section.name + " section has been restored to its original state")
                 
     def remove_section(self):
         if tkMessageBox.askquestion("Remove?", "Remove section " + self.section.name + "?") == 'yes':
             self.section.remove()
-            configurator.status.set(self.section.name + " section has been removed")
+            acme.status.set(self.section.name + " section has been removed")
         
             if self._onremove:
                 self._onremove()    
@@ -1028,7 +1028,7 @@ class ConfigurationSchemaSectionCreator(w.Dialog):
         else:
             self.section.name = self.section_name.get()
             self.section.documentation = self.section_documentation.get(1.0, tk.END)
-            configurator.status.set(self.section.name + " section has been created")
+            acme.status.set(self.section.name + " section has been created")
             
             if self._onsave:
                 self._onsave(self.section)
@@ -1129,7 +1129,7 @@ class ConfigurationSchemaOptionCreator(w.Dialog):
             option.is_required=self.option_required.get() == 1
             option.documentation = self.option_documentation.get(1.0, tk.END)
                    
-            configurator.status.set(option.name + " option has been created")
+            acme.status.set(option.name + " option has been created")
             
             if self._onsave:
                 self._onsave(option)
@@ -1302,7 +1302,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
             expression, ast = self._dependency_editor.value()
             self.option.dependency_expression = ast
                 
-            configurator.status.set(self.option.name + " option has been updated")
+            acme.status.set(self.option.name + " option has been updated")
             
             if self._onsave:
                 self._onsave()
@@ -1311,7 +1311,7 @@ class ConfigurationSchemaOptionEditor(tk.Frame):
         self.option_name.set(self.option.name)
         self.option_documentation.delete(1.0, tk.END)
         self.option_documentation.insert(1.0, self.option.documentation)
-        configurator.status.set(self.option.name + " option has been restored to its original state")
+        acme.status.set(self.option.name + " option has been restored to its original state")
         
     def remove_option(self):
         if tkMessageBox.askquestion("Remove?", "Remove " + self.option.name + " option?") == 'yes':
@@ -1865,9 +1865,9 @@ class ConfigurationSectionEditor(tk.Frame):
         errors = section.validate(self._config)
         if errors:
             self.redraw(errors)
-            configurator.status.set('There are errors')
+            acme.status.set('There are errors')
         else:
-            configurator.status.set('Section saved')
+            acme.status.set('Section saved')
                 
             # We do this to clear possible past errors
             self.redraw()
@@ -2287,7 +2287,7 @@ class AboutDialog(w.Dialog):
         w.Dialog.__init__(self, parent)
 
         self.transient(parent)
-        self.title("About configurator")        
+        self.title("About acme")        
         
         logo = tk.PhotoImage(file=image('system-settings-2.gif'))
         
@@ -2295,8 +2295,8 @@ class AboutDialog(w.Dialog):
         label.image = logo # avoid garbage collection
         label.pack()
         
-        tk.Label(self, text="This is configurator, a tool for managing application configurations." +
-                            "\n\n Home page: https://github.com/mmontone/configurator" +  
+        tk.Label(self, text="This is acme, a tool for managing application configurations." +
+                            "\n\n Home page: https://github.com/mmontone/acme" +  
                             "\n\n Author: Mariano Montone").pack()
 
         b = tk.Button(self, text="OK", command=self.ok)
@@ -3021,7 +3021,7 @@ class PathSelector(tk.Frame):
             self._select_option = tk.OptionMenu(self, self._option_var, *map(lambda o: o.name, section.options()))           
             self._select_option.pack(side=tk.LEFT, padx=3)
             
-class FullConfigurator(tk.Frame):
+class FullManager(tk.Frame):
     def __init__(self, parent, configs=[], schemas=None):
         
         if schemas is None:
@@ -3029,7 +3029,7 @@ class FullConfigurator(tk.Frame):
                 
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
-        parent.title('Configurator')
+        parent.title('Acme')
         
         # Menubar
         self.menu_bar = tk.Menu(self)
@@ -3052,11 +3052,11 @@ class FullConfigurator(tk.Frame):
         # Help menu
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
-        set_status_message(help_menu, 'About configurator')
+        set_status_message(help_menu, 'About acme')
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
-        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/acme/images/application-exit-2.gif")
         #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
         #self.menu_bar.icon = quit_icon
         
@@ -3113,12 +3113,12 @@ class FullConfigurator(tk.Frame):
     def quit(self):
         root.quit()
         
-class Configurator(tk.Frame):
+class Acme(tk.Frame):
     def __init__(self, parent, configs=[]):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
-        parent.title('Configurator')
+        parent.title('Acme')
         
         # Menubar
         self.menu_bar = tk.Menu(self)
@@ -3133,11 +3133,11 @@ class Configurator(tk.Frame):
         
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
-        set_status_message(help_menu, 'About configurator')
+        set_status_message(help_menu, 'About acme')
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
-        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/acme/images/application-exit-2.gif")
         #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
         #self.menu_bar.icon = quit_icon
         
@@ -3177,7 +3177,7 @@ class Configurator(tk.Frame):
     def quit(self):
         root.quit()
         
-class SchemasConfigurator(tk.Frame):
+class SchemasManager(tk.Frame):
     def __init__(self, parent, schemas=None):
         
         if schemas is None:
@@ -3185,7 +3185,7 @@ class SchemasConfigurator(tk.Frame):
         
         tk.Frame.__init__(self, parent, relief=tk.SUNKEN)
         
-        parent.title('Schemas configurator')
+        parent.title('Schemas acme')
         
         # Menubar
         self.menu_bar = tk.Menu(self)
@@ -3202,11 +3202,11 @@ class SchemasConfigurator(tk.Frame):
         
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
-        set_status_message(help_menu, 'About configurator')
+        set_status_message(help_menu, 'About acme')
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
-        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/acme/images/application-exit-2.gif")
         #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
         #self.menu_bar.icon = quit_icon
         
@@ -3246,7 +3246,7 @@ class SchemasConfigurator(tk.Frame):
     def quit(self):
         root.quit()
         
-class ConfigurationConfigurator(tk.Frame):
+class ConfigurationManager(tk.Frame):
     def __init__(self, parent, config):
         
         tk.Frame.__init__(self, parent)
@@ -3261,11 +3261,11 @@ class ConfigurationConfigurator(tk.Frame):
         
         help_menu = tk.Menu(self.menu_bar)
         help_menu.add_command(label='About', command=self.help_about)
-        set_status_message(help_menu, 'About configurator')
+        set_status_message(help_menu, 'About acme')
         
         self.menu_bar.add_cascade(label='Help', menu=help_menu)
         
-        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/configurator/images/application-exit-2.gif")
+        #quit_icon = tk.PhotoImage(file="/home/marian/workspace2/acme/images/application-exit-2.gif")
         #self.menu_bar.add_command(label='Quit', image=quit_icon, compound=tk.RIGHT, command=self.quit)
         #self.menu_bar.icon = quit_icon
         
@@ -3395,30 +3395,30 @@ class ConfigurationConfigurator(tk.Frame):
         root.quit()
         
 def set_status_message(widget, message):
-    global configurator
-    widget.bind('<Enter>', lambda ev:configurator.status.set(message))
-    widget.bind('<Leave>', lambda ev:configurator.status.set(''))
+    global acme
+    widget.bind('<Enter>', lambda ev:acme.status.set(message))
+    widget.bind('<Leave>', lambda ev:acme.status.set(''))
     
 def image(filename):
     return os.path.dirname(os.path.realpath(__file__)) + "/images/" + filename
 
-class ConfiguratorJSONEncoder(json.JSONEncoder):
+class AcmeJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime("%d/%m/%Y %H:%M:%S")
             
         return json.JSONEncoder.default(self, obj)
 
-configurator = None
+acme = None
 root = None
 
 def main():
-    global configurator, root
+    global acme, root
 
-    parser = argparse.ArgumentParser(description='Configurator. Configuration management utility.')
-    parser.add_argument('-f', '--full', help='Run the full configurator (both configurations and schemas navigation)', action='store_true')
-    parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is configurator.schema')
-    parser.add_argument('-c', '--configs', help='The configurations file. Default is configurator.config')
+    parser = argparse.ArgumentParser(description='Acme. Application Configuration ManagEr.')
+    parser.add_argument('-f', '--full', help='Run the full acme (both configurations and schemas navigation)', action='store_true')
+    parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is acme.schema')
+    parser.add_argument('-c', '--configs', help='The configurations file. Default is acme.config')
     parser.add_argument('-l', '--list-configs', help='List configurations', action='store_true')
     parser.add_argument('-i', '--inspect-config', help='Inspect a configuration. A CSV(Comma separated values) list with <option path>, <value>, <option type>, <origin>')
     parser.add_argument('-g', '--get', help='Get an option value')
@@ -3451,7 +3451,7 @@ def main():
             sys.exit('Schema file ' + args.schemas + ' does not exist')
         
     if schemas_file is None:
-        schemas_file = os.getcwd() + '/configurator.schema'
+        schemas_file = os.getcwd() + '/acme.schema'
     
     # Try to load the schemas
     schemas = []
@@ -3469,7 +3469,7 @@ def main():
             sys.exit('Configuration file ' + args.configs + ' does not exist')     
     
     if configs_file is None:
-        configs_file = os.getcwd() + '/configurator.config'
+        configs_file = os.getcwd() + '/acme.config'
             
     # Try loading the configurations
     configs = []
@@ -3543,7 +3543,7 @@ def main():
             options = []
             for section in config.sections():
                 inspect_section(section, options)
-            print json.dumps(options, cls=ConfiguratorJSONEncoder)
+            print json.dumps(options, cls=AcmeJSONEncoder)
         else:
             def inspect_section(section):
                 for option in section.options():
@@ -3597,7 +3597,7 @@ def main():
                     attributes = {'value' : option_value,
                                   'type': str(option.option_type),
                                   'origin' : str(option_origin)}
-                    print json.dumps(attributes, cls=ConfiguratorJSONEncoder)
+                    print json.dumps(attributes, cls=AcmeJSONEncoder)
                 else:
                     print option.unparse_value(option_value)
                     print str(option.option_type)
@@ -3648,19 +3648,19 @@ def main():
     root = tk.Tk()
     
     if args.full:
-        configurator = FullConfigurator(root, configs=configs)
+        acme = FullManager(root, configs=configs)
     elif args.setup:
-        configurator = SchemasConfigurator(root)
+        acme = SchemasManager(root)
     else:
         if len(schemas) == 0:
             sys.exit('Can\'t load configuration schemas')
         else:
             if args.config is not None:
-                configurator = ConfigurationConfigurator(root, config=conf.Configuration.get_named(args.config))
+                acme = ConfigurationManager(root, config=conf.Configuration.get_named(args.config))
             else:
-                configurator = Configurator(root, configs=configs)
+                acme = Acme(root, configs=configs)
     
-    configurator.pack(fill=tk.BOTH, expand=True)
+    acme.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
 
 if __name__ == '__main__':

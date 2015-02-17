@@ -1,10 +1,10 @@
-(in-package :configurator)
+(in-package :acme)
 
-;; Configurator API via command line
+;; Acme API via command line
 
-(defparameter *configurator*
-  ;(asdf:system-relative-pathname :configurator "../../configurator")
-  "configurator")
+(defparameter *acme*
+  ;(asdf:system-relative-pathname :acme "../../acme")
+  "acme")
 (defparameter *configuration-schemas-pathname* nil)
 (defparameter *configurations-pathname* nil)
 (defparameter *configurations* nil)
@@ -20,22 +20,22 @@
   (print-unreadable-object (config stream :type t :identity t)
     (format stream "~S" (name config))))
 
-(defun configurator-setup (schemas-pathname configs-pathname)
+(defun acme-setup (schemas-pathname configs-pathname)
   (setf *configuration-schemas-pathname* schemas-pathname)
   (setf *configurations-pathname* configs-pathname)
   (load-configurations)
   t)
 
-(defun configurator-setup-example ()
-  (configurator-setup
-   (asdf:system-relative-pathname :configurator "../../doc/example/configurator.schema")
-   (asdf:system-relative-pathname :configurator "../../doc/example/configurator.config")))
+(defun acme-setup-example ()
+  (acme-setup
+   (asdf:system-relative-pathname :acme "../../doc/example/acme.schema")
+   (asdf:system-relative-pathname :acme "../../doc/example/acme.config")))
 
 (defun load-configurations ()
   (setf *configurations* (make-hash-table :test #'equalp))
-  (loop for config-name in (configurator-list-configs)
+  (loop for config-name in (acme-list-configs)
        do
-       (let ((data (configurator-inspect config-name)))
+       (let ((data (acme-inspect config-name)))
 	 (let ((config (make-instance 'configuration
 				      :name config-name)))
 	   (loop for option-data in data
@@ -45,9 +45,9 @@
 	   (setf (gethash config-name *configurations*)
 		 config)))))
 
-(defun configurator-inspect (config)
+(defun acme-inspect (config)
   (let ((command (format nil "~A --schemas ~A --configs ~A -i ~A --json"
-			 *configurator*
+			 *acme*
 			 *configuration-schemas-pathname*
 			 *configurations-pathname*
 			 config)))
@@ -56,9 +56,9 @@
 	  (error error))
       (json:decode-json-from-string output))))
 
-(defun configurator-get (path)
+(defun acme-get (path)
   (let ((command (format nil "~A --schemas ~A --configs ~A --get '~A' --json"
-			 *configurator*
+			 *acme*
 			 *configuration-schemas-pathname*
 			 *configurations-pathname*
 			 path)))
@@ -67,9 +67,9 @@
 	  (error error))
       (json:decode-json-from-string output))))
 
-(defun configurator-set (option value)
+(defun acme-set (option value)
   (let ((command (format nil "~A --schemas ~A --configs ~A --set '~A' --json"
-			 *configurator*
+			 *acme*
 			 *configuration-schemas-pathname*
 			 *configurations-pathname*
 			 (json:encode-json-to-string (list option value)))))
@@ -79,9 +79,9 @@
 	  (error error))
       t)))
 
-(defun configurator-list-configs ()
+(defun acme-list-configs ()
   (let ((command (format nil "~A --schemas ~A --configs ~A --list --json"
-			 *configurator*
+			 *acme*
 			 *configuration-schemas-pathname*
 			 *configurations-pathname*)))
     (multiple-value-bind (output error status) (trivial-shell:shell-command command)
@@ -153,8 +153,8 @@
 ;(defmethod parse-configuration-option% ((option-type (eql :color)) value)
 ;  (cl-colors:hex-to-rgb (subseq value 1)))
 
-(defun configurator-get* (path)
-  (parse-configuration-option (configurator-get path)))
+(defun acme-get* (path)
+  (parse-configuration-option (acme-get path)))
 
 (defparameter *configuration* nil)
 

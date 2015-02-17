@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Configurator documentation build configuration file, created by
+# Acme documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 21 12:22:34 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Configurator'
+project = u'Acme'
 copyright = u'2014, Mariano Montone'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -180,7 +180,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Configuratordoc'
+htmlhelp_basename = 'Acmedoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -200,7 +200,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'configurator.tex', u'Configurator Developer Manual',
+  ('index', 'acme.tex', u'Acme Developer Manual',
    u'Mariano Montone', 'manual'),
 ]
 
@@ -230,7 +230,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'configurator', u'Configurator Documentation',
+    ('index', 'acme', u'Acme Documentation',
      [u'Mariano Montone'], 1)
 ]
 
@@ -244,8 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'configurator', u'Configurator Developer Manual',
-   u'Mariano Montone', 'Configurator', 'Configuration management utility.',
+  ('index', 'acme', u'Acme Developer Manual',
+   u'Mariano Montone', 'Acme', 'Configuration management manager.',
    'Miscellaneous'),
 ]
 
@@ -265,13 +265,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Configurator Developer Manual'
+epub_title = u'Acme Developer Manual'
 epub_author = u'Mariano Montone'
 epub_publisher = u'Mariano Montone'
 epub_copyright = u'2014, Mariano Montone'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'Configurator'
+#epub_basename = u'Acme'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is

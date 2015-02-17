@@ -1,12 +1,12 @@
 (require :asdf)
 
-(defpackage configurator-system
+(defpackage acme-system
   (:use :cl :asdf))
 
-(in-package configurator-system)
+(in-package acme-system)
 
-(defsystem configurator
-    :description "Common Lisp Configurator bindings"
+(defsystem acme
+    :description "Common Lisp Acme bindings"
     :version "0.1"
     :author "Mariano Montone <marianomontone@gmail.com>"
     :maintainer "Mariano Montone <marianomontone@gmail.com>"
@@ -35,7 +35,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE."
     :components
     ((:file "package")
-     (:file "configurator"))
+     (:file "acme"))
     :serial t
     :depends-on
     (:trivial-shell

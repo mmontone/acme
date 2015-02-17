@@ -5,4 +5,5 @@
 /dist
 *~
 _build
-/configurator.egg-info/
+/acme.egg-info/
+/acme_utility.egg-info/

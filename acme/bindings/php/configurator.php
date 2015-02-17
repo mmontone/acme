@@ -1,6 +1,6 @@
 <?php
 
-define('configurator_command', "/usr/local/bin/configurator");
+define('acme_command', "/usr/local/bin/acme");
 
 $schemas_file = null;
 $configs_file = null;
@@ -24,7 +24,7 @@ class Configuration {
     }
 }
 
-function configurator_setup($schemas, $configs) {
+function acme_setup($schemas, $configs) {
     global $schemas_file;
     global $configs_file;
     
@@ -34,25 +34,25 @@ function configurator_setup($schemas, $configs) {
     load_configurations();
 }
 
-function configurator_setup_example() {
-    configurator_setup(__FILE__ . "../../doc/example/configurator.schema",
-                       __FILE__ . "../../doc/example/configurator.config");
+function acme_setup_example() {
+    acme_setup(__FILE__ . "../../doc/example/acme.schema",
+                       __FILE__ . "../../doc/example/acme.config");
 }
 
-function configurator_list_configs() {
+function acme_list_configs() {
     global $schemas_file;
     global $configs_file;
     
-    $output = exec(constant('configurator_command') . ' --schemas ' . $schemas_file .
+    $output = exec(constant('acme_command') . ' --schemas ' . $schemas_file .
                     ' --configs ' . $configs_file . ' --list --json');
     return json_decode($output, true);
 }
 
-function configurator_inspect($config) {
+function acme_inspect($config) {
     global $schemas_file;
     global $configs_file;
     
-    $output = exec(constant('configurator_command') . ' --schemas ' . $schemas_file .
+    $output = exec(constant('acme_command') . ' --schemas ' . $schemas_file .
                     ' --configs ' . $configs_file . ' -i ' . $config . ' --json');
     return json_decode($output, true);
 }
@@ -62,10 +62,10 @@ function load_configurations() {
 
     $configurations = array();
     
-    foreach (configurator_list_configs() as $config) {
+    foreach (acme_list_configs() as $config) {
         $configuration = new Configuration($config);
 
-        foreach (configurator_inspect($config) as $option) {
+        foreach (acme_inspect($config) as $option) {
             $configuration->set($option['option'], $option['value']);
         }
 

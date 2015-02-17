@@ -3,13 +3,13 @@ import subprocess
 import json
 import sys
 
-configurator_command = "/usr/local/bin/configurator"
+acme_command = "/usr/local/bin/acme"
 
 schemas_file = None
 configs_file = None
 configurations = {}
 
-def configurator_setup(schemas, configs):
+def acme_setup(schemas, configs):
     global schemas_file
     global configs_file
     schemas_file = schemas
@@ -17,9 +17,9 @@ def configurator_setup(schemas, configs):
     
     load_configurations()
     
-def configurator_setup_example():
-    configurator_setup(os.getcwd() + "/../../doc/example/configurator.schema",
-                       os.getcwd() + "/../../doc/example/configurator.config")
+def acme_setup_example():
+    acme_setup(os.getcwd() + "/../../doc/example/acme.schema",
+                       os.getcwd() + "/../../doc/example/acme.config")
     
 class Configuration():
     def __init__(self, name):
@@ -37,8 +37,8 @@ def load_configurations():
     
     configurations = {}
     
-    for config in configurator_list_configs():
-        data = configurator_inspect(config)
+    for config in acme_list_configs():
+        data = acme_inspect(config)
         configuration = Configuration(config)
         for option in data:
             configuration.set(option.get('option'),
@@ -51,20 +51,20 @@ def parse_option_value(option):
 def get_configuration(name):
     return configurations.get(name)
 
-def configurator_list_configs():
-    output = subprocess.check_output([configurator_command, '--schemas', schemas_file, '--configs', configs_file, '-list', '--json'])
+def acme_list_configs():
+    output = subprocess.check_output([acme_command, '--schemas', schemas_file, '--configs', configs_file, '-list', '--json'])
     
     return json.loads(output)
 
-def configurator_inspect(config):
-    output = subprocess.check_output([configurator_command, '--schemas', schemas_file, '--configs', configs_file, '-i', config, '--json'])
+def acme_inspect(config):
+    output = subprocess.check_output([acme_command, '--schemas', schemas_file, '--configs', configs_file, '-i', config, '--json'])
     
     return json.loads(output)
 
 
 if __name__ == '__main__':
     
-    configurator_setup_example()
+    acme_setup_example()
     
     configuration = get_configuration("Dev")
     

@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
-@setfilename configurator.info
-@settitle Configurator - An configuration management utility
+@setfilename acme.info
+@settitle Acme - An Application Configuration ManagEr
 
 @set VERSION 0.1
 @set DATE January 2013
@@ -17,7 +17,7 @@
 @ifinfo
 @format
 START-INFO-DIR-ENTRY
-* Configurator: (configurator.info). A configuration management utility.
+* Acme: (acme.info). An Application Configuration ManagEr
 END-INFO-DIR-ENTRY
 @end format
 @end ifinfo
@@ -34,7 +34,7 @@ END-INFO-DIR-ENTRY
 
 @copying
 
-This manual is for Configurator version @value{VERSION}.
+This manual is for Acme version @value{VERSION}.
 
 Copyright @copyright{} 2013 Mariano Montone
 
@@ -58,7 +58,7 @@ license to the document, as described in section 6 of the license.
 @end copying
 
 @titlepage
-@title Configurator
+@title Acme
 @subtitle A configuration management utility
 @subtitle User manual
 @subtitle Release @value{VERSION}
@@ -75,20 +75,20 @@ license to the document, as described in section 6 of the license.
 
 @ifnottex
 @node Top
-@top Configurator - A configuration management utility
+@top Acme - An Application Configuration ManagEr
 
-This is Configurator library documentation
+This is Acme library documentation
 
 @end ifnottex
 
 @menu
-* Introduction::                        What is Configurator?
-* Overview::                            Configurator overview
+* Introduction::                        What is Acme?
+* Overview::                            Acme overview
 * Running::                             Running    
 * Configuration schemas::               What configuration schemas are and how to define them
 * Configurations::                      What configurations are and how to define them
 * Examples::                            Some examples
-* Frontend::                            Configurator frontend
+* Frontend::                            Acme frontend
 * Custom option types::                 How to define custom option types
 * Language bindings::                   Language bindings
 * System reference::                    The system reference
@@ -100,8 +100,8 @@ This is Configurator library documentation
 
 Introduction
 
-* Summary::                     A brief summary of what Configurator is
-* Installation::                How to install Configurator
+* Summary::                     A brief summary of what Acme is
+* Installation::                How to install Acme
 * Feedback::                    Bug reports, ideas, patches etc.
 * Conventions::                 Type-setting conventions in the manual
 
@@ -140,13 +140,13 @@ Index
 @chapter Introduction
 @cindex introduction
 
-Configurator is a configuration management utility.
+Acme is an Application Configuration ManagEr.
 
-You can get a copy and this manual at @url{http://mmontone.github.io/configurator}
+You can get a copy and this manual at @url{http://mmontone.github.io/acme}
 
 @menu
-* Summary::                     A brief summary of what Configurator is
-* Installation::                How to install Configurator
+* Summary::                     A brief summary of what Acme is
+* Installation::                How to install Acme
 * Feedback::                    Bug reports, ideas, patches etc.
 * Conventions::                 Type-setting conventions in the manual
 @end menu
@@ -155,13 +155,13 @@ You can get a copy and this manual at @url{http://mmontone.github.io/configurato
 @section Summary
 @cindex summary
 
-Configurator is a configuration management utility
+Acme is an Application Configuration ManagEr
 
 @node Installation
 @section Installation
 @cindex installation
 
-Download Configurator, or clone the git repository from @url{https://github.com/mmontone/configurator}. Then run sudo @verb{|sh ./install.sh|}. That installs configurator on @verb{|/usr/local/lib/configurator|} directory, and the configurator binary on @verb{|/usr/local/bin|}. After that, you can run configurator typing @verb{|configurator|} at the shell.
+Download Acme, or clone the git repository from @url{https://github.com/mmontone/acme}. Then run sudo @verb{|sudo python ./setup.py install|}. That installs acme the acme binary on @verb{|/usr/local/bin|}. After that, you can run acme typing @verb{|acme|} at the shell.
 
 @node Feedback
 @section Feedback
@@ -189,7 +189,7 @@ We don't want functions to be shorter than the should nor longer than they shoul
 @chapter Overview
 @cindex overview 
 
-Configurator is a configuration management utility. It is written in Python and provides a Tk GUI at the moment.
+Acme is an Application Configuration ManagEr. It is written in Python and provides a Tk GUI at the moment.
 
 The idea is to define configuration schemas and get a proper way of:
 
@@ -225,38 +225,38 @@ Define your own option configurations types and provide validation for them.
 @section Running overview
 @cindex running
 
-Configurator is run invoking @emph{configurator} command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
+Acme is run invoking @emph{acme} command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
 
-A configurations schemas files is required. By default, Configurator looks for @emph{configurator.schema} in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the @emph{--schemas SCHEMAS} option.
+A configurations schemas files is required. By default, Acme looks for @emph{acme.schema} in the current directory. It shows and errors if it can not find it. A different file or location can be specified through the @emph{--schemas SCHEMAS} option.
 
 If the schemas file is found, then it is parsed and loaded. The schemas file is in XML format.
 
-Apart from that, Configurator maintains configurations in another file, which by default is @emph{configurator.config}. It can be specified to be something else through the @emph{--configs CONFIGS} option.
+Apart from that, Acme maintains configurations in another file, which by default is @emph{acme.config}. It can be specified to be something else through the @emph{--configs CONFIGS} option.
 
 @node Running modes
 @section Running modes
 
-Configurator can be run in three different modes fundamentally.
+Acme can be run in three different modes fundamentally.
 
 @itemize
 @item
-@emph{Normal mode}: this mode is invoked running configurator with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn't need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.
+@emph{Normal mode}: this mode is invoked running acme with no special arguments from the command line (apart from the schema and configs arguments). In this mode, the standard configuration navigation UI is opened. This UI si meant for end users. The user can create, remove and edit his configurations from here. He doesn't need to know how to build a configuration schema (although that is not difficult at all, as we will see.) Apart from that, when editing the configuration, the user gets a (hopefully) decent UI with custom option editors depending on the type of options and validation.
 
-This is an example of Configurator running in normal mode:
+This is an example of Acme running in normal mode:
 
-@image{images/configurator1, 6in}
+@image{images/acme1, 6in}
 
 @item
-@emph{Setup mode}: this mode is invoked running configurator with the @emph{--setup} option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
+@emph{Setup mode}: this mode is invoked running acme with the @emph{--setup} option from the command line. In this mode, the configuration schemas navigator UI is opened. The developer can create, remove and edit configuration schemas from here. Configuration schemas are descriptions of how configurations should be, with nested sections and different type of options. He can build the application specific configuration schemas from here.
 
-This is an example of Configurator running in setup mode:
+This is an example of Acme running in setup mode:
 
 @image{images/schemas1, 6in}
 
 @item
-@emph{Full mode}: this mode is invoked running configurator with the @emph{--full} option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
+@emph{Full mode}: this mode is invoked running acme with the @emph{--full} option from the command line. In this mode, both the configurations navigator and the configurations schemas navigator are available in two different tabs.
 
-This is an example of Configurator running in full mode:
+This is an example of Acme running in full mode:
 
 @image{images/full, 6in}
 
@@ -267,25 +267,25 @@ This is an example of Configurator running in full mode:
 
 @verbatim
 
-$> configurator -h
+$> acme -h
 
-usage: configurator [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [-l]
+usage: acme [-h] [-f] [-s SCHEMAS] [-c CONFIGS] [-l]
                     [-i INSPECT_CONFIG] [-g GET] [--set SET] [--config CONFIG]
                     [--validation VALIDATION] [--validate VALIDATE]
                     [--validate-all] [--json] [--setup] [--debug DEBUG]
 
-Configurator. Configuration management utility.
+Acme. Application Configuration ManagEr.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -f, --full            Run the full configurator (both configurations and
+  -f, --full            Run the full acme (both configurations and
                         schemas navigation)
   -s SCHEMAS, --schemas SCHEMAS
                         The configuration schemas files. Default is
-                        configurator.schema
+                        acme.schema
   -c CONFIGS, --configs CONFIGS
                         The configurations file. Default is
-                        configurator.config
+                        acme.config
   -l, --list-configs    List configurations
   -i INSPECT_CONFIG, --inspect-config INSPECT_CONFIG
                         Inspect a configuration. A CSV(Comma separated values)
@@ -357,7 +357,7 @@ They also have a documentation string. This is very important for the end user t
 
 It often happens that some options only make sense when some others are set to certain values. For instance, if we are configuring a database, then specific database engine options should only be available when the the specific engine is selected. Or a list of options make sense only when a boolean option is enabled.
 
-Configurator has support for that by attaching a dependencies expression to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
+Acme has support for that by attaching a dependencies expression to an option schema. The dependency expression is written in a very simple domain specific language. They are basically boolean expressions, with options being referenced. 
 
 Example: MySQL supports two storage engines, MyISAM and InnoDB, but this option only makes sense for MySQL. To specify that, we can use the following dependencies expression: @verb{|Database.Engine = 'MySQL'|}. This way the @verb{|Storage engine|} option will only be editable when the Database.Engine is set to 'MySQL'.
 
@@ -493,9 +493,9 @@ Configurations belong to one and only one configuration schema, and that's compu
 
 Configurations can be added and removed from the list appering on the left of the configurations navigator.
 
-@image{images/configurator1, 6in}
+@image{images/acme1, 6in}
 
-Configurations can be loaded and saved. They are serialized in XML format. The default filename is @verb{|configurator.config|}, but it can be changed if desired.
+Configurations can be loaded and saved. They are serialized in XML format. The default filename is @verb{|acme.config|}, but it can be changed if desired.
 
 Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with @verb{|required|} enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be @verb{|set|} and @verb{|unset|}. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
 
@@ -656,7 +656,7 @@ There are language bindings implemented for Python, PHP and Common Lisp for the 
 
 Bindings can be found in the bindings directory. For how they are used, look at the tests in the corresponding directory.
 
-In general, bindings ivoke configurator from the command line using JSON for communication.
+In general, bindings ivoke acme from the command line using JSON for communication.
 
 @node System reference
 @chapter System reference
