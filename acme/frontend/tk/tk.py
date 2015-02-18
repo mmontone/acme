@@ -686,7 +686,7 @@ class SaveSchemasDialog(w.Dialog):
         
         self._schemas = schemas
         self._onsave = options.get('onsave') or None
-        self._schemas_file = options.get('schemas_file') or os.getcwd() + 'acme.schema'
+        self._schemas_file = options.get('schemas_file') or os.getcwd() + '/acme.schema'
         
         self.title('Save schemas')
         
@@ -730,7 +730,7 @@ class LoadSchemasDialog(w.Dialog):
         
         self._schemas = []
         self._onload= options.get('onload') or None
-        self._schemas_file = options.get('schemas_file') or os.getcwd() + 'acme.schema'
+        self._schemas_file = options.get('schemas_file') or os.getcwd() + '/acme.schema'
         
         self.title('Load schemas')
         
@@ -2189,7 +2189,7 @@ class LoadConfigurationsDialog(w.Dialog):
         
         self._configs = []
         self._onload= options.get('onload') or None
-        self._configs_file = options.get('configs_file') or os.getcwd() + 'acme.config'
+        self._configs_file = options.get('configs_file') or os.getcwd() + '/acme.config'
         
         self.title('Load configs')
         
@@ -2238,7 +2238,7 @@ class SaveConfigurationsDialog(w.Dialog):
         
         self._configs = configs
         self._onsave = options.get('onsave') or None
-        self._configs_file = options.get('configs_file') or os.getcwd() + 'acme.config'
+        self._configs_file = options.get('configs_file') or os.getcwd() + '/acme.config'
         
         self.title('Save configs')
         
