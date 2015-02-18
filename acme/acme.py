@@ -19,6 +19,12 @@ class AcmeJSONEncoder(json.JSONEncoder):
             
         return json.JSONEncoder.default(self, obj)
 
+def acme_version():
+    here = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(here, '..', 'VERSION')) as version_file:
+        version = version_file.read().strip()
+    return version    
+
 def read_schemas_file(args):
     schemas_file = None
     if args.schemas is not None:
@@ -260,6 +266,8 @@ def main():
     parser = argparse.ArgumentParser(prog='acme', description='Acme. Application Configuration ManagEr.')
     parser.add_argument('-c', '--configs', help='The configurations file. Default is acme.config')
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is acme.schema')
+
+    parser.add_argument('--version', help='Acme version', action="version", version=acme_version())
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
 
     subparsers = parser.add_subparsers(help='command help')
@@ -309,7 +317,7 @@ def main():
         if args.debug == 'INFO':
             logging.basicConfig(level=logging.INFO)
         else:
-            logging.basicConfig(level=logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG)   
             
     logging.info("Command line args: " + str(args)) 
 
