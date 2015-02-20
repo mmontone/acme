@@ -37,7 +37,7 @@ def query_yes_no(question, default="yes"):
                              "(or 'y' or 'n').\n")
 
 
-def create_configuration_2(config):
+def create_configuration(config):
     for section in config.schema.sections():
         print Fore.WHITE + Back.BLUE +  section.name + ' options:'
         #print Fore.BLUE + 'INFO: ' +  section.documentation
@@ -63,6 +63,7 @@ def select_section(config):
     for section in sections:
         print '[' + str(index) + '] ' + section.name
         index = index + 1
+    print '[h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -76,7 +77,8 @@ def select_section(config):
             print
             return select_section(config)
         else:
-            return sections[selected_section]
+            select_option(config, sections[selected_section])
+            return select_section(config)
     else:
         def print_help():
             print 'Select a section with a number'
@@ -111,7 +113,7 @@ def select_option(config, section):
             
         print '[' + str(index) + '] ' + option.name + ' (' + str(option_origin) + '): ' + str(option_value)
         index = index + 1
-
+    print '[l] Go back | [h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -125,33 +127,68 @@ def select_option(config, section):
             print
             return select_option(config, section)
         else:
-            return options[selected_option]
+            edit_option(config, options[selected_option])
+            select_option(config, section)
     else:
         def print_help():
             print 'Select an option with a number'
             print
         if command == 'h' or command == 'help':
             print_help()
-            return select_section(config)
+            return select_option(config, section)
         if command == 'q' or command == 'quit':
             if query_yes_no('Quit without saving?'):
                 exit(0)
             else:
-                return select_option(config, option)
+                return select_option(config, section)
         elif command == 'l':
-            return 'go_back'
+            return
         else:
             print 'Invalid command: ' + command
             print
             return select_option(config, section)
         
 def edit_configuration(config):
-    section = select_section(config)
+    select_section(config)            
+
+def edit_option(config, option):
+    print 'Edit option: ' + str(option.path_string())
     
-    option = select_option(config, section)
+    option_value, option_origin = config.option_value(option)
 
-    if option == 'go_back':
-        edit_configuration(config)
+    if option_value is None:
+        option_value = option.default_value
+    if option_value is None:
+        print 'Not set'
     else:
-        edit_option(option)
+        if option_origin is None:
+            option_origin = 'Default'
+            
+    print 'Value: ' + str(option_value) +  ' (' + str(option_origin) + ')'
+    print 'Default: ' + str(option.default_value)
+    print
+    print '[s] Set'
+    print '[u] Unset'
+    print '[l] Go back | [h] Help | [q] Quit'
+    print
 
+    def print_help():
+        print 'Set/unset the option value'
+    command = raw_input('Command: ')
+    if command == 's':
+        value_entry = raw_input('New value: ')
+        value = option.parse_value(value_entry)
+        config.set_option_value(option, value)
+        return edit_option(config, option)
+    elif command == 'u':
+        config.unset_option(option)
+        return edit_option(config, option)
+    elif command == 'l':
+        return 'go_back'
+    elif command == 'h':
+        print_help()
+    elif command == 'q':
+        if query_yes_no('Quit without saving?'):
+            exit(0)
+        else:
+            return edit_option(config, option)
