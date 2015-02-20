@@ -56,14 +56,38 @@ def create_configuration(config):
             raw_input('Value:')
             print
 
+def print_section(config, section):
+    print Fore.WHITE + Back.BLUE +  section.name + ' options:'
+    for option in section.options():
+        option_value, option_origin = config.option_value(option)
+
+        if option_value is None:
+            option_value = option.default_value
+        if option_value is None:
+            print 'Empty'
+        else:
+            if option_origin is None:
+                option_origin = 'Default'
+            
+        print option.name + ' (' + str(option_origin) + '): ' + str(option_value)
+
+def print_config(config):
+    print config.name + ' configuration'
+    print
+    if config.documentation is not None:
+        print config.documentation
+        print
+    for section in config.schema.sections():
+        print_section(config, section)
+        print
+
 def select_section(config):
-    print 'Select section:'
     sections = config.schema.sections()
     index = 0
     for section in sections:
         print '[' + str(index) + '] ' + section.name
         index = index + 1
-    print '[h] Help | [q] Quit'
+    print '[p] Print | [h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -83,6 +107,9 @@ def select_section(config):
         def print_help():
             print 'Select a section with a number'
             print
+        if command == 'p' or command == 'print':
+            print_config(config)
+            return select_section(config)
         if command == 'h' or command == 'help':
             print_help()
             return select_section(config)
