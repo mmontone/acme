@@ -3,6 +3,8 @@ import os
 from util import *
 from colorama import Fore, Back, Style
 import sys
+import readline
+import pycountry
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -319,3 +321,20 @@ class CliChoiceEditor(OptionTypeEditor):
             print 'Enter an option number'
             print
             return self.edit()
+
+class CliCountryEditor(OptionTypeEditor):
+    options = [country.name for country in pycountry.countries]
+
+    def edit(self):
+        readline.set_completer(self.completer)
+        readline.parse_and_bind('tab: complete')
+        value = raw_input('Enter country(tab for completion): ')
+        return self.option.parse_value(value)
+        
+    def completer(self, text, state):
+        raise Exception('Completing!!')
+        matches = [i for i in self.options if i.startswith(text)]
+        if state < len(matches):
+            return matches[state]
+        else:
+            return None
