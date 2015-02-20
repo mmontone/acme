@@ -72,7 +72,7 @@ def print_section(config, section):
         print option.name + ' (' + str(option_origin) + '): ' + str(option_value)
 
 def print_config(config):
-    print config.name + ' configuration'
+    print Fore.GREEN + config.name + ' configuration'
     print
     if config.documentation is not None:
         print config.documentation
@@ -81,13 +81,14 @@ def print_config(config):
         print_section(config, section)
         print
 
-def select_section(config):
+def edit_configuration(config, **kwargs):
+    print 'Select section:'
     sections = config.schema.sections()
     index = 0
     for section in sections:
         print '[' + str(index) + '] ' + section.name
         index = index + 1
-    print '[p] Print | [h] Help | [q] Quit'
+    print '[p] Print | [s] Save | [h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -99,29 +100,41 @@ def select_section(config):
         if selected_section > len(sections):
             print 'Section ' + str(selected_section) + ' not found'
             print
-            return select_section(config)
+            return edit_configuration(config, **kwargs)
         else:
             select_option(config, sections[selected_section])
-            return select_section(config)
+            return edit_configuration(config, **kwargs)
     else:
         def print_help():
             print 'Select a section with a number'
             print
         if command == 'p' or command == 'print':
             print_config(config)
-            return select_section(config)
+            return edit_configuration(config, **kwargs)
+        if command == 's' or command == 'save':
+            print_config(config)
+            if query_yes_no('Save configuration?'):
+                filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
+                confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
+                save_configs(confirmed_filename)
+                print Fore.GREEN + 'CONFIGURATION SAVED.'
+                print
+                return edit_configuration(config, **kwargs)
+            else:
+                return edit_configuration(config, **kwargs)
         if command == 'h' or command == 'help':
             print_help()
-            return select_section(config)
+            return edit_configuration(config, **kwargs)
         if command == 'q' or command == 'quit':
             if query_yes_no('Quit without saving?'):
+                print 'Bye.'
                 exit(0)
             else:
-                return select_section(config)
+                return edit_configuration(config, **kwargs)
         else:
             print 'Invalid command: ' + command
             print
-            return select_section(config)
+            return edit_configuration(config, **kwargs)
 
 def select_option(config, section):
     print 'Select option:'
@@ -165,6 +178,7 @@ def select_option(config, section):
             return select_option(config, section)
         if command == 'q' or command == 'quit':
             if query_yes_no('Quit without saving?'):
+                print 'Bye.'
                 exit(0)
             else:
                 return select_option(config, section)
@@ -174,10 +188,13 @@ def select_option(config, section):
             print 'Invalid command: ' + command
             print
             return select_option(config, section)
-        
-def edit_configuration(config):
-    select_section(config)            
 
+def save_configs(filename):
+    serializer = conf.ConfigurationsXMLSerializer()
+    for config in conf.Configuration.configurations():
+        serializer.serialize(config)
+    serializer.write(filename)
+        
 def edit_option(config, option):
     print 'Edit option: ' + str(option.path_string())
     
