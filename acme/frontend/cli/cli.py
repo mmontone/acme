@@ -221,8 +221,10 @@ def edit_option(config, option):
         print 'Set/unset the option value'
     command = raw_input('Command: ')
     if command == 's':
-        value_entry = raw_input('New value: ')
-        value = option.parse_value(value_entry)
+        editor_class_name = 'Cli' + option.option_type.name + 'Editor'
+        editor_class = globals()[editor_class_name]
+        editor = editor_class(option)
+        value = editor.edit()
         config.set_option_value(option, value)
         return edit_option(config, option)
     elif command == 'u':
@@ -237,3 +239,83 @@ def edit_option(config, option):
             exit(0)
         else:
             return edit_option(config, option)
+
+class OptionTypeEditor():
+    option = None
+
+    def __init__(self, option):
+        self.option = option
+
+    
+class CliStringEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliBooleanEditor(OptionTypeEditor):
+    def edit(self):
+        return query_yes_no(self.option.name + '?')
+
+class CliNumberEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliFilenameEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('Enter a filepath: ')
+        if not os.path.isfile(value):
+            cont = query_yes_no(value + ' file does not exist. Continue?')
+            if not cont:
+                return self.edit()
+
+        return self.option.parse_value(value)
+
+class CliEmailEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliUriEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliDirectoryEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('Enter new directory: ')
+        if not os.path.dir(value):
+            cont = query_yes_no(value + ' file does not exist. Continue?')
+            if not cont:
+                return self.edit()
+        return self.option.parse_value(value)
+
+class CliColorEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliChoiceEditor(OptionTypeEditor):
+    def edit(self):
+        options = self.option.option_type.options()
+        index = 0
+        for option in options:
+            print '[' + str(index) + '] ' + str(option)
+            index = index + 1
+        selection = raw_input('Select option: ')
+        try:
+            selected_option = int(selection)
+        except ValueError:
+            selected_option = None
+
+        if selected_option is not None:
+            if selected_option > len(options):
+                print 'Option ' + str(selected_option) + ' not found'
+                print
+                return self.edit()
+            else:
+                return self.option.parse_value(options[selected_option])
+        else:
+            print 'Enter an option number'
+            print
+            return self.edit()
