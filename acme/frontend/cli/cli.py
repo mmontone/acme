@@ -57,7 +57,7 @@ def create_configuration(config):
             print
 
 def print_section(config, section):
-    print Fore.WHITE + Back.BLUE +  section.name + ' options:'
+    print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ' options:'
     for option in section.options():
         option_value, option_origin = config.option_value(option)
 
@@ -72,7 +72,7 @@ def print_section(config, section):
         print option.name + ' (' + str(option_origin) + '): ' + str(option_value)
 
 def print_config(config):
-    print Fore.GREEN + config.name + ' configuration'
+    print Fore.GREEN + Style.BRIGHT + config.name + ' configuration'
     print
     if config.documentation is not None:
         print config.documentation
@@ -196,7 +196,8 @@ def save_configs(filename):
     serializer.write(filename)
         
 def edit_option(config, option):
-    print 'Edit option: ' + str(option.path_string())
+    print 'Edit option: ' + Style.BRIGHT + str(option.path_string())
+    print 'Description: ' + Fore.CYAN + option.documentation        
     
     option_value, option_origin = config.option_value(option)
 
@@ -207,8 +208,8 @@ def edit_option(config, option):
     else:
         if option_origin is None:
             option_origin = 'Default'
-            
-    print 'Value: ' + str(option_value) +  ' (' + str(option_origin) + ')'
+    
+    print 'Value: ' + Style.BRIGHT + str(option_value) +  ' (' + str(option_origin) + ')'
     print 'Default: ' + str(option.default_value)
     print
     print '[s] Set'
