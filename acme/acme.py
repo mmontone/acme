@@ -254,13 +254,25 @@ def cmd_list(args):
 def cmd_edit(args):
     configs = load_configs(args)
     if args.config is not None:
-        tk.start_configuration_manager(conf.Configuration.get_named(args.config))
+        config = conf.Configuration.get_named(args.config)
+        if args.frontend == 'tk' or args.tk:
+            tk.start_configuration_manager(config)
+        elif args.frontend == 'cli' or args.cli:
+            cli.edit_configuration(config)
+        else:  # no frontend selected
+            tk.start_configuration_manager(config)
     else:
-        tk.start_configurations_manager(configs)
+        tk.start_configurations_manager(configs)      
 
-def cmd_create():
-    pass
-        
+def cmd_create(args):
+    load_schemas(args)
+    config = conf.Configuration(args.config, schema=conf.ConfigurationSchema.get_named(args.schema))
+    if args.frontend == 'tk' or args.tk:
+        tk.start_configuration_manager(config)
+    elif args.frontend == 'cli' or args.cli:
+        cli.create_configuration(config)
+    else:  # no frontend selected
+        tk.start_configuration_manager(config)
 
 def main():
     parser = argparse.ArgumentParser(prog='acme', description='Acme. Application Configuration ManagEr.')
@@ -299,9 +311,18 @@ def main():
     parser_edit = subparsers.add_parser('edit', help="Edit configurations or a specific configuration")
     parser_edit.add_argument('config', nargs='?', help='Configuration to validate')
     parser_edit.add_argument('--frontend', help='Select prefered frontend. One of tk, cli, or dialog')
+    parser_edit.add_argument('--tk', help='Use tk frontend', action='store_true')
+    parser_edit.add_argument('--cli', help='Use terminal frontend', action='store_true')
+    parser_edit.add_argument('--dialog', help='Use dialog frontend', action='store_true')
     parser_edit.set_defaults(func=cmd_edit)
 
     parser_create = subparsers.add_parser('create', help="Create a configuration")
+    parser_create.add_argument('config', help='Name of the configuration to create')
+    parser_create.add_argument('schema', help='Schema for the new configuration')
+    parser_create.add_argument('--frontend', help='Select prefered frontend. One of tk, cli, or dialog')
+    parser_create.add_argument('--tk', help='Use tk frontend', action='store_true')
+    parser_create.add_argument('--cli', help='Use terminal frontend', action='store_true')
+    parser_create.add_argument('--dialog', help='Use dialog frontend', action='store_true')
     parser_create.set_defaults(func=cmd_create)
 
     parser_validate = subparsers.add_parser('validate', help='Validate configurations or a configuration')

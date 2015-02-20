@@ -47,7 +47,7 @@ with open(os.path.join(here,'VERSION')) as version_file:
         # project is installed. For an analysis of "install_requires" vs pip's
         # requirements files see:
         # https://packaging.python.org/en/latest/requirements.html
-        install_requires=['pycountry', 'grako'],
+        install_requires=['pycountry', 'grako', 'colorama'],
         # List additional groups of dependencies here (e.g. development dependencies).
         # You can install these using the following syntax, for example:
         # $ pip install -e .[dev,test]
