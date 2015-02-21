@@ -42,29 +42,9 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-
-def create_configuration(config):
-    for section in config.schema.sections():
-        print Fore.WHITE + Back.BLUE +  section.name + ' options:'
-        #print Fore.BLUE + 'INFO: ' +  section.documentation
-        for option in section.options():
-            option_value, option_origin = config.option_value(option)
-
-            if option_value is None:
-                option_value = option.default_value
-            if option_value is None:
-                print 'Empty'
-            else:
-                if option_origin is None:
-                    option_origin = 'Default'
-            
-            print option.name + ' (' + str(option_origin) + '): ' + str(option_value)
-            raw_input('Value:')
-            print
-
-def print_section(config, section):
-    print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ' options:'
-    for option in section.options():
+def option_display_string(option, config=None, display_value=False, display_default=False):
+    if display_value:
+        assert(config is not None)
         option_value, option_origin = config.option_value(option)
 
         if option_value is None:
@@ -74,8 +54,36 @@ def print_section(config, section):
         else:
             if option_origin is None:
                 option_origin = 'Default'
-            
-        print option.name + ' (' + str(option_origin) + '): ' + str(option_value)
+        
+        if option.is_required:
+            return option.name + ' (' + str(option_origin) + ')(*): ' + Style.NORMAL + str(option_value)
+        else:
+            return option.name + ' (' + str(option_origin) + '): ' + str(option_value)
+    else:
+        if option.is_required:
+            display = option.name + '(*)'
+            if display_default and option.default_value is not None:
+                display += '. Default: ' + str(option.default_value)
+            return display
+        else:
+            display = option.name
+            if display_default and option.default_value is not None:
+                display += '. Default: ' + str(option.default_value)
+            return display
+
+def create_configuration(config):
+    for section in config.schema.sections():
+        print Fore.WHITE + Back.BLUE +  section.name + ' options:'
+        #print Fore.BLUE + 'INFO: ' +  section.documentation
+        for option in section.options():
+            print option_display_string(option, config, display_value=True)
+            raw_input('Value:')
+            print
+
+def print_section(config, section):
+    print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ' options:'
+    for option in section.options():
+        print option_display_string(option, config=config, display_value=True)
 
 def print_config(config):
     print Fore.GREEN + Style.BRIGHT + config.name + ' configuration'
@@ -248,17 +256,7 @@ def select_option(config, section):
     options = section.options()
     index = 0
     for option in options:
-        option_value, option_origin = config.option_value(option)
-
-        if option_value is None:
-            option_value = option.default_value
-        if option_value is None:
-            print 'Not set'
-        else:
-            if option_origin is None:
-                option_origin = 'Default'
-            
-        print '[' + str(index) + '] ' + option.name + ' (' + str(option_origin) + '): ' + str(option_value)
+        print '[' + str(index) + '] ' + option_display_string(option, config, display_value=True)
         index = index + 1
     print '[l] Go back | [h] Help | [q] Quit'
     print
@@ -303,8 +301,7 @@ def save_configs(filename):
     serializer.write(filename)
         
 def edit_option(config, option):
-    print 'Edit option: ' + Style.BRIGHT + str(option.path_string())
-    print 'Description: ' + Fore.CYAN + option.documentation        
+    print 'Edit option: ' + option_display_string(option)
     
     option_value, option_origin = config.option_value(option)
 
@@ -317,7 +314,8 @@ def edit_option(config, option):
             option_origin = 'Default'
     
     print 'Value: ' + Style.BRIGHT + str(option_value) +  ' (' + str(option_origin) + ')'
-    print 'Default: ' + str(option.default_value)
+    if option.default_value is not None:
+        print 'Default: ' + str(option.default_value)
     print
     print '[s] Set'
     print '[u] Unset'
