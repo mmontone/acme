@@ -195,9 +195,9 @@
         <required>False</required>
       </option>
       <option name="Choice">
-        <documentation>Choice test
-
-
+        <documentation>Foo: make foo
+Bar: build bar
+Baz: output baz
 </documentation>
         <type name="Choice">
           <option value="Foo"/>
