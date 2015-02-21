@@ -5,6 +5,10 @@ from colorama import Fore, Back, Style
 import sys
 import readline
 import pycountry
+import tempfile
+from subprocess import call
+
+EDITOR = os.environ.get('EDITOR', 'emacs')
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -140,7 +144,7 @@ def edit_configuration(config, **kwargs):
     for section in sections:
         print '[' + str(index) + '] ' + section.name
         index = index + 1
-    print '[p] Print | [s] Save | [h] Help | [q] Quit'
+    print '[p] Print | [s] Save | [d] Document | [h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -172,6 +176,13 @@ def edit_configuration(config, **kwargs):
                 print Fore.GREEN + 'CONFIGURATION SAVED.'
             else:
                 return edit_configuration(config, **kwargs)
+        if command == 'd':
+            with tempfile.NamedTemporaryFile(suffix=".tmp") as tmpfile:
+                tmpfile.write(config.documentation)
+                tmpfile.flush()
+                call([EDITOR, tmpfile.name])
+                config.documentation = tmpfile.read()
+
         if command == 'h' or command == 'help':
             print_help()
             return edit_configuration(config, **kwargs)
