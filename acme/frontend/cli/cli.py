@@ -83,6 +83,56 @@ def print_config(config):
         print_section(config, section)
         print
 
+def edit_configurations(configs, **kwargs):
+    print 'Select configuration:'
+    
+    index = 0
+    for config in configs:
+        print '[' + str(index) + '] ' + config.name
+        index = index + 1
+    print '[s] Save | [h] Help | [q] Quit'
+    
+    command = raw_input('Command: ')
+    try:
+        selected_config = int(command)
+    except ValueError:
+        selected_config = None
+
+    if selected_config is not None:
+        if selected_config >= len(configs):
+            print 'Config ' + str(selected_config) + ' not found'
+            print
+            return edit_configurations(configs, **kwargs)
+        else:
+            config = configs[selected_config]
+            edit_configuration(config, **kwargs)
+            return edit_configurations(config, **kwargs)
+    else:
+        def print_help():
+            print 'Select a configuration with a number'
+            print
+        if command == 's' or command == 'save':
+            if query_yes_no('Save changes to configurations?'):
+                filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
+                confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
+                save_configs(confirmed_filename)
+                print Fore.GREEN + 'CONFIGURATIONS SAVED.'
+            else:
+                return edit_configurations(configs, **kwargs)
+        if command == 'h' or command == 'help':
+            print_help()
+            return edit_configurations(configs, **kwargs)
+        if command == 'q' or command == 'quit':
+            if query_yes_no('Quit without saving?'):
+                print 'Bye.'
+                exit(0)
+            else:
+                return edit_configurations(configs, **kwargs)
+        else:
+            print 'Invalid command: ' + command
+            print
+            return edit_configurations(configs, **kwargs)
+
 def edit_configuration(config, **kwargs):
     print 'Select section:'
     sections = config.schema.sections()
@@ -120,8 +170,6 @@ def edit_configuration(config, **kwargs):
                 confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
                 save_configs(confirmed_filename)
                 print Fore.GREEN + 'CONFIGURATION SAVED.'
-                print
-                return edit_configuration(config, **kwargs)
             else:
                 return edit_configuration(config, **kwargs)
         if command == 'h' or command == 'help':

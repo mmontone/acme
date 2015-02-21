@@ -262,7 +262,12 @@ def cmd_edit(args):
         else:  # no frontend selected
             tk.start_configuration_manager(config)
     else:
-        tk.start_configurations_manager(configs)      
+        if args.frontend == 'tk' or args.tk:
+            tk.start_configurations_manager(configs)      
+        elif args.frontend == 'cli' or args.cli:
+            cli.edit_configurations(configs)
+        else:
+            tk.start_configurations_manager(configs)
 
 def cmd_create(args):
     load_schemas(args)
