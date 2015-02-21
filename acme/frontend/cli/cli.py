@@ -99,7 +99,7 @@ def edit_configuration(config, **kwargs):
         selected_section = None
 
     if selected_section is not None:
-        if selected_section > len(sections):
+        if selected_section >= len(sections):
             print 'Section ' + str(selected_section) + ' not found'
             print
             return edit_configuration(config, **kwargs)
@@ -164,7 +164,7 @@ def select_option(config, section):
         selected_option = None
 
     if selected_option is not None:
-        if selected_option > len(options):
+        if selected_option >= len(options):
             print 'Option ' + str(selected_option) + ' not found'
             print
             return select_option(config, section)
@@ -225,7 +225,7 @@ def edit_option(config, option):
     if command == 's':
         editor_class_name = 'Cli' + option.option_type.name + 'Editor'
         editor_class = globals()[editor_class_name]
-        editor = editor_class(option)
+        editor = editor_class(option, config)
         value = editor.edit()
         config.set_option_value(option, value)
         return edit_option(config, option)
@@ -242,11 +242,13 @@ def edit_option(config, option):
         else:
             return edit_option(config, option)
 
-class OptionTypeEditor():
+class OptionTypeEditor(object):
     option = None
+    config = None
 
-    def __init__(self, option):
+    def __init__(self, option, config):
         self.option = option
+        self.config = config
 
     
 class CliStringEditor(OptionTypeEditor):
@@ -311,7 +313,7 @@ class CliChoiceEditor(OptionTypeEditor):
             selected_option = None
 
         if selected_option is not None:
-            if selected_option > len(options):
+            if selected_option >= len(options):
                 print 'Option ' + str(selected_option) + ' not found'
                 print
                 return self.edit()
@@ -338,3 +340,62 @@ class CliCountryEditor(OptionTypeEditor):
             return matches[state]
         else:
             return None
+
+class CliListEditor(OptionTypeEditor):
+    def __init__(self, option, config):
+        super(CliListEditor, self).__init__(option, config)
+        self.options = self.option.option_type.options()
+        
+    def edit(self):
+        value, origin = self.config.option_value(self.option)
+        return self.edit_list(value)
+
+    def edit_list(self, items):
+        index = 0
+        for item in items:
+            print '[' + str(index) + '] ' + str(item)
+            index = index + 1
+        print '[c] Clear list | [+] Add item | [-] Remove item | [d] Done'
+        print
+        command = raw_input('Command: ')
+        if command == 'c' or command == 'clear':
+            return self.edit_list([])
+        elif command == '+':
+            choose_from = [item for item in self.options if item not in items]
+            index = 0
+            for option in choose_from:
+                print '[' + str(index) + '] ' + str(option)
+                index = index + 1
+            selection = raw_input('Select item to add: ')
+            try:
+                selected_option = int(selection)
+            except ValueError:
+                selected_option = None                         
+        
+            if selected_option is not None:
+                if selected_option >= len(choose_from):
+                    print 'Option ' + str(selected_option) + ' not found'
+                    print
+                    return self.edit_list(items)
+                else:
+                    items.append(choose_from[selected_option])
+                    return self.edit_list(items)
+        elif command == '-':
+            selection = raw_input('Item to remove: ')
+            try:
+                selected_item = int(selection)
+            except ValueError:
+                selected_item = None
+            if selected_item is not None:
+                if selected_item >= len(items):
+                    print 'Item ' + str(selected_item) + ' not found'
+                    print
+                    return self.edit_list(items)
+                else:
+                    del(items[selected_item])
+                    return self.edit_list(items)
+        elif command == 'd' or command == 'done':
+            return items
+        else:
+            print 'Invalid command'
+            return self.edit_list(items)
