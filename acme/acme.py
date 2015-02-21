@@ -83,13 +83,31 @@ def cmd_install(args):
     pass
 
 def cmd_setup(args):
-    if args.full:
-        load_configs(args)
-        tk.start_full_manager(configs=configs)
-    else:
-        load_schemas(args)
-        tk.start_schemas_manager()
+    configs = load_configs(args)
+    tk.start_full_manager(configs=configs)
+    
+def cmd_schema_edit(args):
+    load_schemas(args)
+    tk.start_schemas_manager()
 
+def cmd_schema_list(args):
+    print 'Not implemented'
+
+def cmd_schema_inspect(args):
+    print 'Not implemented'
+
+def cmd_schema_delete(args):
+    print 'Not implemented'
+
+def cmd_import(args):
+    print 'Not implemented'
+
+def cmd_export(args):
+    print 'Not implemented'
+
+def cmd_delete(args):
+    print 'Not implemented'
+    
 def cmd_get(args):
     load_configs(args)
     logging.info('Get option at ' + args.get)
@@ -288,11 +306,10 @@ def main():
     parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
 
     subparsers = parser.add_subparsers(help='command help')
-    
-    parser_setup = subparsers.add_parser('setup', help='Edit configuration schemas')
-    parser_setup.add_argument('--full', help="Edit both schemas and configurations", action='store_true')
+
+    parser_setup = subparsers.add_parser('setup', help="Edit both schemas and configurations")
     parser_setup.set_defaults(func=cmd_setup)
-    
+        
     parser_list = subparsers.add_parser('list', help='List configurations')
     parser_list.add_argument('--json', help="Use JSON for communication", action="store_true")
     parser_list.set_defaults(func=cmd_list)
@@ -330,12 +347,41 @@ def main():
     parser_create.add_argument('--dialog', help='Use dialog frontend', action='store_true')
     parser_create.set_defaults(func=cmd_create)
 
+    parser_delete = subparsers.add_parser('delete', help='Delete configuration')
+    parser_delete.add_argument('config', help='Name of the configuration to delete')
+    parser_delete.set_defaults(func=cmd_delete)
+
+    parser_import = subparsers.add_parser('import', help='Import configuration')
+    parser_import.add_argument('file', help='The file to import configurations from')
+    parser_import.set_defaults(func=cmd_import)
+
+    parser_export = subparsers.add_parser('export', help='Export configuration')
+    parser_export.add_argument('config', help='Name of the configuration to export')
+    parser_export.add_argument('file', help='The file to export configuration to')
+    parser_export.set_defaults(func=cmd_export)
+
     parser_validate = subparsers.add_parser('validate', help='Validate configurations or a configuration')
     parser_validate.add_argument('config', nargs='?', help='Configuration to validate')
     parser_validate.set_defaults(func=cmd_validate)
 
     parser_install = subparsers.add_parser('install', help='Trigger install')
     parser_install.set_defaults(func=cmd_install)
+
+    schema_parser = subparsers.add_parser('schema', help='Schemas management')
+    schema_subparsers = schema_parser.add_subparsers(help='Schemas management')
+    
+    schema_parser_edit = schema_subparsers.add_parser('edit', help='Edit configuration schemas')
+    schema_parser_edit.set_defaults(func=cmd_schema_edit)
+
+    schema_parser_list = schema_subparsers.add_parser('list', help='List schemas')
+    schema_parser_list.set_defaults(func=cmd_schema_list)
+
+    schema_parser_delete = schema_subparsers.add_parser('delete', help='Delete schema')
+    schema_parser_delete.set_defaults(func=cmd_schema_delete)
+
+    schema_parser_inspect = schema_subparsers.add_parser('inspect', help='Inspect schema')
+    schema_parser_inspect.add_argument('schema', help='Schema to inspect')
+    schema_parser_inspect.set_defaults(func=cmd_schema_inspect)    
     
     args = parser.parse_args()
 
