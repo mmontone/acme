@@ -71,6 +71,16 @@ def option_display_string(option, config=None, display_value=False, display_defa
                 display += '. Default: ' + str(option.default_value)
             return display
 
+
+def delete_configuration(config, **kwargs):
+    confirmed = True
+    if not kwargs.get('force'):
+        confirmed = query_yes_no('Delete configuration ' + config.name + '?')
+    if confirmed:
+        conf.Configuration.unregister_config(config)
+        filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
+        save_configs(confirmed_filename)
+
 def create_configuration(config, **kwargs):
     def print_help():
         print 'Create configuration'

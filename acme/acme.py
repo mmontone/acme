@@ -106,7 +106,9 @@ def cmd_export(args):
     print 'Not implemented'
 
 def cmd_delete(args):
-    print 'Not implemented'
+    load_configs(args)
+    config = conf.Configuration.get_named(args.config)
+    cli.delete_configuration(config, filename=args.configs, force=args.force)
     
 def cmd_get(args):
     load_configs(args)
@@ -276,14 +278,14 @@ def cmd_edit(args):
         if args.frontend == 'tk' or args.tk:
             tk.start_configuration_manager(config)
         elif args.frontend == 'cli' or args.cli:
-            cli.edit_configuration(config)
+            cli.edit_configuration(config, filename=args.configs)
         else:  # no frontend selected
             tk.start_configuration_manager(config)
     else:
         if args.frontend == 'tk' or args.tk:
             tk.start_configurations_manager(configs)      
         elif args.frontend == 'cli' or args.cli:
-            cli.edit_configurations(configs)
+            cli.edit_configurations(configs, filename=args.configs)
         else:
             tk.start_configurations_manager(configs)
 
@@ -294,9 +296,9 @@ def cmd_create(args):
         tk.start_configuration_manager(config)
     elif args.frontend == 'cli' or args.cli:
         if args.install:
-            cli.create_configuration(config)
+            cli.create_configuration(config, filename=args.configs)
         else:
-            cli.edit_configuration(config)
+            cli.edit_configuration(config, filename=args.configs)
     else:  # no frontend selected
         tk.start_configuration_manager(config)
 
@@ -353,6 +355,7 @@ def main():
 
     parser_delete = subparsers.add_parser('delete', help='Delete configuration')
     parser_delete.add_argument('config', help='Name of the configuration to delete')
+    parser_delete.add_argument('-f', '--force', help='Force the deletion')
     parser_delete.set_defaults(func=cmd_delete)
 
     parser_import = subparsers.add_parser('import', help='Import configuration')
