@@ -137,6 +137,56 @@ def edit_configurations(configs, **kwargs):
             print
             return edit_configurations(configs, **kwargs)
 
+def manage_configuration(config, **kwargs):
+    print 'Manage ' + config.name + ' configuration'
+    print '[s] Save'
+    print '[d] Update description'
+    print '[v] Validate'
+    print '[p] Print'
+    print '[u] Set parent'
+    print '[h] Help'
+    print '[l] Go back'
+    command = raw_input('Command: ')
+
+    def print_help():
+        print 'Configuration management help'
+
+    if command == 'p' or command == 'print':
+        print_config(config)
+        return manage_configuration(config, **kwargs)
+    if command == 's' or command == 'save':
+        print_config(config)
+        if query_yes_no('Save configuration?'):
+            filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
+            confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
+            save_configs(confirmed_filename)
+            print Fore.GREEN + 'CONFIGURATION SAVED.'
+            return manage_configuration(config, **kwargs)
+        else:
+            return manage_configuration(config, **kwargs)
+    if command == 'd':
+        with tempfile.NamedTemporaryFile(suffix=".tmp") as tmpfile:
+            tmpfile.write(config.documentation)
+            tmpfile.flush()
+            call([EDITOR, tmpfile.name])
+            config.documentation = tmpfile.read()
+        return manage_configuration(config, **kwargs)
+    if command == 'v':
+        print 'Not implemented'
+        return manage_configuration(config, **kwargs)
+    if command == 'u':
+        print 'Not implemented'
+        return manage_configuration(config, **kwargs)
+    if command == 'h' or command == 'help':
+        print_help()
+        return manage_configuration(config, **kwargs)
+    if command == 'l' or command == 'back':
+        return
+    else:
+        print 'Invalid command: ' + command
+        print
+        return manage_configuration(config, **kwargs)
+
 def edit_configuration(config, **kwargs):
     print 'Select section:'
     sections = config.schema.sections()
@@ -144,7 +194,7 @@ def edit_configuration(config, **kwargs):
     for section in sections:
         print '[' + str(index) + '] ' + section.name
         index = index + 1
-    print '[p] Print | [s] Save | [d] Document | [h] Help | [q] Quit'
+    print '[p] Print | [s] Save | [m] Manage | [h] Help | [q] Quit'
     print
     command = raw_input('Command: ')
     try:
@@ -176,13 +226,9 @@ def edit_configuration(config, **kwargs):
                 print Fore.GREEN + 'CONFIGURATION SAVED.'
             else:
                 return edit_configuration(config, **kwargs)
-        if command == 'd':
-            with tempfile.NamedTemporaryFile(suffix=".tmp") as tmpfile:
-                tmpfile.write(config.documentation)
-                tmpfile.flush()
-                call([EDITOR, tmpfile.name])
-                config.documentation = tmpfile.read()
-
+        if command == 'm':
+            manage_configuration(config, **kwargs)
+            return edit_configuration(config, **kwargs)
         if command == 'h' or command == 'help':
             print_help()
             return edit_configuration(config, **kwargs)
