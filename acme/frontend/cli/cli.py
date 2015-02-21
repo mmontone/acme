@@ -117,6 +117,7 @@ def create_configuration(config, **kwargs):
                     exit(0)
             print
     # We are done. Save?
+    print_config(config)
     if query_yes_no('Save the configuration?'):
         filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
         confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
