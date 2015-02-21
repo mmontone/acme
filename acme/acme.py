@@ -310,11 +310,11 @@ def main():
     parser.add_argument('-s', '--schemas', help='The configuration schemas files. Default is acme.schema')
 
     parser.add_argument('--version', help='Acme version', action="version", version=acme_version())
-    parser.add_argument('--debug', help='Run in debug mode. Provide the debugging level, one of DEBUG or INFO')
+    parser.add_argument('--debug', help='Run in debug mode. One of DEBUG or INFO')
 
     subparsers = parser.add_subparsers(help='command help')
 
-    parser_setup = subparsers.add_parser('setup', help="Edit both schemas and configurations")
+    parser_setup = subparsers.add_parser('setup', help="Edit schemas and configurations")
     parser_setup.set_defaults(func=cmd_setup)
         
     parser_list = subparsers.add_parser('list', help='List configurations')
@@ -336,7 +336,7 @@ def main():
     parser_set.add_argument('--no-validate', help='Avoid configuration validation before setting', action='store_true')
     parser_set.set_defaults(func=cmd_set)
     
-    parser_edit = subparsers.add_parser('edit', help="Edit configurations or a specific configuration")
+    parser_edit = subparsers.add_parser('edit', help="Edit configuration(s)")
     parser_edit.add_argument('config', nargs='?', help='Configuration to validate')
     parser_edit.add_argument('--frontend', help='Select prefered frontend. One of tk, cli, or dialog')
     parser_edit.add_argument('--tk', help='Use tk frontend', action='store_true')
@@ -372,7 +372,7 @@ def main():
     parser_export.add_argument('--output', '-o', help='The file to export configuration to')
     parser_export.set_defaults(func=cmd_export)
 
-    parser_validate = subparsers.add_parser('validate', help='Validate configurations or a configuration')
+    parser_validate = subparsers.add_parser('validate', help='Validate configuration(s)')
     parser_validate.add_argument('config', nargs='?', help='Configuration to validate')
     parser_validate.set_defaults(func=cmd_validate)
 
