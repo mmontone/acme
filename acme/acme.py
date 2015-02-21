@@ -102,13 +102,15 @@ def cmd_schema_delete(args):
 def cmd_import(args):
     print 'Not implemented'
 
-def cmd_export(args):
-    print 'Not implemented'
-
 def cmd_delete(args):
     load_configs(args)
     config = conf.Configuration.get_named(args.config)
     cli.delete_configuration(config, filename=args.configs, force=args.force)
+
+def cmd_print(args):
+    load_configs(args)
+    config = conf.Configuration.get_named(args.config)
+    cli.print_config(config)
     
 def cmd_get(args):
     load_configs(args)
@@ -187,13 +189,13 @@ def cmd_set(args):
         serialize_config()                                       
     
 
-def cmd_inspect(args):
+def cmd_export(args):
     configs = load_configs(args)
     config = conf.Configuration.get_named(args.config)
     schema = config.schema
         
     if args.json:
-        def inspect_section(section, options):
+        def export_section(section, options):
             for option in section.options():
                 value, origin = config.option_value(option)
                 
@@ -212,13 +214,13 @@ def cmd_inspect(args):
                                   'origin': str(option_origin)}
                     options.append(attributes) 
                 for section in section.subsections():
-                    inspect_section(section, options)
+                    export_section(section, options)
         options = []
         for section in config.sections():
-            inspect_section(section, options)
+            export_section(section, options)
         print json.dumps(options, cls=AcmeJSONEncoder)
     else:
-        def inspect_section(section):
+        def export_section(section):
             for option in section.options():
                 value, origin = config.option_value(option)
                     
@@ -233,13 +235,13 @@ def cmd_inspect(args):
                 if option_value is not None:
                     print option.path_string() + ", " + option.unparse_value(option_value) + ", " + str(option.option_type) + ", " + str(option_origin) 
                 for section in section.subsections():
-                    inspect_section(section)
+                    export_section(section)
                         
         for section in schema.sections():
-            inspect_section(section)
+            export_section(section)
 
 def cmd_validate(args):
-    load_configs(args)
+    configs = load_configs(args)
     if args.config is not None:
         # Validate configuration
         config = conf.Configuration.get_named(args.config)
@@ -252,7 +254,7 @@ def cmd_validate(args):
             print "The configuration is valid"
     else:
         # Validate all
-        for config in conf.Configuration.configurations():
+        for config in configs:
             errors = config.validate()
         
             if errors is not None:
@@ -319,10 +321,9 @@ def main():
     parser_list.add_argument('--json', help="Use JSON for communication", action="store_true")
     parser_list.set_defaults(func=cmd_list)
         
-    parser_inspect = subparsers.add_parser('inspect', help='Inspect a configuration. A CSV(Comma separated values) list with <option path>, <value>, <option type>, <origin>')
-    parser_inspect.add_argument('config', help='Configuration to validate')
-    parser_inspect.add_argument('--json', help="Use JSON for communication", action="store_true")
-    parser_inspect.set_defaults(func=cmd_inspect)
+    parser_print = subparsers.add_parser('print', help='Print a configuration')
+    parser_print.add_argument('config', help='Configuration to print')
+    parser_print.set_defaults(func=cmd_print)
 
     parser_get = subparsers.add_parser('get', help='Get an option value')
     parser_get.add_argument('get', help='Option to get')
@@ -364,7 +365,11 @@ def main():
 
     parser_export = subparsers.add_parser('export', help='Export configuration')
     parser_export.add_argument('config', help='Name of the configuration to export')
-    parser_export.add_argument('file', help='The file to export configuration to')
+    parser_export.add_argument('--json', help="Export in JSON format", action="store_true")
+    parser_export.add_argument('--csv', help="Export in CSV format", action="store_true")
+    parser_export.add_argument('--xml', help="Export in XML format", action="store_true")
+    parser_export.add_argument('--format', help="Export format", action="store_true")
+    parser_export.add_argument('--output', '-o', help='The file to export configuration to')
     parser_export.set_defaults(func=cmd_export)
 
     parser_validate = subparsers.add_parser('validate', help='Validate configurations or a configuration')
