@@ -71,14 +71,47 @@ def option_display_string(option, config=None, display_value=False, display_defa
                 display += '. Default: ' + str(option.default_value)
             return display
 
-def create_configuration(config):
+def create_configuration(config, **kwargs):
+    def print_help():
+        print 'Create configuration'
+
+    print 'Creating ' + config.name + ' configuration'
+    print
     for section in config.schema.sections():
         print Fore.WHITE + Back.BLUE +  section.name + ' options:'
-        #print Fore.BLUE + 'INFO: ' +  section.documentation
         for option in section.options():
-            print option_display_string(option, config, display_value=True)
-            raw_input('Value:')
+            print option_display_string(option)
             print
+            print '[s] Set'
+            print '[ENTER] Skip'
+            print '[l] Edit previous option'
+            print '[h] Help | [q] Quit'
+            print
+            command = raw_input('Command: ')
+
+            if command == 's':
+                editor_class_name = 'Cli' + option.option_type.name + 'Editor'
+                editor_class = globals()[editor_class_name]
+                editor = editor_class(option, config)
+                value = editor.edit()
+                config.set_option_value(option, value)
+            elif command == '':
+                pass
+            elif command == 'l':
+                print 'Not implemented'
+            elif command == 'h' or command == 'help':
+                print_help()
+            elif command == 'q' or command == 'quit':
+                if query_yes_no('Quit without saving?'):
+                    print 'Bye.'
+                    exit(0)
+            print
+    # We are done. Save?
+    if query_yes_no('Save the configuration?'):
+        filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
+        confirmed_filename = raw_input('Save to file[' + filename + ']:') or filename
+        save_configs(confirmed_filename)
+        print Fore.GREEN + 'CONFIGURATIONS SAVED.'           
 
 def print_section(config, section):
     print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ' options:'
@@ -454,6 +487,8 @@ class CliListEditor(OptionTypeEditor):
         return self.edit_list(value)
 
     def edit_list(self, items):
+        if items is None:
+            items = []
         index = 0
         for item in items:
             print '[' + str(index) + '] ' + str(item)
