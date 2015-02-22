@@ -16,7 +16,7 @@ import logging
 import email.utils
 import urlparse
 
-class ConfigurationSchema():
+class ConfigurationSchema(object):
     """Configuration schemas define the configurations structure. They have a name, a list of parents, and a list of sections with options definitions.
 
 Configuration schemas can be composed by inheriting from multiple parents. Configuration sections from the parents appear in the child configuration schema. For instance, a full stack web framework configuration schema could inherit from a generic Web schema for web server configuration, and another Database schema for database connection configuration.
@@ -156,7 +156,7 @@ Configuration schemas have sections, each containing other sections and schema o
             raise Exception('Section ' + path[1] + ' not found')
         return section.option_in_path(path[1:])
         
-class ConfigurationSchemaSection:
+class ConfigurationSchemaSection(object):
     """Configuration schema section"""
     
     def __init__(self, name='', **args):
@@ -309,7 +309,7 @@ class ConfigurationSchemaSection:
         else:
             return None               
 
-class ConfigurationSchemaOption:
+class ConfigurationSchemaOption(object):
     def __init__(self, name, option_type, **args):
         self._name = name
         self._option_type = option_type
@@ -907,7 +907,7 @@ class Configuration(object):
     def __str__(self):
         return self.name        
         
-class ConfigurationOption():
+class ConfigurationOption(object):
     
     def __init__(self, schema, **options):
         self._schema = schema
@@ -1335,7 +1335,7 @@ class DENumber(DependencyExpression):
     def evaluate(self, config):
         return self._value              
     
-class DependencyExpressionParser():
+class DependencyExpressionParser(object):
     @classmethod
     def parse_expression(cls, expression):
         parser = dependencies.dependenciesParser(parseinfo=False)
