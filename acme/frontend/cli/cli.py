@@ -84,7 +84,7 @@ def delete_configuration(config, **kwargs):
     if confirmed:
         conf.Configuration.unregister_config(config)
         filename = kwargs.get('filename') or os.getcwd() + '/acme.config'
-        save_configs(confirmed_filename)
+        save_configs(filename)
 
 def create_configuration(config, **kwargs):
     def print_help():

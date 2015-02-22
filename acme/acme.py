@@ -356,7 +356,7 @@ def main():
 
     parser_delete = subparsers.add_parser('delete', help='Delete configuration')
     parser_delete.add_argument('config', help='Name of the configuration to delete')
-    parser_delete.add_argument('-f', '--force', help='Force the deletion')
+    parser_delete.add_argument('-f', '--force', help='Force the deletion', action='store_true')
     parser_delete.set_defaults(func=cmd_delete)
 
     parser_import = subparsers.add_parser('import', help='Import configuration')
