@@ -365,6 +365,7 @@ def edit_option(config, option):
         if option_origin is None:
             option_origin = 'Default'
     
+    print 'Type: ' + str(option.option_type)
     print 'Value: ' + Style.BRIGHT + str(option_value) +  ' (' + str(option_origin) + ')'
     if option.default_value is not None:
         print 'Default: ' + str(option.default_value)
