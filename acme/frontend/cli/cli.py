@@ -91,7 +91,7 @@ def create_configuration(config, **kwargs):
         print 'Create configuration'
 
     def edit_option(option):
-        print option_display_string(option)
+        print option_display_string(option, display_default=True)
         print
         print '[s] Set'
         if not option.is_required:
