@@ -8,7 +8,6 @@ import tkFileDialog
 import pytz # for timezones
 import pycountry # for countries and languages
 import tkCalendar
-import grako
 import logging
 import os
 from util import *
@@ -1691,7 +1690,7 @@ class ConfigurationNavigator(tk.Frame):
                 error_msg = error_msg + '\n' + config.name + " configuration is invalid: \n"
                 for error in errors:
                     error_msg = error_msg + "    " + error['message'] + '\n'
-        if error_msg <> '':
+        if error_msg != '':
             tkMessageBox.showerror('Invalid configurations', 'There are invalid configurations\n' + error_msg)
         else:
             tkMessageBox.showinfo('Valid configurations', 'All configurations are valid')

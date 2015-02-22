@@ -142,7 +142,7 @@ class StatusBar(tk.Frame):
         self.label.config(text="")
         self.label.update_idletasks()
         
-class Dialog(tk.Toplevel):
+class Dialog(tk.Toplevel, object):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
         

@@ -4,7 +4,6 @@ from util import *
 import configuration as conf
 import os
 import sys
-import test
 import argparse
 import logging
 import datetime

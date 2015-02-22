@@ -11,7 +11,7 @@
 from util import *
 from lxml import etree as et
 import datetime
-import dependencies
+#import dependencies
 import logging
 import email.utils
 import urlparse
@@ -1338,11 +1338,15 @@ class DENumber(DependencyExpression):
 class DependencyExpressionParser(object):
     @classmethod
     def parse_expression(cls, expression):
-        parser = dependencies.dependenciesParser(parseinfo=False)
-        ast = parser.parse(expression, whitespace='', 
-                           rule_name='boolexp', 
-                           semantics=DependencyExpressionParser())
-        return ast
+        # TODO: enable this. Dependencies parsing has been disabled because
+        # it breaks readline and the grako api has changed.
+        
+        #parser = dependencies.dependenciesParser(parseinfo=False)
+        #ast = parser.parse(expression, whitespace='', 
+        #                   rule_name='boolexp', 
+        #                   semantics=DependencyExpressionParser())
+        #return ast
+        return expression
     
     def bool_literal(self, ast):
         if ast == 'True':
