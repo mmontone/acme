@@ -3,8 +3,8 @@ import os
 from util import *
 from colorama import Fore, Back, Style
 import sys
-import readline
 import pycountry
+import readline
 import tempfile
 from subprocess import call
 
@@ -85,37 +85,45 @@ def create_configuration(config, **kwargs):
     def print_help():
         print 'Create configuration'
 
+    def edit_option(option):
+        print option_display_string(option)
+        print
+        print '[s] Set'
+        if not option.is_required:
+            print '[ENTER] Skip'
+        print '[l] Edit previous option'
+        print '[h] Help | [q] Quit'
+        print
+        command = raw_input('Command: ')
+
+        if command == 's':
+            editor_class_name = 'Cli' + option.option_type.name + 'Editor'
+            editor_class = globals()[editor_class_name]
+            editor = editor_class(option, config)
+            value = editor.edit()
+            config.set_option_value(option, value)
+        elif command == ''  and not option.is_required:
+            pass
+        elif command == 'l':
+            print 'Not implemented'
+        elif command == 'h' or command == 'help':
+            print_help()
+        elif command == 'q' or command == 'quit':
+            if query_yes_no('Quit without saving?'):
+                print 'Bye.'
+                exit(0)
+        else:
+            print 'Invalid command'
+            edit_option(option)
+        print
+
     print 'Creating ' + config.name + ' configuration'
     print
     for section in config.schema.sections():
         print Fore.WHITE + Back.BLUE +  section.name + ' options:'
         for option in section.options():
-            print option_display_string(option)
-            print
-            print '[s] Set'
-            print '[ENTER] Skip'
-            print '[l] Edit previous option'
-            print '[h] Help | [q] Quit'
-            print
-            command = raw_input('Command: ')
-
-            if command == 's':
-                editor_class_name = 'Cli' + option.option_type.name + 'Editor'
-                editor_class = globals()[editor_class_name]
-                editor = editor_class(option, config)
-                value = editor.edit()
-                config.set_option_value(option, value)
-            elif command == '':
-                pass
-            elif command == 'l':
-                print 'Not implemented'
-            elif command == 'h' or command == 'help':
-                print_help()
-            elif command == 'q' or command == 'quit':
-                if query_yes_no('Quit without saving?'):
-                    print 'Bye.'
-                    exit(0)
-            print
+            edit_option(option)
+       
     # We are done. Save?
     print_config(config)
     if query_yes_no('Save the configuration?'):
@@ -427,7 +435,7 @@ class CliEmailEditor(OptionTypeEditor):
         value = raw_input('New value: ')
         return self.option.parse_value(value)
 
-class CliUriEditor(OptionTypeEditor):
+class CliURIEditor(OptionTypeEditor):
     def edit(self):
         value = raw_input('New value: ')
         return self.option.parse_value(value)
@@ -435,13 +443,28 @@ class CliUriEditor(OptionTypeEditor):
 class CliDirectoryEditor(OptionTypeEditor):
     def edit(self):
         value = raw_input('Enter new directory: ')
-        if not os.path.dir(value):
+        if not os.path.isdir(value):
             cont = query_yes_no(value + ' file does not exist. Continue?')
             if not cont:
                 return self.edit()
         return self.option.parse_value(value)
 
 class CliColorEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliDateEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliTimeEditor(OptionTypeEditor):
+    def edit(self):
+        value = raw_input('New value: ')
+        return self.option.parse_value(value)
+
+class CliDatetimeEditor(OptionTypeEditor):
     def edit(self):
         value = raw_input('New value: ')
         return self.option.parse_value(value)
@@ -477,11 +500,58 @@ class CliCountryEditor(OptionTypeEditor):
     def edit(self):
         readline.set_completer(self.completer)
         readline.parse_and_bind('tab: complete')
-        value = raw_input('Enter country(tab for completion): ')
+        value = raw_input('Enter country (tab for completion): ')
         return self.option.parse_value(value)
         
     def completer(self, text, state):
-        raise Exception('Completing!!')
+        matches = [i for i in self.options if i.startswith(text)]
+        if state < len(matches):
+            return matches[state]
+        else:
+            return None
+
+class CliTimezoneEditor(OptionTypeEditor):
+    options = ['tz1', 'tz2']
+
+    def edit(self):
+        readline.set_completer(self.completer)
+        readline.parse_and_bind('tab: complete')
+        value = raw_input('Enter timezone (tab for completion): ')
+        return self.option.parse_value(value)
+        
+    def completer(self, text, state):
+        matches = [i for i in self.options if i.startswith(text)]
+        if state < len(matches):
+            return matches[state]
+        else:
+            return None
+
+class CliLanguageEditor(OptionTypeEditor):
+    options = ['lang1', 'lang2']
+
+    def edit(self):
+        readline.set_completer(self.completer)
+        readline.parse_and_bind('tab: complete')
+        value = raw_input('Enter language (tab for completion): ')
+        return self.option.parse_value(value)
+        
+    def completer(self, text, state):
+        matches = [i for i in self.options if i.startswith(text)]
+        if state < len(matches):
+            return matches[state]
+        else:
+            return None
+
+class CliCurrencyEditor(OptionTypeEditor):
+    options = ['currency1', 'currency2']
+
+    def edit(self):
+        readline.set_completer(self.completer)
+        readline.parse_and_bind('tab: complete')
+        value = raw_input('Enter currency (tab for completion): ')
+        return self.option.parse_value(value)
+        
+    def completer(self, text, state):
         matches = [i for i in self.options if i.startswith(text)]
         if state < len(matches):
             return matches[state]
@@ -519,7 +589,7 @@ class CliListEditor(OptionTypeEditor):
             try:
                 selected_option = int(selection)
             except ValueError:
-                selected_option = None                         
+                selected_option = None
         
             if selected_option is not None:
                 if selected_option >= len(choose_from):
@@ -548,3 +618,50 @@ class CliListEditor(OptionTypeEditor):
         else:
             print 'Invalid command'
             return self.edit_list(items)
+
+class CliManyEditor(OptionTypeEditor):
+    def edit(self):
+        value, origin = self.config.option_value(self.option)
+        return self.edit_many(value)
+
+    def edit_many(self, items):
+        if items is None:
+            items = []
+        index = 0
+        for item in items:
+            print '[' + str(index) + '] ' + str(item)
+            index = index + 1
+        print '[c] Clear list | [+] Add item | [-] Remove item | [d] Done'
+        print
+        command = raw_input('Command: ')
+        if command == 'c' or command == 'clear':
+            return self.edit_many([])
+        elif command == '+':
+            new_item = self.create_item()
+            items.append(new_item)
+            return self.edit_many(items)
+        elif command == '-':
+            selection = raw_input('Item to remove: ')
+            try:
+                selected_item = int(selection)
+            except ValueError:
+                selected_item = None
+            if selected_item is not None:
+                if selected_item >= len(items):
+                    print 'Item ' + str(selected_item) + ' not found'
+                    print
+                    return self.edit_many(items)
+                else:
+                    del(items[selected_item])
+                    return self.edit_many(items)
+        elif command == 'd' or command == 'done':
+            return items
+        else:
+            print 'Invalid command'
+            return self.edit_many(items)
+
+    def create_item(self):
+        editor_class_name = 'Cli' + self.option.option_type.option_type.name + 'Editor'
+        editor_class = globals()[editor_class_name]
+        editor = editor_class(self.option.option_type.option_type, self.config)
+        return editor.edit()
