@@ -47,18 +47,23 @@ def option_display_string(option, config=None, display_value=False, display_defa
         assert(config is not None)
         option_value, option_origin = config.option_value(option)
 
-        if option_value is None:
-            option_value = option.default_value
-        if option_value is None:
-            print 'Empty'
+        if option_value is not None:
+            option_value_string = option.display_value(option_value)
         else:
-            if option_origin is None:
+            if option.default_value is not None:
+                option_value_string = option.display_value(option.default_value)
                 option_origin = 'Default'
+            else:
+                option_value_string = 'Not set'
+
+        origin_string = ''
+        if option_origin is not None:
+            origin_string = ' (' + str(option_origin) + ')'
         
         if option.is_required:
-            return option.name + ' (' + str(option_origin) + ')(*): ' + Style.NORMAL + str(option_value)
+            return option.name + ' ' + origin_string + '(*): ' + Style.NORMAL + str(option_value_string)
         else:
-            return option.name + ' (' + str(option_origin) + '): ' + str(option_value)
+            return option.name + ' ' + origin_string + ': ' + str(option_value_string)
     else:
         if option.is_required:
             display = option.name + '(*)'
@@ -357,16 +362,21 @@ def edit_option(config, option):
     
     option_value, option_origin = config.option_value(option)
 
-    if option_value is None:
-        option_value = option.default_value
-    if option_value is None:
-        print 'Not set'
+    if option_value is not None:
+        option_value_string = option.display_value(option_value)
     else:
-        if option_origin is None:
+        if option.default_value is not None:
+            option_value_string = option.display_value(option.default_value)
             option_origin = 'Default'
-    
+        else:
+            option_value_string = 'Not set'
+   
+    origin_string = ''
+    if option_origin is not None:
+        origin_string = ' (' + str(option_origin) + ')'
+
     print 'Type: ' + str(option.option_type)
-    print 'Value: ' + Style.BRIGHT + str(option_value) +  ' (' + str(option_origin) + ')'
+    print 'Value: ' + Style.BRIGHT + str(option_value_string) + origin_string
     if option.default_value is not None:
         print 'Default: ' + str(option.default_value)
     print
