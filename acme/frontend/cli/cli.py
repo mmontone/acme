@@ -457,18 +457,33 @@ class CliColorEditor(OptionTypeEditor):
 
 class CliDateEditor(OptionTypeEditor):
     def edit(self):
-        value = raw_input('New value: ')
-        return self.option.parse_value(value)
+        day = raw_input('Day: ')
+        month = raw_input('Month: ')
+        year = raw_input('Year: ')
+        date = day + '/' + month + '/' + year
+        return self.option.parse_value(date)
 
 class CliTimeEditor(OptionTypeEditor):
     def edit(self):
-        value = raw_input('New value: ')
-        return self.option.parse_value(value)
+        hour = raw_input('Hour: ')
+        minutes = raw_input('Minute[00]:') or '00'
+        seconds = raw_input('Seconds[00]') or '00'
+        time = hour + ':' + minutes + ':' + seconds
+        return self.option.parse_value(time)
 
 class CliDatetimeEditor(OptionTypeEditor):
     def edit(self):
-        value = raw_input('New value: ')
-        return self.option.parse_value(value)
+        day = raw_input('Day: ')
+        month = raw_input('Month: ')
+        year = raw_input('Year: ')
+        date = day + '/' + month + '/' + year
+        
+        hour = raw_input('Hour: ')
+        minutes = raw_input('Minute[00]:') or '00'
+        seconds = raw_input('Seconds[00]') or '00'
+        time = hour + ':' + minutes + ':' + seconds
+
+        return self.option.parse_value("('" + date + "','" + time + "')")
 
 class CliChoiceEditor(OptionTypeEditor):
     def edit(self):
