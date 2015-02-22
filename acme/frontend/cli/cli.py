@@ -1,12 +1,15 @@
 import configuration as conf
 import os
 from util import *
-from colorama import Fore, Back, Style
+from colorama import Fore, Back, Style, init
 import sys
 import pycountry
+import pytz
 import readline
 import tempfile
 from subprocess import call
+
+init(autoreset=True)
 
 EDITOR = os.environ.get('EDITOR', 'emacs')
 
@@ -125,7 +128,7 @@ def create_configuration(config, **kwargs):
     print 'Creating ' + config.name + ' configuration'
     print
     for section in config.schema.sections():
-        print Fore.WHITE + Back.BLUE +  section.name + ' options:'
+        print Fore.WHITE + Back.BLUE +  section.name + ':'
         for option in section.options():
             edit_option(option)
        
@@ -138,15 +141,15 @@ def create_configuration(config, **kwargs):
         print Fore.GREEN + 'CONFIGURATIONS SAVED.'           
 
 def print_section(config, section):
-    print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ' options:'
+    print Fore.WHITE + Back.BLUE +  Style.BRIGHT + section.name + ':'
     for option in section.options():
         print option_display_string(option, config=config, display_value=True)
 
 def print_config(config):
-    print Fore.GREEN + Style.BRIGHT + config.name + ' configuration'
+    print Style.BRIGHT + config.name + ' configuration'
     print
     if config.documentation is not None:
-        print config.documentation
+        print Fore.WHITE + Back.CYAN + config.documentation
         print
     for section in config.schema.sections():
         print_section(config, section)
@@ -537,7 +540,7 @@ class CliCountryEditor(OptionTypeEditor):
             return None
 
 class CliTimezoneEditor(OptionTypeEditor):
-    options = ['tz1', 'tz2']
+    options = [str(tz) for tz in pytz.all_timezones]
 
     def edit(self):
         readline.set_completer(self.completer)
@@ -553,7 +556,7 @@ class CliTimezoneEditor(OptionTypeEditor):
             return None
 
 class CliLanguageEditor(OptionTypeEditor):
-    options = ['lang1', 'lang2']
+    options = [lang.name for lang in pycountry.languages]
 
     def edit(self):
         readline.set_completer(self.completer)
@@ -569,7 +572,7 @@ class CliLanguageEditor(OptionTypeEditor):
             return None
 
 class CliCurrencyEditor(OptionTypeEditor):
-    options = ['currency1', 'currency2']
+    options = [currency.name for currency in pycountry.currencies]
 
     def edit(self):
         readline.set_completer(self.completer)
