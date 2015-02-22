@@ -360,7 +360,7 @@ class ConfigurationSchemaOption:
         
     @property
     def is_required(self):
-        return self._is_required
+        return self.default_value is None and self._is_required
     
     @is_required.setter
     def is_required(self, value):
