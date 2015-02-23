@@ -1,6 +1,6 @@
-import configuration as conf
+import acme.configuration as conf
 import os
-from util import *
+from acme.util import *
 from colorama import Fore, Back, Style, init
 import sys
 import pycountry

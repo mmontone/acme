@@ -1,7 +1,7 @@
 import Tkinter as tk
 import ttk
 import widgets as w
-import configuration as conf
+import acme.configuration as conf
 import tkMessageBox
 import tkColorChooser
 import tkFileDialog
@@ -10,7 +10,7 @@ import pycountry # for countries and languages
 import tkCalendar
 import logging
 import os
-from util import *
+from acme.util import *
 
 acme = None
 root = None
