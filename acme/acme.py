@@ -292,7 +292,10 @@ def cmd_edit(args):
 
 def cmd_create(args):
     load_configs(args)
-    config = conf.Configuration(args.config, schema=conf.ConfigurationSchema.get_named(args.schema))
+    parent = None
+    if args.parent is not None:
+        assert(conf.Configuration.get_named(args.parent))
+    config = conf.Configuration(args.config, schema=conf.ConfigurationSchema.get_named(args.schema), parent=args.parent)
     if args.frontend == 'tk' or args.tk:
         tk.start_configuration_manager(config)
     elif args.frontend == 'cli' or args.cli:
@@ -346,7 +349,8 @@ def main():
     parser_create = subparsers.add_parser('create', help="Create a configuration")
     parser_create.add_argument('config', help='Name of the configuration to create')
     parser_create.add_argument('schema', help='Schema for the new configuration')
-    parser_create.add_argument('--install', help='Create configuration in install mode', action='store_true')
+    parser_create.add_argument('-p', '--parent', help='The new configuration parent')
+    parser_create.add_argument('-i', '--install', help='Create configuration in install mode', action='store_true')
     parser_create.add_argument('--frontend', help='Select prefered frontend. One of tk, cli, or dialog')
     parser_create.add_argument('--tk', help='Use tk frontend', action='store_true')
     parser_create.add_argument('--cli', help='Use terminal frontend', action='store_true')
