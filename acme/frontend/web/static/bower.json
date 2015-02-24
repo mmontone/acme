@@ -1,0 +1,25 @@
+{
+  "name": "acme.web",
+  "version": "0.0.1",
+  "homepage": "https://github.com/mmontone/acme",
+  "authors": [
+    "Mariano Montone <marianomontone@gmail.com>"
+  ],
+  "description": "Acme web frontend",
+  "main": "web.py",
+  "keywords": [
+    "web"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.2"
+  }
+}
