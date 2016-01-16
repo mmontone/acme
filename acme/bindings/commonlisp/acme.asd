@@ -42,4 +42,6 @@ OTHER DEALINGS IN THE SOFTWARE."
      :cl-json
      :puri
      :local-time
-     :cl-colors))
+     :cl-colors
+     :usocket
+     :cl-messagepack))

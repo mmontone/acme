@@ -10,6 +10,8 @@ import datetime
 import json
 import frontend.tk.tk as tk
 import frontend.cli.cli as cli
+import SocketServer
+import server
 
 class AcmeJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -306,6 +308,20 @@ def cmd_create(args):
     else:  # no frontend selected
         tk.start_configuration_manager(config)
 
+def cmd_serve(args):
+    load_configs(args)
+    
+    host = "localhost"
+    if args.host:
+        host = args.host
+
+    port = 2020
+    if args.port:
+        port = int(args.port)
+
+    s = server.AcmeServer((host, port))
+    s.serve_forever()
+
 def main():
     parser = argparse.ArgumentParser(prog='acme', description='Acme. Application Configuration ManagEr.')
     parser.add_argument('-c', '--configs', help='The configurations file. Default is acme.config')
@@ -396,7 +412,12 @@ def main():
 
     schema_parser_inspect = schema_subparsers.add_parser('inspect', help='Inspect schema')
     schema_parser_inspect.add_argument('schema', help='Schema to inspect')
-    schema_parser_inspect.set_defaults(func=cmd_schema_inspect)    
+    schema_parser_inspect.set_defaults(func=cmd_schema_inspect)
+
+    parser_serve = subparsers.add_parser('serve', help='Run ACME server')
+    parser_serve.add_argument('--host', help='Server host url')
+    parser_serve.add_argument('--port', help='Server port')
+    parser_serve.set_defaults(func=cmd_serve)
     
     args = parser.parse_args()
 
