@@ -308,7 +308,7 @@ def cmd_create(args):
     else:  # no frontend selected
         tk.start_configuration_manager(config)
 
-def cmd_serve(args):
+def cmd_serve (args):
     load_configs(args)
     
     host = "localhost"
@@ -319,7 +319,7 @@ def cmd_serve(args):
     if args.port:
         port = int(args.port)
 
-    s = server.AcmeServer((host, port))
+    s = server.AcmeServer((host, port), args)
     s.serve_forever()
 
 def main():
