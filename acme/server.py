@@ -10,10 +10,7 @@ class AcmeClientHandler(SocketServer.StreamRequestHandler, object):
     def __init__(self, request, client_address, server):
         self.schemas = acme.load_schemas(server.args)
         self.configs = acme.load_configs(server.args)
-                
-        print self.configs
-        print self.schemas
-        
+               
         super(AcmeClientHandler, self).__init__(request, client_address, server)
         
     def send (self, data):
@@ -77,8 +74,9 @@ class AcmeClientHandler(SocketServer.StreamRequestHandler, object):
 
                     config.set_option_value(option, parsed_value)
                     self.send('OK')
-                elif msg_type == 'RELOAD':
-                    pass
+                elif msg_type == 'RELOAD-CONFIGS':
+                    self.configs = acme.load_configs(server.args)
+                    self.send('OK')
                 elif msg_type == 'LIST-SCHEMAS':
                     pass
                 elif msg_type == 'LIST-CONFIGS':

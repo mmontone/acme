@@ -5,7 +5,7 @@
 
 (in-package acme-system)
 
-(defsystem acme
+(defsystem acme-client
     :description "Common Lisp Acme bindings"
     :version "0.1"
     :author "Mariano Montone <marianomontone@gmail.com>"
@@ -35,12 +35,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE."
     :components
     ((:file "package")
-     (:file "acme")
+     (:file "client")
      (:file "option"))
     :serial t
     :depends-on
-    (:trivial-shell
-     :cl-json
+    (:cl-json
      :puri
      :local-time
      :cl-colors
