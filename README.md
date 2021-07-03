@@ -28,7 +28,7 @@ User manual: [HTML](http://mmontone.github.io/acme/doc/user-manual/acme.html) [P
 
 Developer manual: [HTML](http://mmontone.github.io/acme/doc/developer-manual/html/index.html) [PDF](http://mmontone.github.io/acme/doc/developer-manual/acme.pdf)
 
-##Quick introduction##
+## Quick introduction ##
 
 ### Running
 
