@@ -1,8 +1,8 @@
-#ACME#
+# ACME
 
 **ACME** is an Application Configuration ManagEr. It is written in Python and provides a Tk GUI for configurations manipulation.
 
-##Overview##
+## Overview
 
 The idea is to define configuration schemas and get a proper way of:
 
@@ -13,7 +13,7 @@ The idea is to define configuration schemas and get a proper way of:
 - Define your own option configurations types and provide validation for them.
 
 
-##Install##
+## Install
 
 Using pip:
 ```
@@ -22,7 +22,7 @@ sudo pip install https://github.com/mmontone/acme/archive/master.zip
 
 or download Acme and then run ``sudo python setup.py install``. That installs ``acme`` binary on ``/usr/local/bin``. After that, you can run acme typing ``acme`` at the shell.
 
-##Documentation##
+## Documentation
 
 User manual: [HTML](http://mmontone.github.io/acme/doc/user-manual/acme.html) [PDF](http://mmontone.github.io/acme/doc/user-manual/acme.pdf)
 
@@ -30,7 +30,7 @@ Developer manual: [HTML](http://mmontone.github.io/acme/doc/developer-manual/htm
 
 ##Quick introduction##
 
-###Running###
+### Running
 
 Acme is run invoking acme command from the command line. By default, it runs in normal mode; that means, it opens a GUI for adding, removing and editing configurations.
 
@@ -100,7 +100,7 @@ Configurations can be loaded and saved. They are serialized in XML format. The d
 
 Configuration options editing happens on the right panel of the configurations navigator. A specific option editor is offered for each type of option, and each option documentation is displayed too. When trying to save a configuration section, it is ensured that required options (options declared with ``required`` enabled in the configuration schema) are filled. Options that are not currently set have their default value, if any. Also, options can be ``set`` and ``unset``. Setting a configuration option means setting the configuration option in the current configuration to the value being shown in the option editor. Unsetting a configuration option means removing the option value setting from the current configuration.
 
-###Examples###
+### Examples ###
 
 There are some example configurations and schemas to see what the application is about.
 
